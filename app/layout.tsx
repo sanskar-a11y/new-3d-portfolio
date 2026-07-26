@@ -1,6 +1,5 @@
 import './globals.css'
 import { Navbar } from '@/components/ui/Navbar'
-import { CustomCursor } from '@/components/ui/CustomCursor'
 import { Preloader } from '@/components/ui/Preloader'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { GlobalCanvas } from '@/components/canvas/GlobalCanvas'
@@ -16,7 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="noise-overlay">
         <ErrorBoundary>
           <Preloader />
-          <CustomCursor />
           <GlobalCanvas />
           <Navbar />
           {children}
