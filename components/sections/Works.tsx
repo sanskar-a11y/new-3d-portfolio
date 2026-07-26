@@ -78,7 +78,7 @@ export function Works() {
           // Single active project row: z-50 (Strictly OVER 3D Cat Model Canvas at z-30)
           const zIndexClass = isSelected
             ? 'relative z-50 opacity-100 scale-[1.015]'
-            : 'relative z-10 opacity-25 hover:opacity-50'
+            : 'relative z-10 opacity-45 hover:opacity-75'
 
           return (
             <motion.div
@@ -106,7 +106,7 @@ export function Works() {
                   className={`text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-none transition-all duration-500 ${
                     isSelected
                       ? 'text-white translate-x-2 sm:translate-x-3 drop-shadow-[0_0_25px_rgba(0,240,255,0.5)]'
-                      : 'text-white/40'
+                      : 'text-white/60'
                   }`}
                 >
                   {project.title}
