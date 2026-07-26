@@ -83,7 +83,7 @@ export function Works() {
           // Non-active project rows: z-10 (Strictly UNDER 3D Cat Model Canvas at z-30)
           // Single active project row: z-50 (Strictly OVER 3D Cat Model Canvas at z-30)
           const zIndexClass = isSelected
-            ? 'relative z-50 opacity-100 scale-[1.015]'
+            ? 'relative z-60 opacity-100 scale-[1.015]'
             : 'relative z-10 opacity-45 hover:opacity-75'
 
           return (
