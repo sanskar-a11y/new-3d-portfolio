@@ -48,26 +48,56 @@ export function Navbar() {
         <Link 
           href="/" 
           aria-label="Home"
-          className="relative group p-1.5 flex items-center justify-center transition-transform duration-300 hover:scale-110"
+          className="relative group p-1 flex items-center justify-center transition-transform duration-300 hover:scale-110"
         >
-          {/* Subtle ambient glow behind logo */}
+          {/* Subtle ambient cyan glow behind logo on hover */}
           <div className="absolute inset-0 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
-          {/* Playboy-Style Cat Head Silhouette Logo with Bowtie */}
+          {/* White Cat Head Vector Logo (Inverted White Style from User Image) */}
           <svg 
-            className="w-7 h-7 text-white fill-current transition-all duration-300 group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.9)]" 
-            viewBox="0 0 24 24"
+            className="w-8 h-8 text-white transition-all duration-300 group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.9)]" 
+            viewBox="0 0 100 100"
           >
-            {/* Playboy Style Cat Head Silhouette with Almond Eye Cutout */}
+            {/* White Cat Head Base Silhouette */}
             <path 
-              d="M 11.2,1.8 C 10.8,1.0 9.6,1.1 9.4,2.0 C 8.5,5.9 8.7,9.2 9.8,11.9 C 8.2,13.5 7.2,15.6 7.2,18.0 C 7.2,21.9 10.1,24.5 14.2,24.5 C 18.3,24.5 21.2,21.9 21.2,18.0 C 21.2,15.6 20.2,13.5 18.6,11.9 C 19.7,9.2 19.9,5.9 19.0,2.0 C 18.8,1.1 17.6,1.0 17.2,1.8 C 15.6,5.0 14.8,7.9 14.2,9.8 C 13.6,7.9 12.8,5.0 11.2,1.8 Z M 11.8,15.8 C 12.6,15.8 13.2,16.5 13.2,17.3 C 13.2,18.1 12.6,18.8 11.8,18.8 C 11.0,18.8 10.4,18.1 10.4,17.3 C 10.4,16.5 11.0,15.8 11.8,15.8 Z" 
-              fillRule="evenodd" 
+              d="M 24 35 C 21 20 27 12 27 12 C 33 20 38 25 41 25 C 44 23.5 56 23.5 59 25 C 62 25 67 20 73 12 C 73 12 79 20 76 35 C 82 43 82 56 77 64 C 70 74 50 82 50 82 C 50 82 30 74 23 64 C 18 56 18 43 24 35 Z" 
+              fill="currentColor" 
             />
+
+            {/* Inner Ear Cutouts */}
+            <polygon points="31,21 37,25 33,32" fill="#050505" />
+            <polygon points="69,21 63,25 67,32" fill="#050505" />
+
+            {/* 3 Forehead Stripes */}
+            <path d="M 45 23 C 45.5 28 45.8 33 46 38 H 47.5 C 47.3 33 47 28 46.5 23 Z" fill="#050505" />
+            <path d="M 49 22 C 49.5 28 49.8 35 50 41 H 52 C 51.8 35 51.5 28 51 22 Z" fill="#050505" />
+            <path d="M 54.5 23 C 54 28 53.7 33 53.5 38 H 55 C 55.2 33 55.5 28 56 23 Z" fill="#050505" />
+
+            {/* Sharp Almond Eyes */}
+            <path d="M 33 45 C 37 40 44 44 45 47.5 C 41 49.5 35 48 33 45 Z" fill="#050505" />
+            <path d="M 67 45 C 63 40 56 44 55 47.5 C 59 49.5 65 48 67 45 Z" fill="#050505" />
             
-            {/* Iconic Playboy Bowtie */}
-            <path 
-              d="M 10.5,22.8 L 14.2,23.8 L 10.5,24.8 Z M 17.9,22.8 L 14.2,23.8 L 17.9,24.8 Z M 14.2,23.3 C 14.6,23.3 14.9,23.5 14.9,23.8 C 14.9,24.1 14.6,24.3 14.2,24.3 C 13.8,24.3 13.5,24.1 13.5,23.8 C 13.5,23.5 13.8,23.3 14.2,23.3 Z" 
-            />
+            {/* White Eye Pupils */}
+            <polygon points="38,44 42,45 40,47" fill="currentColor" />
+            <polygon points="62,44 58,45 60,47" fill="currentColor" />
+
+            {/* Cheekbone Cuts */}
+            <path d="M 43.5 48.5 L 42 56 L 40.5 55 Z" fill="#050505" />
+            <path d="M 56.5 48.5 L 58 56 L 59.5 55 Z" fill="#050505" />
+
+            {/* Triangular Nose & Curved Mouth */}
+            <polygon points="50,60.5 46.5,56.5 53.5,56.5" fill="#050505" />
+            <path d="M 50 60.5 C 46.5 63 42 62.5 40 60" stroke="#050505" strokeWidth="2" strokeLinecap="round" fill="none" />
+            <path d="M 50 60.5 C 53.5 63 58 62.5 60 60" stroke="#050505" strokeWidth="2" strokeLinecap="round" fill="none" />
+
+            {/* 3 Muzzle Whiskers on Left & Right */}
+            <path d="M 23 54 L 38 57" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+            <path d="M 21 59 L 37 60.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+            <path d="M 23 64 L 38 63.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+
+            <path d="M 77 54 L 62 57" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+            <path d="M 79 59 L 63 60.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+            <path d="M 77 64 L 62 63.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </Link>
       </Magnetic>
