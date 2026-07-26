@@ -76,7 +76,7 @@ export function Works() {
                 alt={project.title}
                 fill
                 sizes="(max-width: 640px) 110px, (max-width: 768px) 170px, 250px"
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="object-cover transition-transform duration-500 group-hover:scale-110 grayscale contrast-125"
                 referrerPolicy="no-referrer"
               />
               <div
