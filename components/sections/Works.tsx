@@ -51,6 +51,7 @@ export function Works() {
               setHoveredIndex(null)
             }}
             onClick={() => setHoveredIndex(hoveredIndex === idx ? null : idx)}
+          >
             {/* Left side: Pure Project Title */}
             <h3
               className={`text-xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight transition-all duration-300 ${
