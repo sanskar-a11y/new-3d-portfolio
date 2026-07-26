@@ -53,34 +53,21 @@ export function Navbar() {
           {/* Subtle ambient glow behind logo */}
           <div className="absolute inset-0 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
-          {/* Elegant Cyber Cat SVG Logo */}
+          {/* Playboy-Style Cat Head Silhouette Logo with Bowtie */}
           <svg 
-            className="w-7 h-7 text-white stroke-current fill-none transition-all duration-300 group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" 
-            viewBox="0 0 32 32" 
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            className="w-7 h-7 text-white fill-current transition-all duration-300 group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.9)]" 
+            viewBox="0 0 24 24"
           >
-            {/* Sleek Pointed Ears & Face Outline */}
-            <path d="M 5 12 L 10 3 L 15 9 L 17 9 L 22 3 L 27 12 C 29 16 28 22 24 26 C 20 29 12 29 8 26 C 4 22 3 16 5 12 Z" />
+            {/* Playboy Style Cat Head Silhouette with Almond Eye Cutout */}
+            <path 
+              d="M 11.2,1.8 C 10.8,1.0 9.6,1.1 9.4,2.0 C 8.5,5.9 8.7,9.2 9.8,11.9 C 8.2,13.5 7.2,15.6 7.2,18.0 C 7.2,21.9 10.1,24.5 14.2,24.5 C 18.3,24.5 21.2,21.9 21.2,18.0 C 21.2,15.6 20.2,13.5 18.6,11.9 C 19.7,9.2 19.9,5.9 19.0,2.0 C 18.8,1.1 17.6,1.0 17.2,1.8 C 15.6,5.0 14.8,7.9 14.2,9.8 C 13.6,7.9 12.8,5.0 11.2,1.8 Z M 11.8,15.8 C 12.6,15.8 13.2,16.5 13.2,17.3 C 13.2,18.1 12.6,18.8 11.8,18.8 C 11.0,18.8 10.4,18.1 10.4,17.3 C 10.4,16.5 11.0,15.8 11.8,15.8 Z" 
+              fillRule="evenodd" 
+            />
             
-            {/* Inner Ear Structural Facets */}
-            <path d="M 10 3 L 14 9" strokeWidth="1.2" opacity="0.5" />
-            <path d="M 22 3 L 18 9" strokeWidth="1.2" opacity="0.5" />
-            
-            {/* Sharp Almond Eyes */}
-            <polygon points="8.5,14.5 13.5,12.5 12.5,16" fill="currentColor" stroke="none" />
-            <polygon points="23.5,14.5 18.5,12.5 19.5,16" fill="currentColor" stroke="none" />
-            
-            {/* Nose & Muzzle */}
-            <polygon points="16,19 14.5,17.5 17.5,17.5" fill="currentColor" stroke="none" />
-            <path d="M 16 19 L 16 21" strokeWidth="1.4" />
-            
-            {/* Whisker Details */}
-            <path d="M 4 17 L 10 18" opacity="0.8" />
-            <path d="M 4 20 L 10 20" opacity="0.8" />
-            <path d="M 28 17 L 22 18" opacity="0.8" />
-            <path d="M 28 20 L 22 20" opacity="0.8" />
+            {/* Iconic Playboy Bowtie */}
+            <path 
+              d="M 10.5,22.8 L 14.2,23.8 L 10.5,24.8 Z M 17.9,22.8 L 14.2,23.8 L 17.9,24.8 Z M 14.2,23.3 C 14.6,23.3 14.9,23.5 14.9,23.8 C 14.9,24.1 14.6,24.3 14.2,24.3 C 13.8,24.3 13.5,24.1 13.5,23.8 C 13.5,23.5 13.8,23.3 14.2,23.3 Z" 
+            />
           </svg>
         </Link>
       </Magnetic>
