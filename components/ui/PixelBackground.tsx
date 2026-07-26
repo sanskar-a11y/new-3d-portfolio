@@ -16,22 +16,22 @@ export function PixelBackground() {
     let width = 0
     let height = 0
 
-    // Grid config matching Yuta Abe signature pixel grid
-    const pixelSize = 3        // 3px x 3px square box pixels
-    const gap = 28             // 28px grid spacing
-    const radius = 110         // Vanish radius around cursor
+    const radius = 130 // Vanish radius around cursor
     const radiusSq = radius * radius
 
-    interface Pixel {
+    interface FloatingPixel {
       x: number
       y: number
-      currentOpacity: number
+      size: number
+      vx: number
+      vy: number
       baseOpacity: number
+      currentOpacity: number
     }
 
-    let pixels: Pixel[] = []
+    let pixels: FloatingPixel[] = []
 
-    const initGrid = () => {
+    const initPixels = () => {
       width = window.innerWidth
       height = window.innerHeight
       canvas.width = width * window.devicePixelRatio
@@ -39,22 +39,23 @@ export function PixelBackground() {
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
 
       pixels = []
-      const cols = Math.ceil(width / gap) + 1
-      const rows = Math.ceil(height / gap) + 1
+      // Generate randomly scattered pixel boxes (no rigid grid pattern)
+      const count = Math.floor((width * height) / 3600)
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          pixels.push({
-            x: c * gap + 14,
-            y: r * gap + 14,
-            currentOpacity: 0.14,
-            baseOpacity: 0.14,
-          })
-        }
+      for (let i = 0; i < count; i++) {
+        pixels.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() < 0.65 ? 3 : 4, // 3px or 4px square pixel box
+          vx: (Math.random() - 0.5) * 0.4,   // Real-time drifting velocity X
+          vy: (Math.random() - 0.5) * 0.4,   // Real-time drifting velocity Y
+          baseOpacity: 0.08 + Math.random() * 0.14,
+          currentOpacity: 0.12,
+        })
       }
     }
 
-    initGrid()
+    initPixels()
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = e.clientX
@@ -66,7 +67,7 @@ export function PixelBackground() {
       mouseRef.current.targetY = -1000
     }
 
-    window.addEventListener('resize', initGrid)
+    window.addEventListener('resize', initPixels)
     window.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseleave', handleMouseLeave)
 
@@ -82,24 +83,34 @@ export function PixelBackground() {
 
       for (let i = 0; i < pixels.length; i++) {
         const p = pixels[i]
+
+        // Dynamic position shifting across screen (no static pattern!)
+        p.x += p.vx
+        p.y += p.vy
+
+        // Wrap around screen edges
+        if (p.x < 0) p.x = width
+        if (p.x > width) p.x = 0
+        if (p.y < 0) p.y = height
+        if (p.y > height) p.y = 0
+
+        // Distance check to cursor for dynamic vanishing
         const dx = p.x - mx
         const dy = p.y - my
         const distSq = dx * dx + dy * dy
 
-        // Calculate target opacity based on distance to cursor
         let targetOpacity = p.baseOpacity
         if (distSq < radiusSq) {
           const factor = Math.sqrt(distSq) / radius
-          targetOpacity = p.baseOpacity * Math.pow(factor, 2) // Smooth curve vanish
+          targetOpacity = p.baseOpacity * Math.pow(factor, 2)
         }
 
-        // Lerp opacity change for organic fade-out and fade-in
         p.currentOpacity += (targetOpacity - p.currentOpacity) * 0.12
 
         if (p.currentOpacity > 0.005) {
           ctx.fillStyle = `rgba(255, 255, 255, ${p.currentOpacity})`
           // Draw crisp square box pixel
-          ctx.fillRect(p.x - pixelSize / 2, p.y - pixelSize / 2, pixelSize, pixelSize)
+          ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size)
         }
       }
 
@@ -109,7 +120,7 @@ export function PixelBackground() {
     render()
 
     return () => {
-      window.removeEventListener('resize', initGrid)
+      window.removeEventListener('resize', initPixels)
       window.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseleave', handleMouseLeave)
       cancelAnimationFrame(animationFrameId)
