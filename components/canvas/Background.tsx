@@ -15,8 +15,8 @@ export function Background({ children }: { children?: React.ReactNode }) {
       {/* Dark background base */}
       <div className="fixed inset-0 z-[-1] bg-[#050505]" />
 
-      {/* 3D Canvas layered behind page content but above background */}
-      <div className="fixed inset-0 z-10 pointer-events-none">
+      {/* 3D Canvas layered between non-hovered content (z-10) and hovered content (z-40) */}
+      <div className="fixed inset-0 z-20 pointer-events-none">
         <Canvas 
           dpr={[1, 2]} 
           gl={{ antialias: true, powerPreference: 'default', alpha: true }} 
