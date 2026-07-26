@@ -12,7 +12,8 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="noise-overlay">
+      <body className="noise-overlay bg-[#050505]">
+        <div className="fixed inset-0 z-0 bg-[#050505] pointer-events-none" />
         <ErrorBoundary>
           <Preloader />
           <GlobalCanvas />

@@ -22,7 +22,7 @@ export function HUD() {
   }, [])
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-40 flex flex-col justify-between p-6 sm:p-10 font-mono text-xs text-white/80 select-none">
+    <div className="fixed inset-0 pointer-events-none z-50 flex flex-col justify-between p-6 sm:p-10 font-mono text-xs text-white/80 select-none">
       {/* Bottom Controls Only */}
       <div className="mt-auto flex justify-between items-end w-full">
         {/* Left Side: Time/Location + SHIFT Toggle */}

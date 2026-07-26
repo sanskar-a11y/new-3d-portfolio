@@ -37,7 +37,7 @@ export function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-      className="fixed top-0 left-0 w-full z-30 px-6 py-5 sm:px-12 flex justify-between items-center text-xs sm:text-sm tracking-widest uppercase text-white/80 bg-[#050505]/40 backdrop-blur-md"
+      className="fixed top-0 left-0 w-full z-50 px-6 py-5 sm:px-12 flex justify-between items-center text-xs sm:text-sm tracking-widest uppercase text-white/80 bg-[#050505]/40 backdrop-blur-md"
     >
       {/* Desktop Left Links */}
       <div className="hidden md:flex gap-6 sm:gap-12">

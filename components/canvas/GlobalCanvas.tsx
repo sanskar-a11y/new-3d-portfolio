@@ -13,7 +13,7 @@ export function GlobalCanvas() {
   return (
     <>
       <div
-        className={`fixed inset-0 z-50 pointer-events-none transition-opacity duration-700 ${
+        className={`fixed inset-0 z-20 pointer-events-none transition-opacity duration-700 ${
           isHome ? 'opacity-100' : isProjects ? 'opacity-70' : 'opacity-40'
         }`}
       >
