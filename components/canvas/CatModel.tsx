@@ -341,8 +341,10 @@ export function CatModel() {
 
     // Dynamic Real-time Whisker Gravity & Spring Inertia Physics
     if (whiskerGeoRef.current && groupRef.current) {
-      const posAttr = whiskerGeoRef.current.attributes.position as THREE.BufferAttribute
-      if (posAttr) {
+      const targetGeo = (whiskerGeoRef.current as any).geometry || whiskerGeoRef.current
+      if (targetGeo && targetGeo.attributes && targetGeo.attributes.position) {
+        const posAttr = targetGeo.attributes.position as THREE.BufferAttribute
+        if (posAttr && posAttr.array) {
         const array = posAttr.array as Float32Array
         let ptr = 0
 
@@ -397,7 +399,8 @@ export function CatModel() {
         posAttr.needsUpdate = true
       }
     }
-  })
+  }
+})
 
   return (
     <group ref={groupRef} position={[0, basePosY, 0]} scale={[responsiveScale, responsiveScale, responsiveScale]}>
