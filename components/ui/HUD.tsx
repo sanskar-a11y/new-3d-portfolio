@@ -1,17 +1,43 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { Magnetic } from '@/components/ui/Magnetic'
 
 export function HUD() {
   const mode = useAppStore((state) => state.mode)
+  const [timeString, setTimeString] = useState('')
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      const hours = now.getHours() % 12 || 12
+      const minutes = now.getMinutes().toString().padStart(2, '0')
+      const ampm = now.getHours() >= 12 ? 'PM' : 'AM'
+      setTimeString(`${hours}:${minutes} ${ampm}`)
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="fixed inset-0 pointer-events-none z-40 flex flex-col justify-between p-6 sm:p-10 font-mono text-xs text-white/80 select-none">
       {/* Bottom Controls Only */}
       <div className="mt-auto flex justify-between items-end w-full">
-        {/* Sleek Minimal SHIFT Toggle Pill - No function behind it for now */}
-        <div className="pointer-events-auto">
+        {/* Left Side: Time/Location + SHIFT Toggle */}
+        <div className="flex flex-col items-start gap-4 pointer-events-auto">
+          {/* Time & Location Display */}
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-white/40 tracking-widest uppercase">
+              NEW DELHI
+            </span>
+            <span className="font-mono text-white/80">
+              {timeString || "00:00 AM"}
+            </span>
+          </div>
+
+          {/* Sleek Minimal SHIFT Toggle Pill - No function behind it for now */}
           <Magnetic>
             <button
               onClick={() => {}}

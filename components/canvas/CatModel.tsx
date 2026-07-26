@@ -68,7 +68,7 @@ const CatShader = {
     // Helper: 45-Degree Rotated Halftone Dot Matrix (softer grid scale)
     float getHalftoneMask(vec3 normal, vec3 lightDir1, vec3 lightDir2) {
       vec2 st = gl_FragCoord.xy / max(uResolution.y, 1.0);
-      float gridScale = 180.0;
+      float gridScale = 220.0;
       
       // Rotate grid by 45 degrees (PI / 4) for signature print aesthetic
       float angle = 0.78539816339;
@@ -327,14 +327,14 @@ export function CatModel() {
 
     if (groupRef.current) {
       // Clamped rotation following so ears frame SANSKAR cleanly without overlapping text
-      const targetRotationY = state.pointer.x * (isMobile ? 0.06 : 0.09)
-      const targetRotationX = -state.pointer.y * (isMobile ? 0.04 : 0.06)
+      const targetRotationY = state.pointer.x * (isMobile ? 0.08 : 0.12)
+      const targetRotationX = -state.pointer.y * (isMobile ? 0.06 : 0.08)
 
-      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.06
-      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.06
+      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.08
+      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.08
 
       // Idle floating breathing motion (positioned to align ears perfectly below SANSKAR logo)
-      groupRef.current.position.y = basePosY + Math.sin(elapsed * 1.6) * 0.035
+      groupRef.current.position.y = basePosY + Math.sin(elapsed * 1.2) * 0.025
     }
   })
 
