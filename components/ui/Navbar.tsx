@@ -53,51 +53,50 @@ export function Navbar() {
           {/* Subtle ambient cyan glow behind logo on hover */}
           <div className="absolute inset-0 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
-          {/* White Cat Head Vector Logo (Inverted White Style from User Image) */}
+          {/* Sharp Edgy Low-Poly Cat Head Vector Logo */}
           <svg 
             className="w-8 h-8 text-white transition-all duration-300 group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.9)]" 
             viewBox="0 0 100 100"
           >
-            {/* White Cat Head Base Silhouette */}
-            <path 
-              d="M 24 35 C 21 20 27 12 27 12 C 33 20 38 25 41 25 C 44 23.5 56 23.5 59 25 C 62 25 67 20 73 12 C 73 12 79 20 76 35 C 82 43 82 56 77 64 C 70 74 50 82 50 82 C 50 82 30 74 23 64 C 18 56 18 43 24 35 Z" 
+            {/* Razor-Sharp Angular Cat Head Base Polygon */}
+            <polygon 
+              points="50,84 22,66 18,45 25,32 28,12 40,24 50,22 60,24 72,12 75,32 82,45 78,66" 
               fill="currentColor" 
             />
 
-            {/* Inner Ear Cutouts */}
-            <polygon points="31,21 37,25 33,32" fill="#050505" />
-            <polygon points="69,21 63,25 67,32" fill="#050505" />
+            {/* Sharp Inner Ear Cutouts */}
+            <polygon points="31,18 38,25 31,28" fill="#050505" />
+            <polygon points="69,18 62,25 69,28" fill="#050505" />
 
-            {/* 3 Forehead Stripes */}
-            <path d="M 45 23 C 45.5 28 45.8 33 46 38 H 47.5 C 47.3 33 47 28 46.5 23 Z" fill="#050505" />
-            <path d="M 49 22 C 49.5 28 49.8 35 50 41 H 52 C 51.8 35 51.5 28 51 22 Z" fill="#050505" />
-            <path d="M 54.5 23 C 54 28 53.7 33 53.5 38 H 55 C 55.2 33 55.5 28 56 23 Z" fill="#050505" />
+            {/* 3 Sharp Triangular Forehead Stripes */}
+            <polygon points="46,23 47.5,23 47,36 45.5,36" fill="#050505" />
+            <polygon points="49.5,22 50.5,22 51.5,40 48.5,40" fill="#050505" />
+            <polygon points="52.5,23 54,23 54.5,36 53,36" fill="#050505" />
 
-            {/* Sharp Almond Eyes */}
-            <path d="M 33 45 C 37 40 44 44 45 47.5 C 41 49.5 35 48 33 45 Z" fill="#050505" />
-            <path d="M 67 45 C 63 40 56 44 55 47.5 C 59 49.5 65 48 67 45 Z" fill="#050505" />
+            {/* Razor-Sharp Angular Diamond Eyes */}
+            <polygon points="32,44 44,40 46,47 34,49" fill="#050505" />
+            <polygon points="68,44 56,40 54,47 66,49" fill="#050505" />
             
-            {/* White Eye Pupils */}
-            <polygon points="38,44 42,45 40,47" fill="currentColor" />
-            <polygon points="62,44 58,45 60,47" fill="currentColor" />
+            {/* Eye Pupil Highlights */}
+            <polygon points="38,43 43,42 41,46" fill="currentColor" />
+            <polygon points="62,43 57,42 59,46" fill="currentColor" />
 
-            {/* Cheekbone Cuts */}
-            <path d="M 43.5 48.5 L 42 56 L 40.5 55 Z" fill="#050505" />
-            <path d="M 56.5 48.5 L 58 56 L 59.5 55 Z" fill="#050505" />
+            {/* Edgy Cheekbone Facet Cuts */}
+            <polygon points="43,48.5 41.5,56 39.5,54" fill="#050505" />
+            <polygon points="57,48.5 58.5,56 60.5,54" fill="#050505" />
 
-            {/* Triangular Nose & Curved Mouth */}
-            <polygon points="50,60.5 46.5,56.5 53.5,56.5" fill="#050505" />
-            <path d="M 50 60.5 C 46.5 63 42 62.5 40 60" stroke="#050505" strokeWidth="2" strokeLinecap="round" fill="none" />
-            <path d="M 50 60.5 C 53.5 63 58 62.5 60 60" stroke="#050505" strokeWidth="2" strokeLinecap="round" fill="none" />
+            {/* Sharp Triangular Nose & Angular Mouth */}
+            <polygon points="50,60 46.5,55 53.5,55" fill="#050505" />
+            <polyline points="40,59 50,61 60,59" stroke="#050505" strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter" fill="none" />
 
-            {/* 3 Muzzle Whiskers on Left & Right */}
-            <path d="M 23 54 L 38 57" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
-            <path d="M 21 59 L 37 60.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
-            <path d="M 23 64 L 38 63.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+            {/* Sharp Straight Whiskers */}
+            <line x1="20" y1="52" x2="37" y2="56" stroke="#050505" strokeWidth="2" strokeLinecap="square" />
+            <line x1="18" y1="58" x2="36" y2="60" stroke="#050505" strokeWidth="2" strokeLinecap="square" />
+            <line x1="20" y1="64" x2="37" y2="63" stroke="#050505" strokeWidth="2" strokeLinecap="square" />
 
-            <path d="M 77 54 L 62 57" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
-            <path d="M 79 59 L 63 60.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
-            <path d="M 77 64 L 62 63.5" stroke="#050505" strokeWidth="2" strokeLinecap="round" />
+            <line x1="80" y1="52" x2="63" y2="56" stroke="#050505" strokeWidth="2" strokeLinecap="square" />
+            <line x1="82" y1="58" x2="64" y2="60" stroke="#050505" strokeWidth="2" strokeLinecap="square" />
+            <line x1="80" y1="64" x2="63" y2="63" stroke="#050505" strokeWidth="2" strokeLinecap="square" />
           </svg>
         </Link>
       </Magnetic>
