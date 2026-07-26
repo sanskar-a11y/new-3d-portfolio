@@ -7,26 +7,26 @@ import { useAppStore } from '@/store/useAppStore'
 import { playGlassClinkSound } from '@/lib/audio'
 
 const projects = [
-  {
-    index: '01',
-    title: 'ETHEREAL',
-    image: 'https://picsum.photos/seed/ethereal/600/340',
-  },
-  {
-    index: '02',
-    title: 'LUMINA',
-    image: 'https://picsum.photos/seed/lumina/600/340',
-  },
-  {
-    index: '03',
-    title: 'AURA',
-    image: 'https://picsum.photos/seed/aura/600/340',
-  },
-  {
-    index: '04',
-    title: 'NEXUS',
-    image: 'https://picsum.photos/seed/nexus/600/340',
-  },
+  { index: '01', title: 'ETHEREAL', image: 'https://picsum.photos/seed/ethereal/600/340' },
+  { index: '02', title: 'LUMINA', image: 'https://picsum.photos/seed/lumina/600/340' },
+  { index: '03', title: 'AURA', image: 'https://picsum.photos/seed/aura/600/340' },
+  { index: '04', title: 'NEXUS', image: 'https://picsum.photos/seed/nexus/600/340' },
+  { index: '05', title: 'KINETIC', image: 'https://picsum.photos/seed/kinetic/600/340' },
+  { index: '06', title: 'VELOCITY', image: 'https://picsum.photos/seed/velocity/600/340' },
+  { index: '07', title: 'MONOLITH', image: 'https://picsum.photos/seed/monolith/600/340' },
+  { index: '08', title: 'SYNAPSE', image: 'https://picsum.photos/seed/synapse/600/340' },
+  { index: '09', title: 'CHROMA', image: 'https://picsum.photos/seed/chroma/600/340' },
+  { index: '10', title: 'VORTEX', image: 'https://picsum.photos/seed/vortex/600/340' },
+  { index: '11', title: 'SOLARIS', image: 'https://picsum.photos/seed/solaris/600/340' },
+  { index: '12', title: 'NEBULA', image: 'https://picsum.photos/seed/nebula/600/340' },
+  { index: '13', title: 'SPECTRA', image: 'https://picsum.photos/seed/spectra/600/340' },
+  { index: '14', title: 'HYPERION', image: 'https://picsum.photos/seed/hyperion/600/340' },
+  { index: '15', title: 'QUANTUM', image: 'https://picsum.photos/seed/quantum/600/340' },
+  { index: '16', title: 'OBSIDIAN', image: 'https://picsum.photos/seed/obsidian/600/340' },
+  { index: '17', title: 'ZENITH', image: 'https://picsum.photos/seed/zenith/600/340' },
+  { index: '18', title: 'CYBERPUNK', image: 'https://picsum.photos/seed/cyberpunk/600/340' },
+  { index: '19', title: 'ASTRONOMY', image: 'https://picsum.photos/seed/astronomy/600/340' },
+  { index: '20', title: 'MIRAGE', image: 'https://picsum.photos/seed/mirage/600/340' },
 ]
 
 export function Works() {
