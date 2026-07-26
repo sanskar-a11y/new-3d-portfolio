@@ -38,17 +38,15 @@ export function Works() {
       <div className="w-full max-w-none flex flex-col gap-0 sm:gap-1">
         {projects.map((project, idx) => {
           const isSelected = hoveredIndex === idx
-          const isAnySelected = hoveredIndex !== null
 
-          // Layering: 3D model Canvas is at z-20.
-          // Hovered project item: z-40 (On top of 3D model)
-          // Non-hovered items (when one is active): z-10 (Below 3D model)
-          // Default state (no hover): z-30 (Above 3D model)
+          // Layering Hierarchy:
+          // 3D Cat Model Canvas is at fixed z-20.
+          // By default (no hover), ALL project divs are at z-10 (Cat model is ON TOP of all projects).
+          // When a project div is hovered/clicked: that specific div pops to z-40 (ON TOP of cat model).
+          // All other non-hovered project divs remain at z-10 (BELOW cat model).
           const zIndexClass = isSelected
             ? 'relative z-40 opacity-100'
-            : isAnySelected
-              ? 'relative z-10 opacity-35'
-              : 'relative z-30 opacity-80 hover:opacity-100'
+            : 'relative z-10 opacity-65 hover:opacity-100'
 
           return (
             <motion.div
