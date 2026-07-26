@@ -68,7 +68,7 @@ export function Works() {
   }, [])
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-24 sm:py-32">
+    <section className="w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-24 sm:py-32">
       <div className="w-full max-w-none flex flex-col gap-1 sm:gap-2">
         {projects.map((project, idx) => {
           const isSelected = scrollActiveIndex === idx
