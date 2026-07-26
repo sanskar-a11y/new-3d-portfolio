@@ -213,24 +213,28 @@ export function CatModel() {
   // Dynamic responsive sizing & positioning for desktop, tablet & mobile viewports
   const isMobile = viewport.width < 4.8
   const isTablet = viewport.width >= 4.8 && viewport.width < 7.5
-  const isWidescreen = viewport.aspect >= 1.5 // 16:9 and 16:10 screen aspect ratios
+  const isLaptop = viewport.width >= 7.5 && viewport.height < 5.4 // Laptop screens (~1080p / 768p browser viewports)
 
-  // Dynamic responsive scale based on viewport height so the entire cat head fits 100% inside 16:9 screens
+  // Restore big bold cat head across all screens, with targeted laptop sizing (3.35) so chin isn't clipped
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(1.8, Math.min(viewport.height * 0.48, 2.3))
+      return Math.max(2.2, Math.min(viewport.width * 0.52, 2.6))
     }
     if (isTablet) {
-      return Math.max(2.4, Math.min(viewport.height * 0.58, 2.8))
+      return 3.4
     }
-    // Desktop 16:9 widescreen: scale based strictly on viewport.height (62% fill factor ~2.88)
-    return Math.max(2.55, Math.min(viewport.height * 0.62, 3.10))
-  }, [viewport.height, isMobile, isTablet])
+    if (isLaptop) {
+      return 3.35
+    }
+    // Large Desktop Monitors: Big bold cat model (~3.85)
+    return Math.min(4.0, Math.max(3.6, viewport.width * 0.42))
+  }, [viewport.width, viewport.height, isMobile, isTablet, isLaptop])
 
-  // Center the 3D cat head vertically in world space with 71px safety margin
   const basePosY = useMemo(() => {
-    return -0.04 * viewport.height
-  }, [viewport.height])
+    if (isMobile) return -0.18
+    if (isLaptop) return -0.14
+    return -0.20
+  }, [isMobile, isLaptop])
 
   // Load authentic Yuta Abe cat 3D model
   const { scene } = useGLTF('/cat.glb') as any
