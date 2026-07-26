@@ -33,8 +33,8 @@ export function Works() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center px-4 sm:px-12 lg:px-16 py-20 z-20">
-      <div className="mx-auto w-full max-w-7xl flex flex-col gap-2 sm:gap-4">
+    <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-20 z-20">
+      <div className="w-full max-w-none flex flex-col gap-2 sm:gap-4">
         {projects.map((project, idx) => (
           <motion.div
             key={idx}
@@ -52,8 +52,8 @@ export function Works() {
             }}
             onClick={() => setHoveredIndex(hoveredIndex === idx ? null : idx)}
           >
-            {/* Left side: Accent indicator + Index + Title */}
-            <div className="flex items-center gap-3 sm:gap-6">
+            {/* Left side: Accent indicator + Title (no index number) */}
+            <div className="flex items-center gap-3 sm:gap-5">
               <div
                 className={`w-1 sm:w-1.5 h-6 sm:h-10 lg:h-12 rounded-full transition-all duration-300 ${
                   hoveredIndex === idx
@@ -61,9 +61,6 @@ export function Works() {
                     : 'bg-white/10 group-hover:bg-white/30'
                 }`}
               />
-              <span className="font-mono text-xs sm:text-sm text-white/40 tracking-widest tabular-nums">
-                {project.index}
-              </span>
               <h3
                 className={`text-xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight transition-all duration-300 ${
                   hoveredIndex === idx
