@@ -33,15 +33,15 @@ export function Works() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-20 z-20">
-      <div className="w-full max-w-none flex flex-col gap-2 sm:gap-4">
+    <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-12 z-20">
+      <div className="w-full max-w-none flex flex-col gap-1 sm:gap-2">
         {projects.map((project, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: idx * 0.08 }}
-            className="group relative flex items-center justify-between py-3 sm:py-5 lg:py-6 transition-all duration-300 cursor-pointer select-none"
+            className="group relative flex items-center justify-between py-1.5 sm:py-2.5 lg:py-3 transition-all duration-300 cursor-pointer select-none"
             onMouseEnter={() => {
               setCursorVariant('hover')
               setHoveredIndex(idx)
@@ -65,7 +65,7 @@ export function Works() {
 
             {/* Right side: Sleek widescreen rectangular screenshot (aspect-video / 16:9) matching row height */}
             <div
-              className={`relative aspect-video w-[110px] sm:w-[170px] md:w-[210px] lg:w-[250px] rounded-lg overflow-hidden transition-all duration-300 shadow-md shrink-0 ${
+              className={`relative aspect-video w-[90px] sm:w-[140px] md:w-[170px] lg:w-[200px] rounded-lg overflow-hidden transition-all duration-300 shadow-md shrink-0 ${
                 hoveredIndex === idx
                   ? 'opacity-100 scale-105 shadow-[0_0_20px_rgba(0,240,255,0.3)]'
                   : 'opacity-60 group-hover:opacity-90'
@@ -75,7 +75,7 @@ export function Works() {
                 src={project.image}
                 alt={project.title}
                 fill
-                sizes="(max-width: 640px) 110px, (max-width: 768px) 170px, 250px"
+                sizes="(max-width: 640px) 90px, (max-width: 768px) 140px, 200px"
                 className="object-cover transition-transform duration-500 group-hover:scale-110 grayscale contrast-125"
                 referrerPolicy="no-referrer"
               />
