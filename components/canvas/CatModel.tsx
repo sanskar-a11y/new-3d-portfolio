@@ -227,11 +227,11 @@ export function CatModel() {
     return Math.min(4.15, Math.max(3.85, viewport.width * 0.45))
   }, [viewport.width, isMobile, isTablet])
 
-  // Shift cat model higher up on 16:9 / 16:10 screen sizes (-0.20 instead of -0.36)
+  // Shift cat model higher up so ears and head overlap top navbar
   const basePosY = useMemo(() => {
-    if (isMobile) return -0.24
-    if (isWidescreen) return -0.20
-    return -0.30
+    if (isMobile) return -0.12
+    if (isWidescreen) return -0.06
+    return -0.10
   }, [isMobile, isWidescreen])
 
   // Load authentic Yuta Abe cat 3D model
