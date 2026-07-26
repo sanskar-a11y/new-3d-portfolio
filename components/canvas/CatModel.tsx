@@ -215,10 +215,10 @@ export function CatModel() {
   const isTablet = viewport.width >= 4.8 && viewport.width < 7.5
   const isWidescreen = viewport.aspect >= 1.5 // 16:9 and 16:10 screen aspect ratios
 
-  // Make cat head bigger on desktop (~3.85 - 4.15), balanced on tablet (~3.4), and scaled on mobile (~2.5 - 2.9)
+  // Make cat head bigger on desktop (~3.85 - 4.15), balanced on tablet (~3.4), and slightly reduced on mobile (~2.0 - 2.5)
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(2.4, Math.min(viewport.width * 0.62, 2.9))
+      return Math.max(2.0, Math.min(viewport.width * 0.52, 2.5))
     }
     if (isTablet) {
       return 3.4
