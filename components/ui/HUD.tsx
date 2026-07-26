@@ -37,22 +37,36 @@ export function HUD() {
             </span>
           </div>
 
-          {/* Sleek Minimal SHIFT Toggle Pill - No function behind it for now */}
-          <Magnetic>
-            <button
-              onClick={() => {}}
-              className="flex items-center gap-2.5 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer group"
-            >
-              <div className="w-5 h-2.5 rounded-full border border-white/60 p-0.5 flex items-center">
-                <div
-                  className={`w-1.5 h-1.5 rounded-full bg-white transition-transform duration-300 ${
-                    mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-2.5 bg-white'
-                  }`}
-                />
-              </div>
-              <span className="font-bold text-[11px] tracking-widest text-white/90">SHIFT</span>
-            </button>
-          </Magnetic>
+          {/* Sleek Minimal Controls: SHIFT & SOUND */}
+          <div className="flex items-center gap-3">
+            <Magnetic>
+              <button
+                onClick={() => {}}
+                className="flex items-center gap-2.5 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer group"
+              >
+                <div className="w-5 h-2.5 rounded-full border border-white/60 p-0.5 flex items-center">
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full bg-white transition-transform duration-300 ${
+                      mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-2.5 bg-white'
+                    }`}
+                  />
+                </div>
+                <span className="font-bold text-[11px] tracking-widest text-white/90">SHIFT</span>
+              </button>
+            </Magnetic>
+
+            <Magnetic>
+              <button
+                onClick={() => {
+                  import('@/lib/audio').then(({ playGlassClinkSound }) => playGlassClinkSound())
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white/90 hover:text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer"
+              >
+                <span className="text-xs">🔊</span>
+                <span className="font-bold text-[10px] tracking-widest uppercase">SOUND</span>
+              </button>
+            </Magnetic>
+          </div>
         </div>
 
         {/* Bottom Right Social Links */}
