@@ -40,12 +40,12 @@ export function Works() {
           const isSelected = hoveredIndex === idx
 
           // Layering Hierarchy:
-          // 3D Cat Model Canvas is at fixed z-20.
-          // By default (no hover), ALL project divs are at z-10 (Cat model is ON TOP of all projects).
-          // When a project div is hovered/clicked: that specific div pops to z-40 (ON TOP of cat model).
+          // 3D Cat Model Canvas is fixed at z-30 (opacity 100).
+          // Default state (no hover): ALL project divs sit at z-10 (Cat model is 100% ON TOP of all project divs).
+          // Hovered state: The hovered project div pops to z-50 (ON TOP of cat model).
           // All other non-hovered project divs remain at z-10 (BELOW cat model).
           const zIndexClass = isSelected
-            ? 'relative z-40 opacity-100'
+            ? 'relative z-50 opacity-100'
             : 'relative z-10 opacity-65 hover:opacity-100'
 
           return (
