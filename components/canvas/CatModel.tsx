@@ -215,25 +215,25 @@ export function CatModel() {
   const isTablet = viewport.width >= 4.8 && viewport.width < 7.5
   const isLaptop = viewport.width >= 7.5 && viewport.height < 5.4 // Laptop screens (~1080p / 768p browser viewports)
 
-  // Restore big bold cat head across all screens, with targeted laptop sizing (3.35) so chin isn't clipped
+  // Bigger, bolder 3D cat head model across laptop (3.75) and desktop (4.2)
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(2.2, Math.min(viewport.width * 0.52, 2.6))
+      return Math.max(2.4, Math.min(viewport.width * 0.58, 2.9))
     }
     if (isTablet) {
-      return 3.4
+      return 3.7
     }
     if (isLaptop) {
-      return 3.35
+      return 3.75
     }
-    // Large Desktop Monitors: Big bold cat model (~3.85)
-    return Math.min(4.0, Math.max(3.6, viewport.width * 0.42))
+    // Large Desktop Monitors: Big bold cat model (~4.2)
+    return Math.min(4.35, Math.max(3.85, viewport.width * 0.46))
   }, [viewport.width, viewport.height, isMobile, isTablet, isLaptop])
 
   const basePosY = useMemo(() => {
     if (isMobile) return -0.18
-    if (isLaptop) return -0.14
-    return -0.20
+    if (isLaptop) return -0.22
+    return -0.24
   }, [isMobile, isLaptop])
 
   // Load authentic Yuta Abe cat 3D model
