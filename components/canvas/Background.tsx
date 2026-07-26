@@ -15,8 +15,8 @@ export function Background({ children }: { children?: React.ReactNode }) {
       {/* Dark background base */}
       <div className="fixed inset-0 z-[-1] bg-[#050505]" />
 
-      {/* 3D Canvas layered at z-60 to overlap Navbar (z-50) */}
-      <div className="fixed inset-0 z-60 pointer-events-none">
+      {/* 3D Canvas layered behind page content but above background */}
+      <div className="fixed inset-0 z-10 pointer-events-none">
         <Canvas 
           dpr={[1, 2]} 
           gl={{ antialias: true, powerPreference: 'default', alpha: true }} 
