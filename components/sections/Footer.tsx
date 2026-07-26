@@ -61,8 +61,8 @@ export function Footer() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between pt-8 text-xs text-gray-600 tracking-widest uppercase">
-        <p>© {new Date().getFullYear()} Yuta Abe Replica.</p>
-        <p>Built for the web.</p>
+        <p>© {new Date().getFullYear()} Sanskar Sharma.</p>
+        <p>Built with Claude Code, AI Studio, ChatGPT &amp; Antigravity.</p>
       </div>
     </motion.footer>
   )

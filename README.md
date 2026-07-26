@@ -37,3 +37,14 @@ A modern, high-performance 3D portfolio built with Next.js, React Three Fiber (R
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Contributors
+
+Special thanks to the key contributors and AI collaborators behind this project:
+
+- **[Sanskar Sharma](https://github.com/sanskar-a11y)** - Lead Developer & Creator
+- **Claude Code** - AI Coding Assistant & System Architecture
+- **Google AI Studio** - AI Prototyping & Generative Models
+- **ChatGPT** - Creative Direction & Feature Design
+- **Google Antigravity** - Agentic Development & Pair Programming
+
