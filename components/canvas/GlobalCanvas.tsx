@@ -12,7 +12,11 @@ export function GlobalCanvas() {
 
   return (
     <>
-      <div className={`transition-opacity duration-700 ${isHome ? 'opacity-100' : isProjects ? 'opacity-40' : 'opacity-40'}`}>
+      <div
+        className={`fixed inset-0 z-30 pointer-events-none transition-opacity duration-700 ${
+          isHome ? 'opacity-100' : isProjects ? 'opacity-40' : 'opacity-40'
+        }`}
+      >
         <Background>
           <CatModel />
         </Background>
