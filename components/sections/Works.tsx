@@ -39,20 +39,26 @@ export function Works() {
     let lastIndex = 0
 
     const handleScroll = () => {
-      const centerY = window.innerHeight / 2
+      const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80
       let closestIdx = 0
-      let minDistance = Infinity
 
-      itemRefs.current.forEach((el, idx) => {
-        if (!el) return
-        const rect = el.getBoundingClientRect()
-        const itemCenterY = rect.top + rect.height / 2
-        const distance = Math.abs(itemCenterY - centerY)
-        if (distance < minDistance) {
-          minDistance = distance
-          closestIdx = idx
-        }
-      })
+      if (isAtBottom) {
+        closestIdx = projects.length - 1
+      } else {
+        const centerY = window.innerHeight / 2
+        let minDistance = Infinity
+
+        itemRefs.current.forEach((el, idx) => {
+          if (!el) return
+          const rect = el.getBoundingClientRect()
+          const itemCenterY = rect.top + rect.height / 2
+          const distance = Math.abs(itemCenterY - centerY)
+          if (distance < minDistance) {
+            minDistance = distance
+            closestIdx = idx
+          }
+        })
+      }
 
       if (closestIdx !== lastIndex) {
         lastIndex = closestIdx
@@ -68,7 +74,7 @@ export function Works() {
   }, [])
 
   return (
-    <section className="w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-24 sm:py-32">
+    <section className="w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 pt-24 sm:pt-32 pb-[45vh]">
       <div className="w-full max-w-none flex flex-col gap-1 sm:gap-2">
         {projects.map((project, idx) => {
           const isSelected = scrollActiveIndex === idx
