@@ -215,23 +215,23 @@ export function CatModel() {
   const isTablet = viewport.width >= 4.8 && viewport.width < 7.5
   const isWidescreen = viewport.aspect >= 1.5 // 16:9 and 16:10 screen aspect ratios
 
-  // Make cat head bigger on desktop (~3.85 - 4.15), balanced on tablet (~3.4), and slightly reduced on mobile (~2.0 - 2.5)
+  // Dynamic responsive scale based on viewport height so the entire cat head fits 100% inside 16:9 screens
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(2.0, Math.min(viewport.width * 0.52, 2.5))
+      return Math.max(1.8, Math.min(viewport.width * 0.45, 2.2))
     }
     if (isTablet) {
-      return 3.4
+      return Math.min(2.5, viewport.height * 0.52)
     }
-    // Desktop: bigger cat head (3.85 to 4.15 based on aspect ratio)
-    return Math.min(4.15, Math.max(3.85, viewport.width * 0.45))
-  }, [viewport.width, isMobile, isTablet])
+    // Desktop 16:9 widescreen: scale to ~56% of viewport height (2.45 - 2.95) so chin & ears are 100% visible!
+    return Math.min(2.95, Math.max(2.45, viewport.height * 0.56))
+  }, [viewport.width, viewport.height, isMobile, isTablet])
 
-  // Perfectly align the 3D cat head so its ears frame the SANSKAR logo across all screen sizes
+  // Center the 3D cat head vertically in world space
   const basePosY = useMemo(() => {
-    if (isMobile) return -0.22
-    if (isWidescreen) return -0.28
-    return -0.26
+    if (isMobile) return -0.05
+    if (isWidescreen) return -0.04
+    return -0.05
   }, [isMobile, isWidescreen])
 
   // Load authentic Yuta Abe cat 3D model
