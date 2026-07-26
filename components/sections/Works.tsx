@@ -31,45 +31,84 @@ const projects = [
 
 export function Works() {
   const setCursorVariant = useAppStore((state) => state.setCursorVariant)
+  const [scrollActiveIndex, setScrollActiveIndex] = useState<number>(0)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  // Scroll listener: find project row closest to middle of screen
+  useEffect(() => {
+    let lastIndex = 0
+
+    const handleScroll = () => {
+      const centerY = window.innerHeight / 2
+      let closestIdx = 0
+      let minDistance = Infinity
+
+      itemRefs.current.forEach((el, idx) => {
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        const itemCenterY = rect.top + rect.height / 2
+        const distance = Math.abs(itemCenterY - centerY)
+        if (distance < minDistance) {
+          minDistance = distance
+          closestIdx = idx
+        }
+      })
+
+      if (closestIdx !== lastIndex) {
+        lastIndex = closestIdx
+        setScrollActiveIndex(closestIdx)
+        playGlassClinkSound()
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Active project index (hover overrides scroll position)
+  const activeIndex = hoveredIndex !== null ? hoveredIndex : scrollActiveIndex
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-8">
-      <div className="w-full max-w-none flex flex-col gap-0 sm:gap-1">
+    <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-24 sm:py-32">
+      <div className="w-full max-w-none flex flex-col gap-1 sm:gap-2">
         {projects.map((project, idx) => {
-          const isSelected = hoveredIndex === idx
+          const isSelected = activeIndex === idx
 
           // Layering Hierarchy:
           // 3D Cat Model Canvas is fixed at z-30 (opacity 100).
-          // Default state (no hover): ALL project divs sit at z-10 (Cat model is 100% ON TOP of all project divs).
-          // Hovered state: The hovered project div pops to z-50 (ON TOP of cat model).
-          // All other non-hovered project divs remain at z-10 (BELOW cat model).
+          // Active project div: z-50 (ON TOP of cat model).
+          // Inactive project divs: z-10 (BELOW cat model).
           const zIndexClass = isSelected
             ? 'relative z-50 opacity-100'
-            : 'relative z-10 opacity-65 hover:opacity-100'
+            : 'relative z-10 opacity-30 hover:opacity-80'
 
           return (
             <motion.div
               key={idx}
+              ref={(el) => {
+                itemRefs.current[idx] = el
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: idx * 0.08 }}
-              className={`group flex items-center justify-between py-1 sm:py-1.5 lg:py-2 transition-all duration-300 cursor-pointer select-none ${zIndexClass}`}
+              transition={{ duration: 0.4, delay: Math.min(idx * 0.04, 0.5) }}
+              className={`group flex items-center justify-between py-2 sm:py-2.5 lg:py-3 transition-all duration-300 cursor-pointer select-none ${zIndexClass}`}
               onMouseEnter={() => {
                 setCursorVariant('hover')
                 setHoveredIndex(idx)
-                playGlassClinkSound()
+                if (hoveredIndex !== idx) {
+                  playGlassClinkSound()
+                }
               }}
               onMouseLeave={() => {
                 setCursorVariant('default')
                 setHoveredIndex(null)
               }}
               onClick={() => {
-                const nextIndex = hoveredIndex === idx ? null : idx
-                setHoveredIndex(nextIndex)
-                if (nextIndex !== null) {
-                  playGlassClinkSound()
-                }
+                setHoveredIndex(idx)
+                playGlassClinkSound()
               }}
             >
               {/* Left side: Pure Project Title */}
@@ -77,7 +116,7 @@ export function Works() {
                 className={`text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-none transition-all duration-300 ${
                   isSelected
                     ? 'text-white translate-x-2 sm:translate-x-4 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]'
-                    : 'text-white/70 group-hover:text-white'
+                    : 'text-white/60 group-hover:text-white'
                 }`}
               >
                 {project.title}
@@ -85,17 +124,17 @@ export function Works() {
 
               {/* Right side: Sleek widescreen rectangular screenshot */}
               <div
-                className={`relative aspect-video w-[80px] sm:w-[120px] md:w-[150px] lg:w-[180px] rounded-md overflow-hidden transition-all duration-300 shadow-md shrink-0 ${
+                className={`relative aspect-video w-[85px] sm:w-[130px] md:w-[160px] lg:w-[190px] rounded-md overflow-hidden transition-all duration-300 shadow-md shrink-0 ${
                   isSelected
                     ? 'opacity-100 scale-105 shadow-[0_0_20px_rgba(0,240,255,0.4)] ring-1 ring-cyan-400/50'
-                    : 'opacity-60 group-hover:opacity-90'
+                    : 'opacity-40 group-hover:opacity-80'
                 }`}
               >
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
-                  sizes="(max-width: 640px) 80px, (max-width: 768px) 120px, 180px"
+                  sizes="(max-width: 640px) 85px, (max-width: 768px) 130px, 190px"
                   className="object-cover transition-transform duration-500 group-hover:scale-110 grayscale contrast-125"
                   referrerPolicy="no-referrer"
                 />
