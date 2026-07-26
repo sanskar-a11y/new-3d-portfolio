@@ -34,7 +34,7 @@ export function Works() {
   const [scrollActiveIndex, setScrollActiveIndex] = useState<number>(0)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  // Scroll listener: find project row closest to middle of screen
+  // Scroll listener: find project row closest to vertical center of screen
   useEffect(() => {
     let lastIndex = 0
 
@@ -73,13 +73,12 @@ export function Works() {
         {projects.map((project, idx) => {
           const isSelected = scrollActiveIndex === idx
 
-          // Layering Hierarchy:
-          // 3D Cat Model Canvas is fixed at z-30 (opacity 100).
-          // Scroll-active project div: z-50 (ON TOP of cat model).
-          // Inactive project divs: z-10 (BELOW cat model).
+          // Two-Layer Stacking Architecture:
+          // Non-active project rows: z-10 (Strictly UNDER 3D Cat Model Canvas at z-30)
+          // Single active project row: z-50 (Strictly OVER 3D Cat Model Canvas at z-30)
           const zIndexClass = isSelected
-            ? 'relative z-50 opacity-100'
-            : 'relative z-10 opacity-30 hover:opacity-60'
+            ? 'relative z-50 opacity-100 scale-[1.015]'
+            : 'relative z-10 opacity-25 hover:opacity-50'
 
           return (
             <motion.div
@@ -89,32 +88,37 @@ export function Works() {
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: Math.min(idx * 0.04, 0.5) }}
-              className={`group flex items-center justify-between py-2 sm:py-2.5 lg:py-3 transition-all duration-300 cursor-pointer select-none ${zIndexClass}`}
-              onMouseEnter={() => {
-                setCursorVariant('hover')
-              }}
-              onMouseLeave={() => {
-                setCursorVariant('default')
-              }}
+              transition={{ duration: 0.4, delay: Math.min(idx * 0.03, 0.4) }}
+              className={`group flex items-center justify-between py-2 sm:py-2.5 lg:py-3 transition-all duration-500 cursor-pointer select-none ${zIndexClass}`}
+              onMouseEnter={() => setCursorVariant('hover')}
+              onMouseLeave={() => setCursorVariant('default')}
             >
-              {/* Left side: Pure Project Title */}
-              <h3
-                className={`text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-none transition-all duration-300 ${
-                  isSelected
-                    ? 'text-white translate-x-2 sm:translate-x-4 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]'
-                    : 'text-white/60 group-hover:text-white'
-                }`}
-              >
-                {project.title}
-              </h3>
+              {/* Left side: Kinetic Typography Project Title */}
+              <div className="flex items-center gap-3">
+                {isSelected && (
+                  <motion.div
+                    layoutId="activeIndicator"
+                    className="w-1.5 h-8 sm:h-10 lg:h-12 bg-cyan-400 rounded-full shadow-[0_0_15px_rgba(0,240,255,0.8)]"
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <h3
+                  className={`text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-none transition-all duration-500 ${
+                    isSelected
+                      ? 'text-white translate-x-2 sm:translate-x-3 drop-shadow-[0_0_25px_rgba(0,240,255,0.5)]'
+                      : 'text-white/40'
+                  }`}
+                >
+                  {project.title}
+                </h3>
+              </div>
 
-              {/* Right side: Sleek widescreen rectangular screenshot */}
+              {/* Right side: Sleek Widescreen Widescreen Screenshot */}
               <div
-                className={`relative aspect-video w-[85px] sm:w-[130px] md:w-[160px] lg:w-[190px] rounded-md overflow-hidden transition-all duration-300 shadow-md shrink-0 ${
+                className={`relative aspect-video w-[85px] sm:w-[130px] md:w-[160px] lg:w-[190px] rounded-md overflow-hidden transition-all duration-500 shadow-md shrink-0 ${
                   isSelected
-                    ? 'opacity-100 scale-105 shadow-[0_0_20px_rgba(0,240,255,0.4)] ring-1 ring-cyan-400/50'
-                    : 'opacity-40 group-hover:opacity-80'
+                    ? 'opacity-100 scale-110 shadow-[0_0_30px_rgba(0,240,255,0.5)] ring-2 ring-cyan-400/80'
+                    : 'opacity-30'
                 }`}
               >
                 <Image
