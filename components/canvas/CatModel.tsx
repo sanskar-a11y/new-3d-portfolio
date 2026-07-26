@@ -215,10 +215,10 @@ export function CatModel() {
   const isTablet = viewport.width >= 4.8 && viewport.width < 7.5
   const isLaptop = viewport.width >= 7.5 && viewport.height < 5.4 // Laptop screens (~1080p / 768p browser viewports)
 
-  // Massive, bold 3D cat head model lifted higher up on screen
+  // Smaller scale specifically on mobile phone screens, without touching tablet/laptop/desktop
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(2.8, Math.min(viewport.width * 0.65, 3.4))
+      return Math.max(1.7, Math.min(viewport.width * 0.42, 2.1))
     }
     if (isTablet) {
       return 4.2
