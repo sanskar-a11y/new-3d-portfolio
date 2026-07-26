@@ -35,6 +35,10 @@ if (typeof window !== 'undefined') {
   window.addEventListener('click', unlockAudio)
   window.addEventListener('touchstart', unlockAudio)
   window.addEventListener('keydown', unlockAudio)
+  window.addEventListener('mousemove', unlockAudio, { passive: true })
+  window.addEventListener('pointermove', unlockAudio, { passive: true })
+  window.addEventListener('mouseenter', unlockAudio, { passive: true })
+  window.addEventListener('mouseover', unlockAudio, { passive: true })
 }
 
 export function playGlassClinkSound() {
