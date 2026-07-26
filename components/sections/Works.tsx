@@ -32,7 +32,6 @@ const projects = [
 export function Works() {
   const setCursorVariant = useAppStore((state) => state.setCursorVariant)
   const [scrollActiveIndex, setScrollActiveIndex] = useState<number>(0)
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // Scroll listener: find project row closest to middle of screen
@@ -68,22 +67,19 @@ export function Works() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Active project index (hover overrides scroll position)
-  const activeIndex = hoveredIndex !== null ? hoveredIndex : scrollActiveIndex
-
   return (
     <section className="relative w-full min-h-screen flex flex-col justify-center px-2 sm:px-6 md:px-10 lg:px-12 py-24 sm:py-32">
       <div className="w-full max-w-none flex flex-col gap-1 sm:gap-2">
         {projects.map((project, idx) => {
-          const isSelected = activeIndex === idx
+          const isSelected = scrollActiveIndex === idx
 
           // Layering Hierarchy:
           // 3D Cat Model Canvas is fixed at z-30 (opacity 100).
-          // Active project div: z-50 (ON TOP of cat model).
+          // Scroll-active project div: z-50 (ON TOP of cat model).
           // Inactive project divs: z-10 (BELOW cat model).
           const zIndexClass = isSelected
             ? 'relative z-50 opacity-100'
-            : 'relative z-10 opacity-30 hover:opacity-80'
+            : 'relative z-10 opacity-30 hover:opacity-60'
 
           return (
             <motion.div
@@ -97,18 +93,9 @@ export function Works() {
               className={`group flex items-center justify-between py-2 sm:py-2.5 lg:py-3 transition-all duration-300 cursor-pointer select-none ${zIndexClass}`}
               onMouseEnter={() => {
                 setCursorVariant('hover')
-                setHoveredIndex(idx)
-                if (hoveredIndex !== idx) {
-                  playGlassClinkSound()
-                }
               }}
               onMouseLeave={() => {
                 setCursorVariant('default')
-                setHoveredIndex(null)
-              }}
-              onClick={() => {
-                setHoveredIndex(idx)
-                playGlassClinkSound()
               }}
             >
               {/* Left side: Pure Project Title */}
