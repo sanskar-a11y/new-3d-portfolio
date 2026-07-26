@@ -227,11 +227,11 @@ export function CatModel() {
     return Math.min(4.15, Math.max(3.85, viewport.width * 0.45))
   }, [viewport.width, isMobile, isTablet])
 
-  // Shift cat model higher up so ears and head overlap top navbar
+  // Perfectly align the 3D cat head so its ears frame the SANSKAR logo across all screen sizes
   const basePosY = useMemo(() => {
-    if (isMobile) return -0.12
-    if (isWidescreen) return -0.06
-    return -0.10
+    if (isMobile) return -0.22
+    if (isWidescreen) return -0.28
+    return -0.26
   }, [isMobile, isWidescreen])
 
   // Load authentic Yuta Abe cat 3D model
@@ -326,15 +326,15 @@ export function CatModel() {
     }
 
     if (groupRef.current) {
-      // Rotation following adjusted for viewport responsiveness
-      const targetRotationY = state.pointer.x * (isMobile ? 0.08 : 0.12)
-      const targetRotationX = -state.pointer.y * (isMobile ? 0.05 : 0.08)
+      // Clamped rotation following so ears frame SANSKAR cleanly without overlapping text
+      const targetRotationY = state.pointer.x * (isMobile ? 0.06 : 0.09)
+      const targetRotationX = -state.pointer.y * (isMobile ? 0.04 : 0.06)
 
       groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.06
       groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.06
 
-      // Idle floating breathing motion (positioned to stay clear of top navbar across all viewports)
-      groupRef.current.position.y = basePosY + Math.sin(elapsed * 1.6) * 0.045
+      // Idle floating breathing motion (positioned to align ears perfectly below SANSKAR logo)
+      groupRef.current.position.y = basePosY + Math.sin(elapsed * 1.6) * 0.035
     }
   })
 
