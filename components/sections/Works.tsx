@@ -51,26 +51,16 @@ export function Works() {
               setHoveredIndex(null)
             }}
             onClick={() => setHoveredIndex(hoveredIndex === idx ? null : idx)}
-          >
-            {/* Left side: Accent indicator + Title (no index number) */}
-            <div className="flex items-center gap-3 sm:gap-5">
-              <div
-                className={`w-1 sm:w-1.5 h-6 sm:h-10 lg:h-12 rounded-full transition-all duration-300 ${
-                  hoveredIndex === idx
-                    ? 'bg-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.8)]'
-                    : 'bg-white/10 group-hover:bg-white/30'
-                }`}
-              />
-              <h3
-                className={`text-xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight transition-all duration-300 ${
-                  hoveredIndex === idx
-                    ? 'text-white translate-x-1 sm:translate-x-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                    : 'text-white/70 group-hover:text-white'
-                }`}
-              >
-                {project.title}
-              </h3>
-            </div>
+            {/* Left side: Pure Project Title */}
+            <h3
+              className={`text-xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight transition-all duration-300 ${
+                hoveredIndex === idx
+                  ? 'text-white translate-x-2 sm:translate-x-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                  : 'text-white/70 group-hover:text-white'
+              }`}
+            >
+              {project.title}
+            </h3>
 
             {/* Right side: Sleek widescreen rectangular screenshot (aspect-video / 16:9) matching row height */}
             <div
