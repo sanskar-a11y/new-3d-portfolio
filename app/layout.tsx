@@ -3,6 +3,7 @@ import { Navbar } from '@/components/ui/Navbar'
 import { CustomCursor } from '@/components/ui/CustomCursor'
 import { Preloader } from '@/components/ui/Preloader'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { GlobalCanvas } from '@/components/canvas/GlobalCanvas'
 
 export const metadata = {
   title: '3D Portfolio',
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ErrorBoundary>
           <Preloader />
           <CustomCursor />
+          <GlobalCanvas />
           <Navbar />
           {children}
         </ErrorBoundary>
