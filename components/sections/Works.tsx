@@ -41,11 +41,7 @@ export function Works() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: idx * 0.08 }}
-            className={`group relative flex items-center justify-between p-3 sm:p-5 lg:p-6 rounded-xl transition-all duration-300 cursor-pointer border select-none ${
-              hoveredIndex === idx
-                ? 'bg-white/[0.04] border-cyan-400/50 shadow-[0_0_25px_rgba(0,240,255,0.15)]'
-                : 'bg-transparent border-white/[0.05] hover:border-white/20'
-            }`}
+            className="group relative flex items-center justify-between py-3 sm:py-5 lg:py-6 transition-all duration-300 cursor-pointer select-none"
             onMouseEnter={() => {
               setCursorVariant('hover')
               setHoveredIndex(idx)
@@ -81,10 +77,10 @@ export function Works() {
 
             {/* Right side: Sleek widescreen rectangular screenshot (aspect-video / 16:9) matching row height */}
             <div
-              className={`relative aspect-video w-[110px] sm:w-[170px] md:w-[210px] lg:w-[250px] rounded-lg overflow-hidden transition-all duration-300 border shadow-md shrink-0 ${
+              className={`relative aspect-video w-[110px] sm:w-[170px] md:w-[210px] lg:w-[250px] rounded-lg overflow-hidden transition-all duration-300 shadow-md shrink-0 ${
                 hoveredIndex === idx
-                  ? 'border-cyan-400 opacity-100 scale-105 shadow-[0_0_15px_rgba(0,240,255,0.4)] ring-1 ring-cyan-400/50'
-                  : 'border-white/10 opacity-60 group-hover:opacity-90'
+                  ? 'opacity-100 scale-105 shadow-[0_0_20px_rgba(0,240,255,0.3)]'
+                  : 'opacity-60 group-hover:opacity-90'
               }`}
             >
               <Image
