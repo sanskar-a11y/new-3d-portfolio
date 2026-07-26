@@ -9,22 +9,22 @@ const projects = [
   {
     index: '01',
     title: 'ETHEREAL',
-    image: 'https://picsum.photos/seed/ethereal/400/300',
+    image: 'https://picsum.photos/seed/ethereal/600/340',
   },
   {
     index: '02',
     title: 'LUMINA',
-    image: 'https://picsum.photos/seed/lumina/400/300',
+    image: 'https://picsum.photos/seed/lumina/600/340',
   },
   {
     index: '03',
     title: 'AURA',
-    image: 'https://picsum.photos/seed/aura/400/300',
+    image: 'https://picsum.photos/seed/aura/600/340',
   },
   {
     index: '04',
     title: 'NEXUS',
-    image: 'https://picsum.photos/seed/nexus/400/300',
+    image: 'https://picsum.photos/seed/nexus/600/340',
   },
 ]
 
@@ -33,68 +33,18 @@ export function Works() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-between z-20">
-      {/* LEFT SIDE — Large stacked project titles overlaying the 3D cat */}
-      <div className="flex-1 flex flex-col justify-center pl-4 sm:pl-12 lg:pl-16 pr-2 sm:pr-6 py-8 sm:py-12 z-20">
-        {projects.map((project, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: idx * 0.08 }}
-            className="group relative flex items-center gap-2 sm:gap-6 cursor-pointer py-2 sm:py-3.5 select-none"
-            onMouseEnter={() => {
-              setCursorVariant('hover')
-              setHoveredIndex(idx)
-            }}
-            onMouseLeave={() => {
-              setCursorVariant('default')
-              setHoveredIndex(null)
-            }}
-            onClick={() => setHoveredIndex(hoveredIndex === idx ? null : idx)}
-          >
-            {/* Cyan accent bar for active/hovered project */}
-            <div
-              className={`absolute left-0 w-1 rounded-full transition-all duration-300 ${
-                hoveredIndex === idx
-                  ? 'h-full bg-cyan-400 opacity-100 shadow-[0_0_12px_rgba(0,240,255,0.8)]'
-                  : 'h-0 bg-cyan-400 opacity-0'
-              }`}
-            />
-
-            {/* Index number */}
-            <span className="font-mono text-[10px] sm:text-xs text-white/30 tracking-wider tabular-nums pl-3 sm:pl-6">
-              {project.index}
-            </span>
-
-            {/* Project title */}
-            <h3
-              className={`text-xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight transition-all duration-300 ${
-                hoveredIndex === idx
-                  ? 'text-white translate-x-2 sm:translate-x-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                  : hoveredIndex !== null
-                    ? 'text-white/20'
-                    : 'text-white/70 hover:text-white/90'
-              }`}
-            >
-              {project.title}
-            </h3>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* RIGHT SIDE — Thumbnail grid visible on ALL screen sizes */}
-      <div className="flex flex-col justify-center gap-2.5 sm:gap-4 w-[120px] sm:w-[180px] md:w-[220px] lg:w-[260px] py-8 sm:py-12 pr-4 sm:pr-12 lg:pr-16 z-20">
+    <section className="relative w-full min-h-screen flex flex-col justify-center px-4 sm:px-12 lg:px-16 py-20 z-20">
+      <div className="mx-auto w-full max-w-7xl flex flex-col gap-2 sm:gap-4">
         {projects.map((project, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 + idx * 0.1 }}
-            className={`relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer transition-all duration-300 border shadow-lg ${
+            transition={{ duration: 0.5, delay: idx * 0.08 }}
+            className={`group relative flex items-center justify-between p-3 sm:p-5 lg:p-6 rounded-xl transition-all duration-300 cursor-pointer border select-none ${
               hoveredIndex === idx
-                ? 'border-cyan-400/80 opacity-100 scale-[1.04] shadow-[0_0_20px_rgba(0,240,255,0.3)] ring-1 ring-cyan-400/50'
-                : 'border-white/[0.08] opacity-60 hover:opacity-85 hover:scale-[1.01]'
+                ? 'bg-white/[0.04] border-cyan-400/50 shadow-[0_0_25px_rgba(0,240,255,0.15)]'
+                : 'bg-transparent border-white/[0.05] hover:border-white/20'
             }`}
             onMouseEnter={() => {
               setCursorVariant('hover')
@@ -106,20 +56,51 @@ export function Works() {
             }}
             onClick={() => setHoveredIndex(hoveredIndex === idx ? null : idx)}
           >
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              sizes="(max-width: 640px) 120px, (max-width: 768px) 180px, 260px"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              referrerPolicy="no-referrer"
-            />
-            {/* Dark overlay on non-hovered */}
+            {/* Left side: Accent indicator + Index + Title */}
+            <div className="flex items-center gap-3 sm:gap-6">
+              <div
+                className={`w-1 sm:w-1.5 h-6 sm:h-10 lg:h-12 rounded-full transition-all duration-300 ${
+                  hoveredIndex === idx
+                    ? 'bg-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.8)]'
+                    : 'bg-white/10 group-hover:bg-white/30'
+                }`}
+              />
+              <span className="font-mono text-xs sm:text-sm text-white/40 tracking-widest tabular-nums">
+                {project.index}
+              </span>
+              <h3
+                className={`text-xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight transition-all duration-300 ${
+                  hoveredIndex === idx
+                    ? 'text-white translate-x-1 sm:translate-x-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                    : 'text-white/70 group-hover:text-white'
+                }`}
+              >
+                {project.title}
+              </h3>
+            </div>
+
+            {/* Right side: Sleek widescreen rectangular screenshot (aspect-video / 16:9) matching row height */}
             <div
-              className={`absolute inset-0 bg-black/45 transition-opacity duration-300 ${
-                hoveredIndex === idx ? 'opacity-0' : 'opacity-100'
+              className={`relative aspect-video w-[110px] sm:w-[170px] md:w-[210px] lg:w-[250px] rounded-lg overflow-hidden transition-all duration-300 border shadow-md shrink-0 ${
+                hoveredIndex === idx
+                  ? 'border-cyan-400 opacity-100 scale-105 shadow-[0_0_15px_rgba(0,240,255,0.4)] ring-1 ring-cyan-400/50'
+                  : 'border-white/10 opacity-60 group-hover:opacity-90'
               }`}
-            />
+            >
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                sizes="(max-width: 640px) 110px, (max-width: 768px) 170px, 250px"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                referrerPolicy="no-referrer"
+              />
+              <div
+                className={`absolute inset-0 bg-black/45 transition-opacity duration-300 ${
+                  hoveredIndex === idx ? 'opacity-0' : 'opacity-100'
+                }`}
+              />
+            </div>
           </motion.div>
         ))}
       </div>
