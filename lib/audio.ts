@@ -1,98 +1,128 @@
-// Glass bottle bump / clink sound effect generator using Web Audio API
+// Glass bottles bumping / clinking sound effect generator using Web Audio API
 let audioCtx: AudioContext | null = null
 
-export function playGlassClinkSound() {
-  try {
-    if (typeof window === 'undefined') return
+function getAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null
 
+  if (!audioCtx) {
     const AudioContextClass =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext })
         .webkitAudioContext
-    if (!AudioContextClass) return
-
-    if (!audioCtx) {
+    if (AudioContextClass) {
       audioCtx = new AudioContextClass()
     }
+  }
 
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume()
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {})
+  }
+
+  return audioCtx
+}
+
+// Auto-unlock AudioContext on first user interaction anywhere on the page
+if (typeof window !== 'undefined') {
+  const unlock = () => {
+    const ctx = getAudioContext()
+    if (ctx && ctx.state === 'running') {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+      window.removeEventListener('touchstart', unlock)
+    }
+  }
+  window.addEventListener('pointerdown', unlock, { once: true })
+  window.addEventListener('keydown', unlock, { once: true })
+  window.addEventListener('touchstart', unlock, { once: true })
+}
+
+export function playGlassClinkSound() {
+  try {
+    const ctx = getAudioContext()
+    if (!ctx) return
+
+    const now = ctx.currentTime
+
+    // Master gain
+    const masterGain = ctx.createGain()
+    masterGain.gain.setValueAtTime(0.35, now)
+    masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28)
+    masterGain.connect(ctx.destination)
+
+    // Single glass tap function
+    const playTap = (time: number, baseFreq: number, gainMult: number) => {
+      // High pitch sine (glass resonance)
+      const osc1 = ctx.createOscillator()
+      osc1.type = 'sine'
+      osc1.frequency.setValueAtTime(baseFreq, time)
+      osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.98, time + 0.18)
+
+      const g1 = ctx.createGain()
+      g1.gain.setValueAtTime(0.7 * gainMult, time)
+      g1.gain.exponentialRampToValueAtTime(0.001, time + 0.2)
+
+      osc1.connect(g1)
+      g1.connect(masterGain)
+
+      // Overtone harmonic (crystal chime)
+      const osc2 = ctx.createOscillator()
+      osc2.type = 'sine'
+      osc2.frequency.setValueAtTime(baseFreq * 2.15, time)
+      osc2.frequency.exponentialRampToValueAtTime(baseFreq * 2.1, time + 0.1)
+
+      const g2 = ctx.createGain()
+      g2.gain.setValueAtTime(0.4 * gainMult, time)
+      g2.gain.exponentialRampToValueAtTime(0.001, time + 0.1)
+
+      osc2.connect(g2)
+      g2.connect(masterGain)
+
+      // Bottle hollow body thump
+      const osc3 = ctx.createOscillator()
+      osc3.type = 'triangle'
+      osc3.frequency.setValueAtTime(baseFreq * 0.38, time)
+      osc3.frequency.exponentialRampToValueAtTime(300, time + 0.04)
+
+      const g3 = ctx.createGain()
+      g3.gain.setValueAtTime(0.3 * gainMult, time)
+      g3.gain.exponentialRampToValueAtTime(0.001, time + 0.04)
+
+      osc3.connect(g3)
+      g3.connect(masterGain)
+
+      // Hard impact noise click
+      const bufferSize = Math.floor(ctx.sampleRate * 0.004)
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1
+      }
+      const noise = ctx.createBufferSource()
+      noise.buffer = buffer
+
+      const ng = ctx.createGain()
+      ng.gain.setValueAtTime(0.5 * gainMult, time)
+      ng.gain.exponentialRampToValueAtTime(0.01, time + 0.004)
+
+      noise.connect(ng)
+      ng.connect(masterGain)
+
+      osc1.start(time)
+      osc2.start(time)
+      osc3.start(time)
+      noise.start(time)
+
+      osc1.stop(time + 0.22)
+      osc2.stop(time + 0.12)
+      osc3.stop(time + 0.05)
+      noise.stop(time + 0.01)
     }
 
-    const now = audioCtx.currentTime
+    // Tap 1: First bottle impact (e.g. 2400 Hz)
+    playTap(now, 2400, 1.0)
 
-    // Master gain node
-    const masterGain = audioCtx.createGain()
-    masterGain.gain.setValueAtTime(0.18, now)
-    masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22)
-    masterGain.connect(audioCtx.destination)
-
-    // Fundamental glass frequency (high pitch ring e.g. 2350 Hz)
-    const osc1 = audioCtx.createOscillator()
-    osc1.type = 'sine'
-    osc1.frequency.setValueAtTime(2350, now)
-    osc1.frequency.exponentialRampToValueAtTime(2300, now + 0.18)
-
-    const osc1Gain = audioCtx.createGain()
-    osc1Gain.gain.setValueAtTime(0.8, now)
-    osc1Gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2)
-
-    osc1.connect(osc1Gain)
-    osc1Gain.connect(masterGain)
-
-    // High overtone harmonic (4850 Hz crystal chime)
-    const osc2 = audioCtx.createOscillator()
-    osc2.type = 'sine'
-    osc2.frequency.setValueAtTime(4850, now)
-    osc2.frequency.exponentialRampToValueAtTime(4700, now + 0.12)
-
-    const osc2Gain = audioCtx.createGain()
-    osc2Gain.gain.setValueAtTime(0.5, now)
-    osc2Gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
-
-    osc2.connect(osc2Gain)
-    osc2Gain.connect(masterGain)
-
-    // Bottle body bump resonance (lower thump e.g. 920 Hz fast decay)
-    const osc3 = audioCtx.createOscillator()
-    osc3.type = 'triangle'
-    osc3.frequency.setValueAtTime(920, now)
-    osc3.frequency.exponentialRampToValueAtTime(600, now + 0.05)
-
-    const osc3Gain = audioCtx.createGain()
-    osc3Gain.gain.setValueAtTime(0.3, now)
-    osc3Gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05)
-
-    osc3.connect(osc3Gain)
-    osc3Gain.connect(masterGain)
-
-    // Brief click/impact transient (noise)
-    const bufferSize = audioCtx.sampleRate * 0.005
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate)
-    const data = buffer.getChannelData(0)
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1
-    }
-    const noise = audioCtx.createBufferSource()
-    noise.buffer = buffer
-
-    const noiseGain = audioCtx.createGain()
-    noiseGain.gain.setValueAtTime(0.4, now)
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.005)
-
-    noise.connect(noiseGain)
-    noiseGain.connect(masterGain)
-
-    // Start all nodes
-    osc1.start(now)
-    osc2.start(now)
-    osc3.start(now)
-    noise.start(now)
-
-    osc1.stop(now + 0.22)
-    osc2.stop(now + 0.15)
-    osc3.stop(now + 0.06)
-    noise.stop(now + 0.01)
+    // Tap 2: Second bottle clink resonance 28ms later (e.g. 2750 Hz) - creates real bottle bump effect
+    playTap(now + 0.028, 2750, 0.75)
   } catch (err) {
     console.error('Audio play error:', err)
   }
