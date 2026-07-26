@@ -1,8 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Rock+Salt&family=Rubik+Glitch&family=Permanent+Marker&display=swap');
 
 @theme {
   --font-sans: var(--font-inter);
+}
+
+.font-scratchy {
+  font-family: 'Rock Salt', 'Rubik Glitch', cursive;
+  font-style: italic;
 }
 
 @layer base {
