@@ -16,46 +16,56 @@ export function PixelBackground() {
     let width = 0
     let height = 0
 
-    const radius = 130 // Vanish radius around cursor
-    const radiusSq = radius * radius
+    // Authentic Yuta Abe grid parameters
+    const gap = 26              // 26px grid spacing
+    const dotSize = 2.5         // 2.5px square box pixels
+    const maxRepelDist = 130    // Mouse repulsion magnetic radius
+    const maxRepelDistSq = maxRepelDist * maxRepelDist
+    const pushForce = 22        // Max displacement distance
 
-    interface FloatingPixel {
+    interface GridPoint {
+      baseX: number
+      baseY: number
       x: number
       y: number
-      size: number
       vx: number
       vy: number
       baseOpacity: number
       currentOpacity: number
     }
 
-    let pixels: FloatingPixel[] = []
+    let gridPoints: GridPoint[] = []
 
-    const initPixels = () => {
+    const initGrid = () => {
       width = window.innerWidth
       height = window.innerHeight
       canvas.width = width * window.devicePixelRatio
       canvas.height = height * window.devicePixelRatio
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
 
-      pixels = []
-      // Generate randomly scattered pixel boxes (no rigid grid pattern)
-      const count = Math.floor((width * height) / 3600)
+      gridPoints = []
+      const cols = Math.ceil(width / gap) + 1
+      const rows = Math.ceil(height / gap) + 1
 
-      for (let i = 0; i < count; i++) {
-        pixels.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          size: Math.random() < 0.65 ? 3 : 4, // 3px or 4px square pixel box
-          vx: (Math.random() - 0.5) * 0.4,   // Real-time drifting velocity X
-          vy: (Math.random() - 0.5) * 0.4,   // Real-time drifting velocity Y
-          baseOpacity: 0.08 + Math.random() * 0.14,
-          currentOpacity: 0.12,
-        })
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const bx = c * gap + 13
+          const by = r * gap + 13
+          gridPoints.push({
+            baseX: bx,
+            baseY: by,
+            x: bx,
+            y: by,
+            vx: 0,
+            vy: 0,
+            baseOpacity: 0.12,
+            currentOpacity: 0.12,
+          })
+        }
       }
     }
 
-    initPixels()
+    initGrid()
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = e.clientX
@@ -67,50 +77,69 @@ export function PixelBackground() {
       mouseRef.current.targetY = -1000
     }
 
-    window.addEventListener('resize', initPixels)
+    window.addEventListener('resize', initGrid)
     window.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseleave', handleMouseLeave)
 
     const render = () => {
       // Smooth lerp mouse tracking
-      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.15
-      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.15
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.18
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.18
 
       ctx.clearRect(0, 0, width, height)
 
       const mx = mouseRef.current.x
       const my = mouseRef.current.y
 
-      for (let i = 0; i < pixels.length; i++) {
-        const p = pixels[i]
+      for (let i = 0; i < gridPoints.length; i++) {
+        const pt = gridPoints[i]
 
-        // Dynamic position shifting across screen (no static pattern!)
-        p.x += p.vx
-        p.y += p.vy
-
-        // Wrap around screen edges
-        if (p.x < 0) p.x = width
-        if (p.x > width) p.x = 0
-        if (p.y < 0) p.y = height
-        if (p.y > height) p.y = 0
-
-        // Distance check to cursor for dynamic vanishing
-        const dx = p.x - mx
-        const dy = p.y - my
+        // 1. Calculate vector from mouse to grid point
+        const dx = pt.x - mx
+        const dy = pt.y - my
         const distSq = dx * dx + dy * dy
 
-        let targetOpacity = p.baseOpacity
-        if (distSq < radiusSq) {
-          const factor = Math.sqrt(distSq) / radius
-          targetOpacity = p.baseOpacity * Math.pow(factor, 2)
+        let repelX = 0
+        let repelY = 0
+        let targetOpacity = pt.baseOpacity
+
+        if (distSq < maxRepelDistSq && distSq > 0.001) {
+          const dist = Math.sqrt(distSq)
+          const normX = dx / dist
+          const normY = dy / dist
+
+          // Repulsion factor (1.0 at center, 0.0 at radius edge)
+          const factor = 1 - dist / maxRepelDist
+          const force = Math.pow(factor, 1.5) * pushForce
+
+          repelX = normX * force
+          repelY = normY * force
+
+          // Vanish completely under core cursor center, brighten slightly at outer rim
+          targetOpacity = pt.baseOpacity * (1 - Math.pow(factor, 0.8))
         }
 
-        p.currentOpacity += (targetOpacity - p.currentOpacity) * 0.12
+        // Target position with mouse repulsion added
+        const targetX = pt.baseX + repelX
+        const targetY = pt.baseY + repelY
 
-        if (p.currentOpacity > 0.005) {
-          ctx.fillStyle = `rgba(255, 255, 255, ${p.currentOpacity})`
-          // Draw crisp square box pixel
-          ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size)
+        // 2. Spring elasticity physics returning points to base positions
+        const ax = (targetX - pt.x) * 0.22
+        const ay = (targetY - pt.y) * 0.22
+
+        pt.vx = (pt.vx + ax) * 0.72
+        pt.vy = (pt.vy + ay) * 0.72
+
+        pt.x += pt.vx
+        pt.y += pt.vy
+
+        // Smooth lerp opacity
+        pt.currentOpacity += (targetOpacity - pt.currentOpacity) * 0.15
+
+        if (pt.currentOpacity > 0.005) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${pt.currentOpacity})`
+          // Draw Yuta Abe signature square box pixel
+          ctx.fillRect(Math.round(pt.x - dotSize / 2), Math.round(pt.y - dotSize / 2), dotSize, dotSize)
         }
       }
 
@@ -120,7 +149,7 @@ export function PixelBackground() {
     render()
 
     return () => {
-      window.removeEventListener('resize', initPixels)
+      window.removeEventListener('resize', initGrid)
       window.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseleave', handleMouseLeave)
       cancelAnimationFrame(animationFrameId)
