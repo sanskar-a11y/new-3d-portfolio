@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { useAppStore } from '@/store/useAppStore'
 import { Magnetic } from '@/components/ui/Magnetic'
 
 export function HUD() {
+  const pathname = usePathname()
+  const isProjects = pathname === '/projects'
   const mode = useAppStore((state) => state.mode)
   const [timeString, setTimeString] = useState('')
 
@@ -55,17 +58,19 @@ export function HUD() {
               </button>
             </Magnetic>
 
-            <Magnetic>
-              <button
-                onClick={() => {
-                  import('@/lib/audio').then(({ playGlassClinkSound }) => playGlassClinkSound())
-                }}
-                className="flex items-center gap-2 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white/90 hover:text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer"
-              >
-                <span className="text-xs">🔊</span>
-                <span className="font-bold text-[10px] tracking-widest uppercase">SOUND</span>
-              </button>
-            </Magnetic>
+            {isProjects && (
+              <Magnetic>
+                <button
+                  onClick={() => {
+                    import('@/lib/audio').then(({ playGlassClinkSound }) => playGlassClinkSound())
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white/90 hover:text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer"
+                >
+                  <span className="text-xs">🔊</span>
+                  <span className="font-bold text-[10px] tracking-widest uppercase">SOUND</span>
+                </button>
+              </Magnetic>
+            )}
           </div>
         </div>
 
