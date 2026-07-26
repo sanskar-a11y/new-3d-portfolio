@@ -218,21 +218,19 @@ export function CatModel() {
   // Dynamic responsive scale based on viewport height so the entire cat head fits 100% inside 16:9 screens
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(1.8, Math.min(viewport.width * 0.45, 2.2))
+      return Math.max(1.8, Math.min(viewport.height * 0.48, 2.3))
     }
     if (isTablet) {
-      return Math.min(2.5, viewport.height * 0.52)
+      return Math.max(2.4, Math.min(viewport.height * 0.58, 2.8))
     }
-    // Desktop 16:9 widescreen: scale to ~56% of viewport height (2.45 - 2.95) so chin & ears are 100% visible!
-    return Math.min(2.95, Math.max(2.45, viewport.height * 0.56))
-  }, [viewport.width, viewport.height, isMobile, isTablet])
+    // Desktop 16:9 widescreen: scale based strictly on viewport.height (62% fill factor ~2.88)
+    return Math.max(2.55, Math.min(viewport.height * 0.62, 3.10))
+  }, [viewport.height, isMobile, isTablet])
 
-  // Center the 3D cat head vertically in world space
+  // Center the 3D cat head vertically in world space with 71px safety margin
   const basePosY = useMemo(() => {
-    if (isMobile) return -0.05
-    if (isWidescreen) return -0.04
-    return -0.05
-  }, [isMobile, isWidescreen])
+    return -0.04 * viewport.height
+  }, [viewport.height])
 
   // Load authentic Yuta Abe cat 3D model
   const { scene } = useGLTF('/cat.glb') as any
