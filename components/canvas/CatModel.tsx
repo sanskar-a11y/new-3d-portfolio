@@ -294,6 +294,8 @@ export function CatModel() {
     })
   }, [])
 
+  const whiskerGeoRef = useRef<THREE.BufferGeometry>(null)
+
   useFrame((state, delta) => {
     const elapsed = state.clock.getElapsedTime()
 
@@ -336,6 +338,65 @@ export function CatModel() {
       // Idle floating breathing motion (positioned to align ears perfectly below SANSKAR logo)
       groupRef.current.position.y = basePosY + Math.sin(elapsed * 1.2) * 0.025
     }
+
+    // Dynamic Real-time Whisker Gravity & Spring Inertia Physics
+    if (whiskerGeoRef.current && groupRef.current) {
+      const posAttr = whiskerGeoRef.current.attributes.position as THREE.BufferAttribute
+      if (posAttr) {
+        const array = posAttr.array as Float32Array
+        let ptr = 0
+
+        const headPitch = groupRef.current.rotation.x
+        const headRoll = groupRef.current.rotation.y
+
+        const whiskerRows = [
+          { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
+          { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 1.3 },
+          { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 1.6 },
+        ]
+
+        ;[-1, 1].forEach((side) => {
+          whiskerRows.forEach((row, rowIdx) => {
+            const startX = side * 0.14
+            const endX = side * (0.14 + row.len)
+
+            // Gravity sag + motion inertia + subtle organic breathing sway
+            const gravitySag = -0.05 * row.flex
+            const pitchInertia = -headPitch * 0.3 * row.flex
+            const rollInertia = side * headRoll * 0.2 * row.flex
+            const sway = Math.sin(elapsed * 2.6 + rowIdx * 0.8 + side * 1.2) * 0.016 * row.flex
+
+            const totalDrop = gravitySag + pitchInertia + rollInertia + sway
+
+            const start = new THREE.Vector3(startX, row.y, row.z)
+            const mid = new THREE.Vector3(
+              startX + side * row.len * 0.5,
+              row.y + row.angleY * 0.5 + totalDrop * 0.45,
+              row.z - 0.05
+            )
+            const end = new THREE.Vector3(
+              endX,
+              row.y + row.angleY + totalDrop,
+              row.z - 0.15
+            )
+
+            const curve = new THREE.QuadraticBezierCurve3(start, mid, end)
+            const curvePoints = curve.getPoints(20)
+
+            for (let i = 0; i < curvePoints.length - 1; i++) {
+              array[ptr++] = curvePoints[i].x
+              array[ptr++] = curvePoints[i].y
+              array[ptr++] = curvePoints[i].z
+              array[ptr++] = curvePoints[i + 1].x
+              array[ptr++] = curvePoints[i + 1].y
+              array[ptr++] = curvePoints[i + 1].z
+            }
+          })
+        })
+
+        posAttr.needsUpdate = true
+      }
+    }
   })
 
   return (
@@ -348,8 +409,8 @@ export function CatModel() {
       {/* Pure White Eyeballs */}
       <mesh geometry={eyeGeometry} material={eyeballMaterial} />
 
-      {/* 6 Sweeping Muzzle Whiskers */}
-      <lineSegments geometry={whiskerGeometry} material={whiskerMaterial} />
+      {/* 6 Dynamic Gravity-Affected Whiskers */}
+      <lineSegments ref={whiskerGeoRef} geometry={whiskerGeometry} material={whiskerMaterial} />
     </group>
   )
 }
