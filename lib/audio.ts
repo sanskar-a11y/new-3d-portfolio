@@ -58,7 +58,23 @@ if (typeof window !== 'undefined') {
   window.addEventListener('pointerdown', prime, { passive: true })
 }
 
+let isMuted = false
+
+export function setSoundMuted(muted: boolean) {
+  isMuted = muted
+}
+
+export function isSoundMutedState(): boolean {
+  return isMuted
+}
+
+export function toggleSoundMute(): boolean {
+  isMuted = !isMuted
+  return isMuted
+}
+
 export function playGlassClinkSound() {
+  if (isMuted) return
   try {
     // Primary Engine: HTML5 Audio Pool (Bypasses Chrome click restriction via muted auto-prime)
     if (audioPool.length > 0) {

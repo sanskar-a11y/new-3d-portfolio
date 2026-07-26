@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useAppStore } from '@/store/useAppStore'
 import { Magnetic } from '@/components/ui/Magnetic'
+import { isSoundMutedState, toggleSoundMute, playGlassClinkSound } from '@/lib/audio'
 
 export function HUD() {
   const pathname = usePathname()
   const isProjects = pathname === '/projects'
   const mode = useAppStore((state) => state.mode)
   const [timeString, setTimeString] = useState('')
+  const [isMuted, setIsMuted] = useState(isSoundMutedState())
 
   useEffect(() => {
     const updateTime = () => {
@@ -62,12 +64,22 @@ export function HUD() {
               <Magnetic>
                 <button
                   onClick={() => {
-                    import('@/lib/audio').then(({ playGlassClinkSound }) => playGlassClinkSound())
+                    const nextMuted = toggleSoundMute()
+                    setIsMuted(nextMuted)
+                    if (!nextMuted) {
+                      playGlassClinkSound()
+                    }
                   }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white/90 hover:text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer"
+                  className={`flex items-center gap-2 px-3 py-1.5 border rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer ${
+                    isMuted
+                      ? 'bg-red-500/20 border-red-500/40 text-red-300 hover:bg-red-500/30'
+                      : 'bg-black/40 border-white/20 text-white/90 hover:bg-white/10 hover:border-white/50'
+                  }`}
                 >
-                  <span className="text-xs">🔊</span>
-                  <span className="font-bold text-[10px] tracking-widest uppercase">SOUND</span>
+                  <span className="text-xs">{isMuted ? '🔇' : '🔊'}</span>
+                  <span className="font-bold text-[10px] tracking-widest uppercase">
+                    {isMuted ? 'SOUND OFF' : 'SOUND ON'}
+                  </span>
                 </button>
               </Magnetic>
             )}
