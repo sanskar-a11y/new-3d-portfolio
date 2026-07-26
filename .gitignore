@@ -5,3 +5,6 @@ coverage/
 *.log
 .env*
 !.env.example
+what_far_we_have_done_in_this_project.md
+metadata.json
+

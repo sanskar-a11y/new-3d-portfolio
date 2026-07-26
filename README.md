@@ -1,20 +1,39 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Interactive 3D Portfolio
 
-# Run and deploy your AI Studio app
+A modern, high-performance 3D portfolio built with Next.js, React Three Fiber (R3F), Three.js, and TailwindCSS.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/00946a86-5828-4bdc-93e1-cfe2154f858f
+- **Cyberpunk 3D Cat Model**: Interactive low-poly head with custom shaders.
+- **Multiple Visual Shader Modes**:
+  - Crisp Wireframe Base
+  - 45° Rotated Halftone Dot Matrix
+  - Holographic LiDAR Laser Sweep
+- **Responsive Layout**: Dynamic scaling and positioning across mobile, tablet, and widescreen viewports.
+- **Smooth Animations & Interactions**: Built with Framer Motion and custom shaders.
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- **Framework**: Next.js 15 (App Router)
+- **3D Graphics**: React Three Fiber, Three.js, `@react-three/drei`
+- **Styling**: TailwindCSS, Framer Motion
+- **State Management**: Zustand
 
+## Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/sanskar-a11y/new-3d-portfolio.git
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
