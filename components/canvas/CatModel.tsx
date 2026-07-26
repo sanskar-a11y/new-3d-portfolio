@@ -328,15 +328,21 @@ export function CatModel() {
     }
 
     if (groupRef.current) {
-      // Clamped rotation following so ears frame SANSKAR cleanly without overlapping text
-      const targetRotationY = state.pointer.x * (isMobile ? 0.08 : 0.12)
-      const targetRotationX = -state.pointer.y * (isMobile ? 0.06 : 0.08)
+      // Highly sensitive mouse-following rotation tracking
+      const targetRotationY = state.pointer.x * (isMobile ? 0.16 : 0.28)
+      const targetRotationX = -state.pointer.y * (isMobile ? 0.12 : 0.20)
+      const targetRotationZ = state.pointer.x * 0.08 // Lean into turns under gravity momentum
 
-      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.08
-      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.08
+      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.14
+      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.14
+      groupRef.current.rotation.z += (targetRotationZ - groupRef.current.rotation.z) * 0.14
 
-      // Idle floating breathing motion (positioned to align ears perfectly below SANSKAR logo)
-      groupRef.current.position.y = basePosY + Math.sin(elapsed * 1.2) * 0.025
+      // Whole-cat 3D Gravity & Inertia Spring Physics
+      const gravityPull = -state.pointer.y * 0.12
+      const gravitySag = Math.sin(elapsed * 1.8) * 0.045 - 0.05
+      const springBounce = Math.cos(elapsed * 3.2) * 0.015
+
+      groupRef.current.position.y = basePosY + gravitySag + gravityPull + springBounce
     }
 
     // Dynamic Real-time Whisker Gravity & Spring Inertia Physics
