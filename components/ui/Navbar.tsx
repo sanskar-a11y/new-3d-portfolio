@@ -48,28 +48,28 @@ export function Navbar() {
         <Link 
           href="/" 
           aria-label="SANSKAR"
-          className="relative group py-2 px-6 flex items-center justify-center select-none cursor-pointer transform -skew-x-12"
+          className="relative group py-1.5 px-4 flex items-center justify-center select-none cursor-pointer transform -skew-x-12"
         >
-          {/* Ambient Crimson/Magenta Glow behind text */}
-          <div className="absolute inset-0 bg-[#ff0055]/20 rounded-full blur-xl opacity-70 group-hover:opacity-100 group-hover:bg-[#ff0055]/40 transition-all duration-500" />
+          {/* Subtle Ambient Glow behind text */}
+          <div className="absolute inset-0 bg-[#ff0055]/15 rounded-full blur-lg opacity-60 group-hover:opacity-100 group-hover:bg-[#ff0055]/30 transition-all duration-500" />
           
-          {/* Jagged Cat Claw Slash Overlay across the text */}
+          {/* Elegant Fine Cat Claw Slash Overlay */}
           <svg 
-            className="absolute -inset-x-8 -inset-y-4 w-[140%] h-[180%] pointer-events-none stroke-[#ff0055] transition-all duration-300 transform group-hover:scale-105 group-hover:stroke-[#ff2a75] group-hover:drop-shadow-[0_0_15px_rgba(255,0,85,0.95)]"
-            viewBox="0 0 200 60"
+            className="absolute -inset-x-6 -inset-y-2 w-[135%] h-[150%] pointer-events-none stroke-[#ff0055] transition-all duration-300 transform group-hover:scale-105 group-hover:stroke-[#ff3377] group-hover:drop-shadow-[0_0_10px_rgba(255,0,85,0.9)]"
+            viewBox="0 0 180 50"
             fill="none"
           >
-            {/* Multi-stroke Jagged Cat Claw Slashes */}
-            <path d="M 8 52 L 35 12 M 25 55 L 55 10 M 45 54 L 75 8 M 70 56 L 105 6 M 98 52 L 128 10 M 122 55 L 152 8 M 145 54 L 180 6" strokeWidth="1.8" strokeLinecap="round" opacity="0.45" />
-            <path d="M 10 48 C 50 30 110 18 185 6" strokeWidth="2.8" strokeLinecap="round" opacity="0.85" strokeDasharray="14 4 8 2" />
-            <path d="M 18 52 C 60 32 120 20 192 8" strokeWidth="2.2" strokeLinecap="round" opacity="0.9" strokeDasharray="18 6 6 3" />
+            {/* Fine Jagged Cat Claw Slashes */}
+            <path d="M 10 42 L 32 12 M 25 45 L 48 10 M 42 44 L 68 8 M 65 46 L 95 6 M 90 42 L 115 10 M 112 45 L 138 8 M 132 44 L 162 6" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
+            <path d="M 10 40 C 45 25 100 15 170 6" strokeWidth="2" strokeLinecap="round" opacity="0.85" strokeDasharray="12 3 6 2" />
+            <path d="M 16 44 C 52 27 110 17 175 8" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" strokeDasharray="14 4 5 2" />
           </svg>
 
-          {/* Scratched Crimson & White SANSKAR Typography */}
+          {/* Elegant Scratched SANSKAR Typography */}
           <span 
-            className="font-scratchy relative z-10 text-2xl sm:text-4xl tracking-[0.12em] uppercase text-[#ff0055] group-hover:text-[#ff3377] transition-all duration-300 font-black"
+            className="font-scratchy relative z-10 text-lg sm:text-2xl tracking-[0.22em] uppercase text-[#ff0055] group-hover:text-[#ff3377] transition-all duration-300 font-bold"
             style={{
-              textShadow: '0 0 12px rgba(255, 0, 85, 0.9), 0 0 25px rgba(255, 0, 85, 0.5), 2px 2px 0px #000',
+              textShadow: '0 0 8px rgba(255, 0, 85, 0.8), 0 0 16px rgba(255, 0, 85, 0.4), 1.5px 1.5px 0px #000',
             }}
           >
             SANSKAR
