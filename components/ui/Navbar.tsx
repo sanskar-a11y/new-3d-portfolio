@@ -12,7 +12,8 @@ export function Navbar() {
 
   // Close mobile dropdown when route changes
   useEffect(() => {
-    setIsOpen(false)
+    const timer = setTimeout(() => setIsOpen(false), 0)
+    return () => clearTimeout(timer)
   }, [pathname])
 
   const allLinks = [

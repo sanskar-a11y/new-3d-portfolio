@@ -9,12 +9,19 @@ export function GlobalCanvas() {
   const pathname = usePathname()
   const isHome = pathname === '/'
   const isProjects = pathname === '/projects'
+  const isPlayground = pathname === '/playground'
 
   return (
     <>
       <div
         className={`fixed inset-0 z-60 pointer-events-none transition-opacity duration-700 ${
-          isHome ? 'opacity-100' : isProjects ? 'opacity-70' : 'opacity-40'
+          isPlayground
+            ? 'opacity-0 pointer-events-none'
+            : isHome
+            ? 'opacity-100'
+            : isProjects
+            ? 'opacity-70'
+            : 'opacity-40'
         }`}
       >
         <Background>

@@ -8,6 +8,7 @@ import { isSoundMutedState, toggleSoundMute, playGlassClinkSound } from '@/lib/a
 
 export function HUD() {
   const pathname = usePathname()
+  const isHome = pathname === '/'
   const isProjects = pathname === '/projects'
   const mode = useAppStore((state) => state.mode)
   const [timeString, setTimeString] = useState('')
@@ -44,21 +45,23 @@ export function HUD() {
 
           {/* Sleek Minimal Controls: SHIFT & SOUND */}
           <div className="flex items-center gap-3">
-            <Magnetic>
-              <button
-                onClick={() => {}}
-                className="flex items-center gap-2.5 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer group"
-              >
-                <div className="w-5 h-2.5 rounded-full border border-white/60 p-0.5 flex items-center">
-                  <div
-                    className={`w-1.5 h-1.5 rounded-full bg-white transition-transform duration-300 ${
-                      mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-2.5 bg-white'
-                    }`}
-                  />
-                </div>
-                <span className="font-bold text-[11px] tracking-widest text-white/90">SHIFT</span>
-              </button>
-            </Magnetic>
+            {isHome && (
+              <Magnetic>
+                <button
+                  onClick={() => {}}
+                  className="flex items-center gap-2.5 px-3 py-1.5 bg-black/40 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer group"
+                >
+                  <div className="w-5 h-2.5 rounded-full border border-white/60 p-0.5 flex items-center">
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full bg-white transition-transform duration-300 ${
+                        mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-2.5 bg-white'
+                      }`}
+                    />
+                  </div>
+                  <span className="font-bold text-[11px] tracking-widest text-white/90">SHIFT</span>
+                </button>
+              </Magnetic>
+            )}
 
             {isProjects && (
               <Magnetic>

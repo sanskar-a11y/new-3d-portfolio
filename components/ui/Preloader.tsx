@@ -12,7 +12,8 @@ export function Preloader() {
   const setCursorVariant = useAppStore((state) => state.setCursorVariant)
 
   useEffect(() => {
-    setMounted(true)
+    const timer = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {

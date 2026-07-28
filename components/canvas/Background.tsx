@@ -7,8 +7,13 @@ export function Background({ children }: { children?: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    const timer = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(timer)
   }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   return (
     <div className="w-full h-full">
@@ -16,7 +21,7 @@ export function Background({ children }: { children?: React.ReactNode }) {
         dpr={[1, 2]} 
         gl={{ antialias: true, powerPreference: 'default', alpha: true }} 
         camera={{ position: [0, 0, 5], fov: 50 }}
-        eventSource={mounted ? document.body : undefined}
+        eventSource={typeof document !== 'undefined' ? document.body : undefined}
         eventPrefix="client"
       >
         <Suspense fallback={null}>

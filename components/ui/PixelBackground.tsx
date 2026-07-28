@@ -16,56 +16,70 @@ export function PixelBackground() {
     let width = 0
     let height = 0
 
-    // Authentic Yuta Abe grid parameters
-    const gap = 26              // 26px grid spacing
-    const dotSize = 2.5         // 2.5px square box pixels
-    const maxRepelDist = 130    // Mouse repulsion magnetic radius
+    // Configuration parameters
+    const virtualBlockSize = 36 // Grid cell size in px
+    const blockFillProbability = 0.6 // Exactly 6 out of 10 blocks contain a pixel (0.6 density)
+    const maxRepelDist = 140 // Mouse hover interaction radius in px
     const maxRepelDistSq = maxRepelDist * maxRepelDist
-    const pushForce = 22        // Max displacement distance
 
-    interface GridPoint {
-      baseX: number
-      baseY: number
+    interface Particle {
       x: number
       y: number
+      baseX: number
+      baseY: number
       vx: number
       vy: number
+      size: number
       baseOpacity: number
       currentOpacity: number
     }
 
-    let gridPoints: GridPoint[] = []
+    let particles: Particle[] = []
 
-    const initGrid = () => {
+    const initParticles = () => {
       width = window.innerWidth
       height = window.innerHeight
-      canvas.width = width * window.devicePixelRatio
-      canvas.height = height * window.devicePixelRatio
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+      const dpr = window.devicePixelRatio || 1
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      ctx.scale(dpr, dpr)
 
-      gridPoints = []
-      const cols = Math.ceil(width / gap) + 1
-      const rows = Math.ceil(height / gap) + 1
+      particles = []
+      const cols = Math.ceil(width / virtualBlockSize) + 1
+      const rows = Math.ceil(height / virtualBlockSize) + 1
 
+      // Populate particles using virtual cell division with random jitter
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const bx = c * gap + 13
-          const by = r * gap + 13
-          gridPoints.push({
-            baseX: bx,
-            baseY: by,
-            x: bx,
-            y: by,
-            vx: 0,
-            vy: 0,
-            baseOpacity: 0.12,
-            currentOpacity: 0.12,
-          })
+          // Exactly 60% probability (6 out of 10 blocks contain a pixel)
+          if (Math.random() < blockFillProbability) {
+            // Random position within the virtual block to ensure organic, non-pattern layout
+            const baseX = c * virtualBlockSize + Math.random() * virtualBlockSize
+            const baseY = r * virtualBlockSize + Math.random() * virtualBlockSize
+
+            // Random size between 2.5 and 3.0 px (crisp box shape)
+            const size = 2.5 + Math.random() * 0.5
+
+            // Base transparency around 0.16 to 0.26
+            const baseOpacity = 0.16 + Math.random() * 0.10
+
+            particles.push({
+              x: baseX,
+              y: baseY,
+              baseX,
+              baseY,
+              vx: 0,
+              vy: 0,
+              size,
+              baseOpacity,
+              currentOpacity: baseOpacity,
+            })
+          }
         }
       }
     }
 
-    initGrid()
+    initParticles()
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = e.clientX
@@ -77,7 +91,7 @@ export function PixelBackground() {
       mouseRef.current.targetY = -1000
     }
 
-    window.addEventListener('resize', initGrid)
+    window.addEventListener('resize', initParticles)
     window.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseleave', handleMouseLeave)
 
@@ -91,55 +105,54 @@ export function PixelBackground() {
       const mx = mouseRef.current.x
       const my = mouseRef.current.y
 
-      for (let i = 0; i < gridPoints.length; i++) {
-        const pt = gridPoints[i]
+      for (let i = 0; i < particles.length; i++) {
+        const pt = particles[i]
 
-        // 1. Calculate vector from mouse to grid point
-        const dx = pt.x - mx
-        const dy = pt.y - my
+        // Calculate distance from mouse to resting anchor coordinate
+        const dx = pt.baseX - mx
+        const dy = pt.baseY - my
         const distSq = dx * dx + dy * dy
 
-        let repelX = 0
-        let repelY = 0
+        let targetX = pt.baseX
+        let targetY = pt.baseY
         let targetOpacity = pt.baseOpacity
 
+        // Mouse hover interaction (vanishing + gentle push away)
         if (distSq < maxRepelDistSq && distSq > 0.001) {
           const dist = Math.sqrt(distSq)
           const normX = dx / dist
           const normY = dy / dist
+          const factor = 1 - dist / maxRepelDist // 1.0 at center, 0.0 at radius edge
 
-          // Repulsion factor (1.0 at center, 0.0 at radius edge)
-          const factor = 1 - dist / maxRepelDist
-          const force = Math.pow(factor, 1.5) * pushForce
+          // Smoothly drop opacity to 0 when near cursor (vanishing effect)
+          targetOpacity = pt.baseOpacity * Math.max(0, 1 - Math.pow(factor, 0.6) * 1.5)
 
-          repelX = normX * force
-          repelY = normY * force
-
-          // Vanish completely under core cursor center, brighten slightly at outer rim
-          targetOpacity = pt.baseOpacity * (1 - Math.pow(factor, 0.8))
+          // Gently repel particle away from cursor
+          const repelForce = Math.pow(factor, 1.5) * 22
+          targetX = pt.baseX + normX * repelForce
+          targetY = pt.baseY + normY * repelForce
         }
 
-        // Target position with mouse repulsion added
-        const targetX = pt.baseX + repelX
-        const targetY = pt.baseY + repelY
-
-        // 2. Spring elasticity physics returning points to base positions
-        const ax = (targetX - pt.x) * 0.22
-        const ay = (targetY - pt.y) * 0.22
-
+        // Spring physics (Hooke's law) back to anchor target position
+        const ax = (targetX - pt.x) * 0.18
+        const ay = (targetY - pt.y) * 0.18
         pt.vx = (pt.vx + ax) * 0.72
         pt.vy = (pt.vy + ay) * 0.72
-
         pt.x += pt.vx
         pt.y += pt.vy
 
-        // Smooth lerp opacity
+        // Smooth lerp for opacity transitions
         pt.currentOpacity += (targetOpacity - pt.currentOpacity) * 0.15
 
+        // Render crisp box shape (square pixel)
         if (pt.currentOpacity > 0.005) {
           ctx.fillStyle = `rgba(255, 255, 255, ${pt.currentOpacity})`
-          // Draw Yuta Abe signature square box pixel
-          ctx.fillRect(Math.round(pt.x - dotSize / 2), Math.round(pt.y - dotSize / 2), dotSize, dotSize)
+          ctx.fillRect(
+            Math.round(pt.x - pt.size / 2),
+            Math.round(pt.y - pt.size / 2),
+            pt.size,
+            pt.size
+          )
         }
       }
 
@@ -149,7 +162,7 @@ export function PixelBackground() {
     render()
 
     return () => {
-      window.removeEventListener('resize', initGrid)
+      window.removeEventListener('resize', initParticles)
       window.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseleave', handleMouseLeave)
       cancelAnimationFrame(animationFrameId)
@@ -163,3 +176,4 @@ export function PixelBackground() {
     />
   )
 }
+

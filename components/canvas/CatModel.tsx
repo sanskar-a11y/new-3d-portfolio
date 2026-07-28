@@ -218,7 +218,7 @@ export function CatModel() {
   // Smaller scale specifically on mobile phone screens, without touching tablet/laptop/desktop
   const responsiveScale = useMemo(() => {
     if (isMobile) {
-      return Math.max(1.7, Math.min(viewport.width * 0.42, 2.1))
+      return Math.max(2.6, Math.min(viewport.width * 0.68, 3.2))
     }
     if (isTablet) {
       return 4.2
@@ -228,7 +228,7 @@ export function CatModel() {
     }
     // Large Desktop Monitors: Huge hero cat model (~5.0)
     return Math.min(5.2, Math.max(4.5, viewport.width * 0.52))
-  }, [viewport.width, viewport.height, isMobile, isTablet, isLaptop])
+  }, [viewport.width, isMobile, isTablet, isLaptop])
 
   // Lift the cat model higher up on screen (-0.06 / -0.08)
   const basePosY = useMemo(() => {

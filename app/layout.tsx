@@ -1,5 +1,20 @@
+import { Syne, Space_Mono } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/ui/Navbar'
+
+const syne = Syne({
+  subsets: ['latin'],
+  variable: '--font-syne',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800'],
+})
+
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  variable: '--font-space-mono',
+  display: 'swap',
+  weight: ['400', '700'],
+})
 import { Preloader } from '@/components/ui/Preloader'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { GlobalCanvas } from '@/components/canvas/GlobalCanvas'
@@ -13,7 +28,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="noise-overlay bg-[#050505]">
+      <body className={`noise-overlay bg-[#050505] ${syne.variable} ${spaceMono.variable}`}>
         <div className="fixed inset-0 z-0 bg-[#050505] pointer-events-none" />
         <PixelBackground />
         <ErrorBoundary>
