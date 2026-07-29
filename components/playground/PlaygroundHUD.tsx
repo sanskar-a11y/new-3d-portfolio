@@ -12,7 +12,7 @@ interface PlaygroundHUDProps {
 export function PlaygroundHUD({ cellCount, switchCount, lightsOut, onToggleLights }: PlaygroundHUDProps) {
   const [elapsed, setElapsed] = useState('00:00')
   const [isVisible, setIsVisible] = useState(false)
-  const startTimeRef = useRef(Date.now())
+  const startTimeRef = useRef<number | null>(null)
 
   // Fade in on mount
   useEffect(() => {
@@ -22,7 +22,11 @@ export function PlaygroundHUD({ cellCount, switchCount, lightsOut, onToggleLight
 
   // Elapsed timer
   useEffect(() => {
+    if (startTimeRef.current === null) {
+      startTimeRef.current = Date.now()
+    }
     const interval = setInterval(() => {
+      if (startTimeRef.current === null) return
       const diff = Math.floor((Date.now() - startTimeRef.current) / 1000)
       const mins = String(Math.floor(diff / 60)).padStart(2, '0')
       const secs = String(diff % 60).padStart(2, '0')

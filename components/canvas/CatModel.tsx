@@ -1,12 +1,13 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useAppStore } from '@/store/useAppStore'
 
 // Pure Black & White Yuta Abe-style shader with continuous auto-cycling transitions & bluish hover/transition glow
+// Upgraded with R2 Soft-Body Mesh Deformation & Ear Vertex Masking
 const CatShader = {
   uniforms: {
     uTime: { value: 0 },
@@ -15,6 +16,11 @@ const CatShader = {
     uIntroProgress: { value: 0 }, // 0.0 (dispersed particles) -> 1.0 (assembled cat)
     uResolution: { value: new THREE.Vector2(1000, 1000) },
     uMouse: { value: new THREE.Vector2(0, 0) },
+    // Soft-Body Mesh Physics Uniforms (R2 & R3)
+    uVelocity: { value: new THREE.Vector3(0, 0, 0) },
+    uAcceleration: { value: new THREE.Vector3(0, 0, 0) },
+    uDeformAmount: { value: 0.036 },
+    uEarDeform: { value: new THREE.Vector3(0, 0, 0) },
   },
   vertexShader: `
     attribute vec3 barycentric;
@@ -30,20 +36,33 @@ const CatShader = {
     uniform float uIntroProgress;
     uniform vec2 uMouse;
 
+    uniform vec3 uVelocity;
+    uniform vec3 uAcceleration;
+    uniform float uDeformAmount;
+    uniform vec3 uEarDeform;
+
     void main() {
       vUv = uv;
       vBarycentric = barycentric;
-      vNormal = normalize(normalMatrix * normal);
       
-      // Keep pristine model geometry without ear distortion or shape deformation
       vec3 displacedPos = position;
-      
-      // Smooth, clean intro assembly without chaotic shape deformation
+
+      // Natural subtle ear gravity displacement
+      float earMaskY = smoothstep(0.15, 0.35, position.y);
+      float earMaskX = smoothstep(0.15, 0.30, abs(position.x));
+      float earMask = earMaskY * earMaskX;
+      if (earMask > 0.001) {
+        vec3 earGravity = uEarDeform * earMask;
+        displacedPos += earGravity;
+      }
+
+      // 4. Smooth, clean intro assembly dispersion
       float dispersion = 1.0 - smoothstep(0.0, 1.0, uIntroProgress);
       if (dispersion > 0.001) {
         displacedPos += normal * (dispersion * 0.12);
       }
-      
+
+      vNormal = normalize(normalMatrix * normal);
       vec4 worldPosition = modelMatrix * vec4(displacedPos, 1.0);
       vWorldPosition = worldPosition.xyz;
       vec4 mvPosition = modelViewMatrix * vec4(displacedPos, 1.0);
@@ -205,6 +224,7 @@ function createWhiskerGeometry() {
 
 export function CatModel() {
   const groupRef = useRef<THREE.Group>(null)
+  const eyeRef = useRef<THREE.Mesh>(null)
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const isLoaded = useAppStore((state) => state.isLoaded)
   const introStartTimeRef = useRef<number | null>(null)
@@ -236,6 +256,56 @@ export function CatModel() {
     if (isLaptop) return -0.06
     return -0.08
   }, [isMobile, isLaptop])
+
+  // Track scroll velocity via wheel event listener
+  const scrollVelRef = useRef(0)
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      scrollVelRef.current += e.deltaY * 0.002
+    }
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [])
+
+  // R1: Cursor velocity and acceleration tracking
+  const prevMouseRef = useRef({ x: 0, y: 0 })
+  const mouseVelRef = useRef({ x: 0, y: 0 })
+  const mouseAccelRef = useRef({ x: 0, y: 0 })
+
+  // R1: 6-DOF 2nd-Order Spring-Damper Physics Engine State
+  const physicsStateRef = useRef({
+    pos: new THREE.Vector3(0, basePosY, 0),
+    vel: new THREE.Vector3(0, 0, 0),
+    accel: new THREE.Vector3(0, 0, 0),
+    rot: new THREE.Euler(0, 0, 0),
+    rotVel: new THREE.Vector3(0, 0, 0),
+    rotAccel: new THREE.Vector3(0, 0, 0),
+  })
+
+  // R3: Ear Vertex Spring Physics State
+  const earPhysicsRef = useRef({
+    pos: new THREE.Vector3(0, 0, 0),
+    vel: new THREE.Vector3(0, 0, 0),
+  })
+
+  // R3: Eye Tracking Lag / Spring Inertia Physics State
+  const eyePhysicsRef = useRef({
+    rot: new THREE.Euler(0, 0, 0),
+    rotVel: new THREE.Vector3(0, 0, 0),
+    pos: new THREE.Vector3(0, 0, 0),
+    posVel: new THREE.Vector3(0, 0, 0),
+  })
+
+  // R3: Whisker Multi-Node Spring Physics State (6 whiskers, mid and end control nodes)
+  const whiskerPhysicsRef = useRef(
+    Array.from({ length: 6 }, () => ({
+      midPos: new THREE.Vector3(0, 0, 0),
+      midVel: new THREE.Vector3(0, 0, 0),
+      endPos: new THREE.Vector3(0, 0, 0),
+      endVel: new THREE.Vector3(0, 0, 0),
+      initialized: false,
+    }))
+  )
 
   // Load authentic Yuta Abe cat 3D model
   const { scene } = useGLTF('/cat.glb') as any
@@ -301,22 +371,122 @@ export function CatModel() {
 
   useFrame((state, delta) => {
     const elapsed = state.clock.getElapsedTime()
+    // Clamp dt to avoid physics explosion on low frame rates or tab switches
+    const dt = Math.min(delta, 0.033)
 
+    // -------------------------------------------------------------
+    // R1: MOUSE & SCROLL VELOCITY / ACCELERATION TRACKING
+    // -------------------------------------------------------------
+    const currentMouseX = state.pointer.x
+    const currentMouseY = state.pointer.y
+
+    const vx = (currentMouseX - prevMouseRef.current.x) / (dt || 0.016)
+    const vy = (currentMouseY - prevMouseRef.current.y) / (dt || 0.016)
+    const ax = (vx - mouseVelRef.current.x) / (dt || 0.016)
+    const ay = (vy - mouseVelRef.current.y) / (dt || 0.016)
+
+    mouseVelRef.current = { x: vx, y: vy }
+    mouseAccelRef.current = { x: ax, y: ay }
+    prevMouseRef.current = { x: currentMouseX, y: currentMouseY }
+
+    // Smoothly decay scroll velocity
+    scrollVelRef.current *= Math.pow(0.92, dt * 60)
+
+    // -------------------------------------------------------------
+    // R1: 6-DOF 2ND-ORDER SPRING-DAMPER PHYSICS ENGINE
+    // -------------------------------------------------------------
+    const p = physicsStateRef.current
+
+    // Target rotations (firm, crisp rotation tracking with 80% reduced fluid sway)
+    const targetRotY = currentMouseX * (isMobile ? 0.12 : 0.18) + vx * 0.005
+    const targetRotX = -currentMouseY * (isMobile ? 0.09 : 0.14) + vy * 0.005
+    const targetRotZ = currentMouseX * 0.04 - vx * 0.01
+
+    // Target positions (Firm body: gravity sag + breathing float reduced by 80%)
+    const gravityPull = -currentMouseY * 0.024 - scrollVelRef.current * 0.008
+    const gravitySag = Math.sin(elapsed * 1.8) * 0.009 - 0.05
+    const breathingFloat = Math.cos(elapsed * 2.8) * 0.003 + Math.sin(elapsed * 0.85) * 0.004
+    
+    const targetPosX = currentMouseX * 0.03 + vx * 0.003
+    const targetPosY = basePosY + gravitySag + gravityPull + breathingFloat - Math.abs(vy) * 0.004
+    const targetPosZ = -Math.abs(currentMouseY) * 0.016 - Math.abs(vx) * 0.004
+
+    // 2nd-Order Spring-Damper Equations (Firm body springs)
+    // 1. Position Spring Engine
+    const kPos = 350.0
+    const cPos = 28.0
+
+    p.accel.x = -kPos * (p.pos.x - targetPosX) - cPos * p.vel.x
+    p.accel.y = -kPos * (p.pos.y - targetPosY) - cPos * p.vel.y
+    p.accel.z = -kPos * (p.pos.z - targetPosZ) - cPos * p.vel.z
+
+    p.vel.x += p.accel.x * dt
+    p.vel.y += p.accel.y * dt
+    p.vel.z += p.accel.z * dt
+
+    p.pos.x += p.vel.x * dt
+    p.pos.y += p.vel.y * dt
+    p.pos.z += p.vel.z * dt
+
+    // 2. Rotation Spring Engine (Firm body rotation)
+    const kRot = 300.0
+    const cRot = 24.0
+
+    p.rotAccel.x = -kRot * (p.rot.x - targetRotX) - cRot * p.rotVel.x
+    p.rotAccel.y = -kRot * (p.rot.y - targetRotY) - cRot * p.rotVel.y
+    p.rotAccel.z = -kRot * (p.rot.z - targetRotZ) - cRot * p.rotVel.z
+
+    p.rotVel.x += p.rotAccel.x * dt
+    p.rotVel.y += p.rotAccel.y * dt
+    p.rotVel.z += p.rotAccel.z * dt
+
+    p.rot.x += p.rotVel.x * dt
+    p.rot.y += p.rotVel.y * dt
+    p.rot.z += p.rotVel.z * dt
+
+    // Apply 6-DOF transform to cat group
+    if (groupRef.current) {
+      groupRef.current.position.copy(p.pos)
+      groupRef.current.rotation.copy(p.rot)
+    }
+
+    // -------------------------------------------------------------
+    // NON-OSCILLATING CRITICALLY DAMPED EAR GRAVITY TRACKING (ZERO JIGGLE)
+    // -------------------------------------------------------------
+    const ear = earPhysicsRef.current
+    const targetEarX = -p.rot.z * 0.0104 - vx * 0.0052
+    const targetEarY = -Math.abs(p.rot.x) * 0.0104 - vy * 0.0052 - 0.00624  // Ear gravity sag increased by 4%
+    const targetEarZ = 0.0
+
+    // Critically damped exponential smoothing: smooth follow with ZERO jiggle or spring wobble
+    const earDamp = 1.0 - Math.exp(-16.0 * dt)
+    ear.pos.x += (targetEarX - ear.pos.x) * earDamp
+    ear.pos.y += (targetEarY - ear.pos.y) * earDamp
+    ear.pos.z += (targetEarZ - ear.pos.z) * earDamp
+    ear.vel.set(0, 0, 0)
+
+    // -------------------------------------------------------------
+    // R2 & R3: UNIFORM UPDATES TO CAT SHADER
+    // -------------------------------------------------------------
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = elapsed
       materialRef.current.uniforms.uResolution.value.set(
         state.gl.domElement.width, 
         state.gl.domElement.height
       )
-      // Pass normalized mouse coordinates for bluish hover glow & ear tilt
       materialRef.current.uniforms.uMouse.value.set(state.pointer.x, state.pointer.y)
       materialRef.current.uniforms.uScanY.value = Math.sin(elapsed * 1.4) * 1.6
+
+      // Pass soft-body deformation & ear masking uniforms
+      materialRef.current.uniforms.uVelocity.value.copy(p.vel)
+      materialRef.current.uniforms.uAcceleration.value.copy(p.accel)
+      materialRef.current.uniforms.uEarDeform.value.copy(ear.pos)
 
       // Start auto-cycling only after intro completes (~3.5s); cycle speed 0.027 (~36s full loop, ~12s per mode)
       const cycleTime = Math.max(0, elapsed - 3.5)
       materialRef.current.uniforms.uAutoPhase.value = (cycleTime * 0.027) % 3.0
 
-      // Smooth, impactful particle assembly starting exactly when the preloader finishes!
+      // Particle assembly intro progress
       if (!isLoaded) {
         materialRef.current.uniforms.uIntroProgress.value = 0.0
         introStartTimeRef.current = null
@@ -330,86 +500,147 @@ export function CatModel() {
       }
     }
 
-    if (groupRef.current) {
-      // Highly sensitive mouse-following rotation tracking
-      const targetRotationY = state.pointer.x * (isMobile ? 0.16 : 0.28)
-      const targetRotationX = -state.pointer.y * (isMobile ? 0.12 : 0.20)
-      const targetRotationZ = state.pointer.x * 0.08 // Lean into turns under gravity momentum
+    // -------------------------------------------------------------
+    // R3: FLUID EYE TRACKING LAG / SPRING INERTIA (NODE 1 / "球")
+    // -------------------------------------------------------------
+    if (eyeRef.current) {
+      const eye = eyePhysicsRef.current
+      const targetEyeRotY = state.pointer.x * 0.14
+      const targetEyeRotX = -state.pointer.y * 0.12
 
-      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.14
-      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.14
-      groupRef.current.rotation.z += (targetRotationZ - groupRef.current.rotation.z) * 0.14
+      const targetEyePosX = state.pointer.x * 0.012 - p.vel.x * 0.005
+      const targetEyePosY = -state.pointer.y * 0.012 - p.vel.y * 0.005
 
-      // Whole-cat 3D Gravity & Inertia Spring Physics
-      const gravityPull = -state.pointer.y * 0.12
-      const gravitySag = Math.sin(elapsed * 1.8) * 0.045 - 0.05
-      const springBounce = Math.cos(elapsed * 3.2) * 0.015
+      const kEye = 180.0
+      const cEye = 18.0
 
-      groupRef.current.position.y = basePosY + gravitySag + gravityPull + springBounce
+      const fEyeRotX = -kEye * (eye.rot.x - targetEyeRotX) - cEye * eye.rotVel.x
+      const fEyeRotY = -kEye * (eye.rot.y - targetEyeRotY) - cEye * eye.rotVel.y
+
+      eye.rotVel.x += fEyeRotX * dt
+      eye.rotVel.y += fEyeRotY * dt
+      eye.rot.x += eye.rotVel.x * dt
+      eye.rot.y += eye.rotVel.y * dt
+
+      const fEyePosX = -kEye * (eye.pos.x - targetEyePosX) - cEye * eye.posVel.x
+      const fEyePosY = -kEye * (eye.pos.y - targetEyePosY) - cEye * eye.posVel.y
+
+      eye.posVel.x += fEyePosX * dt
+      eye.posVel.y += fEyePosY * dt
+      eye.pos.x += eye.posVel.x * dt
+      eye.pos.y += eye.posVel.y * dt
+
+      eyeRef.current.rotation.set(eye.rot.x, eye.rot.y, 0)
+      eyeRef.current.position.set(eye.pos.x, eye.pos.y, 0)
     }
 
-    // Dynamic Real-time Whisker Gravity & Spring Inertia Physics
+    // -------------------------------------------------------------
+    // R3: HIGH-FLUID WHISKER ELASTICITY & WHIP INERTIA PHYSICS
+    // -------------------------------------------------------------
     if (whiskerGeoRef.current && groupRef.current) {
       const targetGeo = (whiskerGeoRef.current as any).geometry || whiskerGeoRef.current
       if (targetGeo && targetGeo.attributes && targetGeo.attributes.position) {
         const posAttr = targetGeo.attributes.position as THREE.BufferAttribute
         if (posAttr && posAttr.array) {
-        const array = posAttr.array as Float32Array
-        let ptr = 0
+          const array = posAttr.array as Float32Array
+          let ptr = 0
 
-        const headPitch = groupRef.current.rotation.x
-        const headRoll = groupRef.current.rotation.y
+          const whiskerRows = [
+            { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
+            { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 1.2 },
+            { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 1.4 },
+          ]
 
-        const whiskerRows = [
-          { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
-          { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 1.3 },
-          { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 1.6 },
-        ]
+          let whiskerIdx = 0
+          const kWhisker = 140.0  // Balanced spring stiffness for natural whisker posture
+          const cWhisker = 12.0   // Natural damping to prevent drooping
 
-        ;[-1, 1].forEach((side) => {
-          whiskerRows.forEach((row, rowIdx) => {
-            const startX = side * 0.14
-            const endX = side * (0.14 + row.len)
+          ;[-1, 1].forEach((side) => {
+            whiskerRows.forEach((row, rowIdx) => {
+              const stateNode = whiskerPhysicsRef.current[whiskerIdx]
+              const startX = side * 0.14
+              const endX = side * (0.14 + row.len)
 
-            // Gravity sag + motion inertia + subtle organic breathing sway
-            const gravitySag = -0.05 * row.flex
-            const pitchInertia = -headPitch * 0.3 * row.flex
-            const rollInertia = side * headRoll * 0.2 * row.flex
-            const sway = Math.sin(elapsed * 2.6 + rowIdx * 0.8 + side * 1.2) * 0.016 * row.flex
+              // Realistic gravity sag increased by 10% + movement inertia when cursor moves
+              const gravitySag = -0.0088 * row.flex
+              const pitchInertia = -p.rot.x * 0.066 * row.flex - vy * 0.0066 * row.flex
+              const rollInertia = side * p.rot.y * 0.055 * row.flex - side * vx * 0.0066 * row.flex
+              const sway = Math.sin(elapsed * 2.2 + rowIdx * 0.8 + side * 1.2) * 0.0055 * row.flex
 
-            const totalDrop = gravitySag + pitchInertia + rollInertia + sway
+              const totalDrop = gravitySag + pitchInertia + rollInertia + sway
 
-            const start = new THREE.Vector3(startX, row.y, row.z)
-            const mid = new THREE.Vector3(
-              startX + side * row.len * 0.5,
-              row.y + row.angleY * 0.5 + totalDrop * 0.45,
-              row.z - 0.05
-            )
-            const end = new THREE.Vector3(
-              endX,
-              row.y + row.angleY + totalDrop,
-              row.z - 0.15
-            )
+              const start = new THREE.Vector3(startX, row.y, row.z)
+              const idealMid = new THREE.Vector3(
+                startX + side * row.len * 0.5,
+                row.y + row.angleY * 0.5 + totalDrop * 0.45,
+                row.z - 0.05
+              )
+              const idealEnd = new THREE.Vector3(
+                endX,
+                row.y + row.angleY + totalDrop,
+                row.z - 0.15
+              )
 
-            const curve = new THREE.QuadraticBezierCurve3(start, mid, end)
-            const curvePoints = curve.getPoints(20)
+              if (!stateNode.initialized) {
+                stateNode.midPos.copy(idealMid)
+                stateNode.endPos.copy(idealEnd)
+                stateNode.initialized = true
+              }
 
-            for (let i = 0; i < curvePoints.length - 1; i++) {
-              array[ptr++] = curvePoints[i].x
-              array[ptr++] = curvePoints[i].y
-              array[ptr++] = curvePoints[i].z
-              array[ptr++] = curvePoints[i + 1].x
-              array[ptr++] = curvePoints[i + 1].y
-              array[ptr++] = curvePoints[i + 1].z
-            }
+              // Subtle spring inertia forces for mid and tip control nodes
+              const midInertiaForce = new THREE.Vector3(
+                -p.accel.x * 0.02 * row.flex,
+                -p.accel.y * 0.02 * row.flex,
+                -p.accel.z * 0.015 * row.flex
+              )
+              const endInertiaForce = new THREE.Vector3(
+                -p.accel.x * 0.04 * row.flex,
+                -p.accel.y * 0.04 * row.flex,
+                -p.accel.z * 0.025 * row.flex
+              )
+
+              // Spring update for Mid Node
+              const fMid = new THREE.Vector3()
+                .subVectors(idealMid, stateNode.midPos)
+                .multiplyScalar(kWhisker)
+                .sub(stateNode.midVel.clone().multiplyScalar(cWhisker))
+                .add(midInertiaForce)
+
+              stateNode.midVel.add(fMid.multiplyScalar(dt))
+              stateNode.midPos.add(stateNode.midVel.clone().multiplyScalar(dt))
+
+              // Spring update for End Tip Node (natural organic whip action)
+              const fEnd = new THREE.Vector3()
+                .subVectors(idealEnd, stateNode.endPos)
+                .multiplyScalar(kWhisker * 0.9)
+                .sub(stateNode.endVel.clone().multiplyScalar(cWhisker))
+                .add(endInertiaForce)
+
+              stateNode.endVel.add(fEnd.multiplyScalar(dt))
+              stateNode.endPos.add(stateNode.endVel.clone().multiplyScalar(dt))
+
+              // Generate 20 sub-segments along the spring-lag Bezier curve
+              const curve = new THREE.QuadraticBezierCurve3(start, stateNode.midPos, stateNode.endPos)
+              const curvePoints = curve.getPoints(20)
+
+              for (let i = 0; i < curvePoints.length - 1; i++) {
+                array[ptr++] = curvePoints[i].x
+                array[ptr++] = curvePoints[i].y
+                array[ptr++] = curvePoints[i].z
+                array[ptr++] = curvePoints[i + 1].x
+                array[ptr++] = curvePoints[i + 1].y
+                array[ptr++] = curvePoints[i + 1].z
+              }
+
+              whiskerIdx++
+            })
           })
-        })
 
-        posAttr.needsUpdate = true
+          posAttr.needsUpdate = true
+        }
       }
     }
-  }
-})
+  })
 
   return (
     <group ref={groupRef} position={[0, basePosY, 0]} scale={[responsiveScale, responsiveScale, responsiveScale]}>
@@ -418,10 +649,10 @@ export function CatModel() {
         <primitive object={customMaterial} ref={materialRef} attach="material" />
       </mesh>
 
-      {/* Pure White Eyeballs */}
-      <mesh geometry={eyeGeometry} material={eyeballMaterial} />
+      {/* Pure White Eyeballs with Fluid Tracking Lag & Spring Inertia */}
+      <mesh ref={eyeRef} geometry={eyeGeometry} material={eyeballMaterial} />
 
-      {/* 6 Dynamic Gravity-Affected Whiskers */}
+      {/* 6 Dynamic Whisker Lines with Multi-Node Spring-Lag Elasticity */}
       <lineSegments ref={whiskerGeoRef} geometry={whiskerGeometry} material={whiskerMaterial} />
     </group>
   )
