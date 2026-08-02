@@ -19,6 +19,8 @@ import { Preloader } from '@/components/ui/Preloader'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { GlobalCanvas } from '@/components/canvas/GlobalCanvas'
 import { PixelBackground } from '@/components/ui/PixelBackground'
+import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider'
+import { TransitionProvider } from '@/components/providers/TransitionProvider'
 
 export const metadata = {
   title: '3D Portfolio',
@@ -35,7 +37,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Preloader />
           <GlobalCanvas />
           <Navbar />
-          {children}
+          <SmoothScrollProvider>
+            <TransitionProvider>
+              {children}
+            </TransitionProvider>
+          </SmoothScrollProvider>
         </ErrorBoundary>
       </body>
     </html>

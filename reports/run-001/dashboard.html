@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMEGA SWARM v10.0 — Stress Test Dashboard</title>
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card: #12151e;
+      --border: #242938;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --pass: #22c55e;
+      --warn: #eab308;
+      --fail: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; background: var(--bg); color: var(--text); padding: 2rem; line-height: 1.5; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; }
+    .badge-PASS { background: rgba(34, 197, 94, 0.15); color: var(--pass); border: 1px solid var(--pass); }
+    .badge-WARN { background: rgba(234, 179, 8, 0.15); color: var(--warn); border: 1px solid var(--warn); }
+    .badge-FAIL { background: rgba(239, 68, 68, 0.15); color: var(--fail); border: 1px solid var(--fail); }
+    .badge-UNSUPPORTED { background: rgba(148, 163, 184, 0.15); color: var(--muted); border: 1px solid var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+    .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.5rem; }
+    .card-value { font-size: 1.75rem; font-weight: 700; color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2rem; }
+    th, td { padding: 0.85rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    th { background: rgba(255,255,255,0.03); color: var(--muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+    tr:last-child td { border-bottom: none; }
+    .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
+    .meta-bar { display: flex; gap: 2rem; font-size: 0.85rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>🚀 OMEGA SWARM v10.0 Stress Test Dashboard</h1>
+      <div class="meta-bar" style="margin-top: 0.5rem;">
+        <span>Target: <code>http://localhost:3000</code></span>
+        <span>PRNG Seed: <code>1337</code></span>
+        <span>Duration: <code>2088.04s</code></span>
+      </div>
+    </div>
+    <span class="badge badge-FAIL">FAIL</span>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">Overall Status</div>
+      <div class="card-value" style="color: var(--fail);">FAIL</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Avg Route Latency</div>
+      <div class="card-value">0 ms</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Frame Rate</div>
+      <div class="card-value">60 FPS</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Console Errors</div>
+      <div class="card-value" style="color: var(--pass);">0</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Network Failures</div>
+      <div class="card-value" style="color: var(--fail);">2</div>
+    </div>
+  </div>
+
+  <div class="section-title">Performance Budget Evaluations</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Measured Value</th>
+        <th>Threshold</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td><strong>Average Route Latency</strong></td>
+          <td><code>0ms</code></td>
+          <td><span style="color: var(--muted);">< 500ms (PASS), < 1000ms (WARN)</span></td>
+          <td><span class="badge badge-PASS">PASS</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Largest Contentful Paint (LCP)</strong></td>
+          <td><code>0ms</code></td>
+          <td><span style="color: var(--muted);">< 2500ms (PASS), < 4000ms (WARN)</span></td>
+          <td><span class="badge badge-PASS">PASS</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Cumulative Layout Shift (CLS)</strong></td>
+          <td><code>0.00</code></td>
+          <td><span style="color: var(--muted);">< 0.1 (PASS), < 0.25 (WARN)</span></td>
+          <td><span class="badge badge-PASS">PASS</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Frame Rate (FPS)</strong></td>
+          <td><code>60 FPS</code></td>
+          <td><span style="color: var(--muted);">>= 15 FPS (PASS), >= 10 FPS (WARN)</span></td>
+          <td><span class="badge badge-PASS">PASS</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Heap Growth Percentage</strong></td>
+          <td><code>0.0%</code></td>
+          <td><span style="color: var(--muted);">< 20% (PASS), < 50% (WARN)</span></td>
+          <td><span class="badge badge-UNSUPPORTED">UNSUPPORTED</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Garbage Collection Stability</strong></td>
+          <td><code>+4.5 MB (stable)</code></td>
+          <td><span style="color: var(--muted);">Memory bounded & reclaimed</span></td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Console Error Count</strong></td>
+          <td><code>0 errors</code></td>
+          <td><span style="color: var(--muted);">0 errors (PASS), < 3 (WARN)</span></td>
+          <td><span class="badge badge-PASS">PASS</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Network HTTP Failures</strong></td>
+          <td><code>2 failures</code></td>
+          <td><span style="color: var(--muted);">0 failures (PASS), < 2 (WARN)</span></td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+    </tbody>
+  </table>
+
+  <div class="section-title">8 Test Phases Execution Details</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Phase #</th>
+        <th>Phase Name</th>
+        <th>Duration</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td>Phase 1</td>
+          <td><strong>Warm-up</strong></td>
+          <td>30139 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 2</td>
+          <td><strong>Navigation Stress</strong></td>
+          <td>30143 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 3</td>
+          <td><strong>Scroll Stress</strong></td>
+          <td>30014 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 4</td>
+          <td><strong>Interaction Stress</strong></td>
+          <td>30011 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 5</td>
+          <td><strong>CPU / Network Throttling</strong></td>
+          <td>32751 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 6</td>
+          <td><strong>WebGL Context Loss & Recovery</strong></td>
+          <td>25037 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 7</td>
+          <td><strong>Idle Observation</strong></td>
+          <td>21343 ms</td>
+          <td><span class="badge badge-PASS">PASS</span></td>
+        </tr>
+      
+        <tr>
+          <td>Phase 8</td>
+          <td><strong>Recovery Verification</strong></td>
+          <td>33190 ms</td>
+          <td><span class="badge badge-FAIL">FAIL</span></td>
+        </tr>
+      
+    </tbody>
+  </table>
+
+  <div class="section-title">CDP Capabilities Status</div>
+  <table>
+    <thead>
+      <tr>
+        <th>CDP Feature / Domain</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td><strong>Performance</strong></td>
+          <td><code>OK</code></td>
+        </tr>
+      
+        <tr>
+          <td><strong>HeapProfiler</strong></td>
+          <td><code>OK</code></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Profiler</strong></td>
+          <td><code>OK</code></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Tracing</strong></td>
+          <td><code>OK</code></td>
+        </tr>
+      
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "callFrame": {
+        "functionName": "(root)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "callFrame": {
+        "functionName": "(program)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 1
+    },
+    {
+      "id": 3,
+      "callFrame": {
+        "functionName": "(idle)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 7
+    }
+  ],
+  "startTime": 188302355052,
+  "endTime": 188305543433,
+  "samples": [
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    2
+  ],
+  "timeDeltas": [
+    30434,
+    1844481,
+    175451,
+    199688,
+    198556,
+    199450,
+    214498,
+    321062,
+    3798
+  ]
+}

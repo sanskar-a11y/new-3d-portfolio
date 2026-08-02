@@ -6,6 +6,30 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useAppStore } from '@/store/useAppStore'
 
+// ── PRE-ALLOCATED SCRATCHPAD VECTORS (zero GC pressure in render loop) ──
+const _start = new THREE.Vector3()
+const _idealMid = new THREE.Vector3()
+const _idealEnd = new THREE.Vector3()
+const _midInertia = new THREE.Vector3()
+const _endInertia = new THREE.Vector3()
+const _fMid = new THREE.Vector3()
+const _fEnd = new THREE.Vector3()
+const _tempVel = new THREE.Vector3()
+const _bezierP = new THREE.Vector3()
+const _bezierPNext = new THREE.Vector3()
+
+/** Evaluate quadratic bezier at parameter t, writing result into `out` */
+function evalQuadBezier(out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, t: number): THREE.Vector3 {
+  const t1 = 1 - t
+  const t1sq = t1 * t1
+  const tsq = t * t
+  const t12t = 2 * t1 * t
+  out.x = t1sq * p0.x + t12t * p1.x + tsq * p2.x
+  out.y = t1sq * p0.y + t12t * p1.y + tsq * p2.y
+  out.z = t1sq * p0.z + t12t * p1.z + tsq * p2.z
+  return out
+}
+
 // Pure Black & White Yuta Abe-style shader with continuous auto-cycling transitions & bluish hover/transition glow
 // Upgraded with R2 Soft-Body Mesh Deformation & Ear Vertex Masking
 const CatShader = {
@@ -267,12 +291,10 @@ export function CatModel() {
     return () => window.removeEventListener('wheel', handleWheel)
   }, [])
 
-  // R1: Cursor velocity and acceleration tracking
   const prevMouseRef = useRef({ x: 0, y: 0 })
   const mouseVelRef = useRef({ x: 0, y: 0 })
   const mouseAccelRef = useRef({ x: 0, y: 0 })
 
-  // R1: 6-DOF 2nd-Order Spring-Damper Physics Engine State
   const physicsStateRef = useRef({
     pos: new THREE.Vector3(0, basePosY, 0),
     vel: new THREE.Vector3(0, 0, 0),
@@ -385,9 +407,13 @@ export function CatModel() {
     const ax = (vx - mouseVelRef.current.x) / (dt || 0.016)
     const ay = (vy - mouseVelRef.current.y) / (dt || 0.016)
 
-    mouseVelRef.current = { x: vx, y: vy }
-    mouseAccelRef.current = { x: ax, y: ay }
-    prevMouseRef.current = { x: currentMouseX, y: currentMouseY }
+    // Mutate existing refs instead of allocating new objects every frame
+    mouseVelRef.current.x = vx
+    mouseVelRef.current.y = vy
+    mouseAccelRef.current.x = ax
+    mouseAccelRef.current.y = ay
+    prevMouseRef.current.x = currentMouseX
+    prevMouseRef.current.y = currentMouseY
 
     // Smoothly decay scroll velocity
     scrollVelRef.current *= Math.pow(0.92, dt * 60)
@@ -569,67 +595,71 @@ export function CatModel() {
 
               const totalDrop = gravitySag + pitchInertia + rollInertia + sway
 
-              const start = new THREE.Vector3(startX, row.y, row.z)
-              const idealMid = new THREE.Vector3(
+              // Use pre-allocated scratchpad vectors (ZERO allocations per frame)
+              _start.set(startX, row.y, row.z)
+              _idealMid.set(
                 startX + side * row.len * 0.5,
                 row.y + row.angleY * 0.5 + totalDrop * 0.45,
                 row.z - 0.05
               )
-              const idealEnd = new THREE.Vector3(
+              _idealEnd.set(
                 endX,
                 row.y + row.angleY + totalDrop,
                 row.z - 0.15
               )
 
               if (!stateNode.initialized) {
-                stateNode.midPos.copy(idealMid)
-                stateNode.endPos.copy(idealEnd)
+                stateNode.midPos.copy(_idealMid)
+                stateNode.endPos.copy(_idealEnd)
                 stateNode.initialized = true
               }
 
-              // Subtle spring inertia forces for mid and tip control nodes
-              const midInertiaForce = new THREE.Vector3(
+              // Subtle spring inertia forces (mutate pre-allocated vectors)
+              _midInertia.set(
                 -p.accel.x * 0.02 * row.flex,
                 -p.accel.y * 0.02 * row.flex,
                 -p.accel.z * 0.015 * row.flex
               )
-              const endInertiaForce = new THREE.Vector3(
+              _endInertia.set(
                 -p.accel.x * 0.04 * row.flex,
                 -p.accel.y * 0.04 * row.flex,
                 -p.accel.z * 0.025 * row.flex
               )
 
-              // Spring update for Mid Node
-              const fMid = new THREE.Vector3()
-                .subVectors(idealMid, stateNode.midPos)
+              // Spring update for Mid Node (zero-alloc)
+              _fMid.subVectors(_idealMid, stateNode.midPos)
                 .multiplyScalar(kWhisker)
-                .sub(stateNode.midVel.clone().multiplyScalar(cWhisker))
-                .add(midInertiaForce)
+              _tempVel.copy(stateNode.midVel).multiplyScalar(cWhisker)
+              _fMid.sub(_tempVel).add(_midInertia)
 
-              stateNode.midVel.add(fMid.multiplyScalar(dt))
-              stateNode.midPos.add(stateNode.midVel.clone().multiplyScalar(dt))
+              stateNode.midVel.addScaledVector(_fMid, dt)
+              _tempVel.copy(stateNode.midVel).multiplyScalar(dt)
+              stateNode.midPos.add(_tempVel)
 
-              // Spring update for End Tip Node (natural organic whip action)
-              const fEnd = new THREE.Vector3()
-                .subVectors(idealEnd, stateNode.endPos)
+              // Spring update for End Tip Node (zero-alloc)
+              _fEnd.subVectors(_idealEnd, stateNode.endPos)
                 .multiplyScalar(kWhisker * 0.9)
-                .sub(stateNode.endVel.clone().multiplyScalar(cWhisker))
-                .add(endInertiaForce)
+              _tempVel.copy(stateNode.endVel).multiplyScalar(cWhisker)
+              _fEnd.sub(_tempVel).add(_endInertia)
 
-              stateNode.endVel.add(fEnd.multiplyScalar(dt))
-              stateNode.endPos.add(stateNode.endVel.clone().multiplyScalar(dt))
+              stateNode.endVel.addScaledVector(_fEnd, dt)
+              _tempVel.copy(stateNode.endVel).multiplyScalar(dt)
+              stateNode.endPos.add(_tempVel)
 
-              // Generate 20 sub-segments along the spring-lag Bezier curve
-              const curve = new THREE.QuadraticBezierCurve3(start, stateNode.midPos, stateNode.endPos)
-              const curvePoints = curve.getPoints(20)
-
-              for (let i = 0; i < curvePoints.length - 1; i++) {
-                array[ptr++] = curvePoints[i].x
-                array[ptr++] = curvePoints[i].y
-                array[ptr++] = curvePoints[i].z
-                array[ptr++] = curvePoints[i + 1].x
-                array[ptr++] = curvePoints[i + 1].y
-                array[ptr++] = curvePoints[i + 1].z
+              // Generate 20 sub-segments via inline quadratic bezier (no curve/getPoints allocation)
+              const WHISKER_SEGMENTS = 20
+              evalQuadBezier(_bezierP, _start, stateNode.midPos, stateNode.endPos, 0)
+              for (let seg = 1; seg <= WHISKER_SEGMENTS; seg++) {
+                const t = seg / WHISKER_SEGMENTS
+                evalQuadBezier(_bezierPNext, _start, stateNode.midPos, stateNode.endPos, t)
+                array[ptr++] = _bezierP.x
+                array[ptr++] = _bezierP.y
+                array[ptr++] = _bezierP.z
+                array[ptr++] = _bezierPNext.x
+                array[ptr++] = _bezierPNext.y
+                array[ptr++] = _bezierPNext.z
+                // Swap: current next becomes next current
+                _bezierP.copy(_bezierPNext)
               }
 
               whiskerIdx++
@@ -641,6 +671,18 @@ export function CatModel() {
       }
     }
   })
+
+  // Dispose all manually-created GPU resources on unmount / HMR
+  useEffect(() => {
+    return () => {
+      bodyGeometry?.dispose()
+      eyeGeometry?.dispose()
+      whiskerGeometry?.dispose()
+      customMaterial?.dispose()
+      eyeballMaterial?.dispose()
+      whiskerMaterial?.dispose()
+    }
+  }, [bodyGeometry, eyeGeometry, whiskerGeometry, customMaterial, eyeballMaterial, whiskerMaterial])
 
   return (
     <group ref={groupRef} position={[0, basePosY, 0]} scale={[responsiveScale, responsiveScale, responsiveScale]}>

@@ -1,0 +1,314 @@
+[
+  {
+    "timestamp": 1785661718786,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661719311,
+    "type": "warning",
+    "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/three/build/three.core.js",
+      "line": 1969,
+      "column": 20,
+      "lineNumber": 1969,
+      "columnNumber": 20
+    }
+  },
+  {
+    "timestamp": 1785661719388,
+    "type": "warning",
+    "text": "[.WebGL-0x3204001b3e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "http://localhost:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661719605,
+    "type": "warning",
+    "text": "[.WebGL-0x3204001b3e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "http://localhost:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661719665,
+    "type": "warning",
+    "text": "[.WebGL-0x3204001b3e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "http://localhost:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661719714,
+    "type": "warning",
+    "text": "[.WebGL-0x3204001b3e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "location": {
+      "url": "http://localhost:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661733524,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661734646,
+    "type": "warning",
+    "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/three/build/three.core.js",
+      "line": 1969,
+      "column": 20,
+      "lineNumber": 1969,
+      "columnNumber": 20
+    }
+  },
+  {
+    "timestamp": 1785661739459,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661740562,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 103,
+      "column": 0,
+      "lineNumber": 103,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661740563,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 128,
+      "column": 0,
+      "lineNumber": 128,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661740563,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 129,
+      "column": 0,
+      "lineNumber": 129,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661740932,
+    "type": "warning",
+    "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/three/build/three.core.js",
+      "line": 1969,
+      "column": 20,
+      "lineNumber": 1969,
+      "columnNumber": 20
+    }
+  },
+  {
+    "timestamp": 1785661744310,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661745024,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 43,
+      "column": 0,
+      "lineNumber": 43,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661745024,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 43,
+      "column": 0,
+      "lineNumber": 43,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661745125,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 43,
+      "column": 0,
+      "lineNumber": 43,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661745125,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 43,
+      "column": 0,
+      "lineNumber": 43,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661745260,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 43,
+      "column": 0,
+      "lineNumber": 43,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661745261,
+    "type": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./lib/audio.ts",
+      "line": 43,
+      "column": 0,
+      "lineNumber": 43,
+      "columnNumber": 0
+    }
+  },
+  {
+    "timestamp": 1785661745472,
+    "type": "warning",
+    "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/three/build/three.core.js",
+      "line": 1969,
+      "column": 20,
+      "lineNumber": 1969,
+      "columnNumber": 20
+    }
+  },
+  {
+    "timestamp": 1785661757655,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661758234,
+    "type": "warning",
+    "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/three/build/three.core.js",
+      "line": 1969,
+      "column": 20,
+      "lineNumber": 1969,
+      "columnNumber": 20
+    }
+  },
+  {
+    "timestamp": 1785661764552,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661783173,
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js",
+      "line": 25630,
+      "column": 16,
+      "lineNumber": 25630,
+      "columnNumber": 16
+    }
+  },
+  {
+    "timestamp": 1785661783777,
+    "type": "warning",
+    "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "location": {
+      "url": "webpack-internal:///(app-pages-browser)/./node_modules/three/build/three.core.js",
+      "line": 1969,
+      "column": 20,
+      "lineNumber": 1969,
+      "columnNumber": 20
+    }
+  }
+]

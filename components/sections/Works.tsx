@@ -35,10 +35,14 @@ export function Works() {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // Scroll listener: find project row closest to vertical center of screen
+  // Throttled with requestAnimationFrame to prevent layout thrashing (getBoundingClientRect on 20 items)
   useEffect(() => {
     let lastIndex = 0
+    let rafId: number | null = null
+    let ticking = false
 
-    const handleScroll = () => {
+    const updateActiveIndex = () => {
+      ticking = false
       const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80
       let closestIdx = 0
 
@@ -67,10 +71,21 @@ export function Works() {
       }
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true
+        rafId = requestAnimationFrame(updateActiveIndex)
+      }
+    }
 
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    // Initial check
+    updateActiveIndex()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (rafId !== null) cancelAnimationFrame(rafId)
+    }
   }, [])
 
   return (

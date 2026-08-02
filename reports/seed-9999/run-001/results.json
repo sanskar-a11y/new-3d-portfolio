@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "seed": 42,
+    "timestamp": "2026-08-02T09:09:47.801Z",
+    "targetUrl": "http://localhost:3000",
+    "durationMs": 69815,
+    "overallStatus": "WARN"
+  },
+  "budgetEvaluations": {
+    "routeLatency": {
+      "metric": "Average Route Latency",
+      "measured": "520ms",
+      "threshold": "< 500ms (PASS), < 1000ms (WARN)",
+      "status": "WARN"
+    },
+    "lcp": {
+      "metric": "Largest Contentful Paint (LCP)",
+      "measured": "624ms",
+      "threshold": "< 2500ms (PASS), < 4000ms (WARN)",
+      "status": "PASS"
+    },
+    "cls": {
+      "metric": "Cumulative Layout Shift (CLS)",
+      "measured": "0.00",
+      "threshold": "< 0.1 (PASS), < 0.25 (WARN)",
+      "status": "PASS"
+    },
+    "fps": {
+      "metric": "Frame Rate (FPS)",
+      "measured": "15 FPS",
+      "threshold": ">= 15 FPS (PASS), >= 10 FPS (WARN)",
+      "status": "PASS"
+    },
+    "heapGrowth": {
+      "metric": "Heap Growth Percentage",
+      "measured": "-10.9%",
+      "threshold": "< 20% (PASS), < 50% (WARN)",
+      "status": "PASS"
+    },
+    "gcBehavior": {
+      "metric": "Garbage Collection Stability",
+      "measured": "STABLE",
+      "threshold": "Memory bounded & reclaimed",
+      "status": "PASS"
+    },
+    "consoleErrors": {
+      "metric": "Console Error Count",
+      "measured": "0 errors",
+      "threshold": "0 errors (PASS), < 3 (WARN)",
+      "status": "PASS"
+    },
+    "networkFailures": {
+      "metric": "Network HTTP Failures",
+      "measured": "0 failures",
+      "threshold": "0 failures (PASS), < 2 (WARN)",
+      "status": "PASS"
+    }
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Warm-up",
+      "status": "PASS",
+      "durationMs": 3330,
+      "details": {
+        "navLatency": 234,
+        "initialFPS": 20,
+        "initialHeapBytes": 60292400
+      }
+    },
+    {
+      "phase": 2,
+      "name": "Navigation Stress",
+      "status": "PASS",
+      "durationMs": 8896,
+      "details": {
+        "totalNavigations": 12,
+        "avgLatencyMs": 520
+      }
+    },
+    {
+      "phase": 3,
+      "name": "Scroll Stress",
+      "status": "PASS",
+      "durationMs": 10170,
+      "details": {
+        "scrollFPS": 16
+      }
+    },
+    {
+      "phase": 4,
+      "name": "Interaction Stress",
+      "status": "PASS",
+      "durationMs": 25166,
+      "details": {
+        "totalInteractions": 26
+      }
+    },
+    {
+      "phase": 5,
+      "name": "CPU / Network Throttling",
+      "status": "PASS",
+      "durationMs": 4836,
+      "details": {
+        "throttledNavLatencyMs": 3091,
+        "throttledFPS": 63
+      }
+    },
+    {
+      "phase": 6,
+      "name": "WebGL Context Loss & Recovery",
+      "status": "PASS",
+      "durationMs": 2797,
+      "details": {
+        "success": true,
+        "isLost": true,
+        "isRestored": true
+      }
+    },
+    {
+      "phase": 7,
+      "name": "Idle Observation",
+      "status": "PASS",
+      "durationMs": 5210,
+      "details": {
+        "idleDurationMs": 5000,
+        "idleStartHeapBytes": 70386256,
+        "idleEndHeapBytes": 49348932,
+        "heapGrowthBytes": -21037324
+      }
+    },
+    {
+      "phase": 8,
+      "name": "Recovery Verification",
+      "status": "PASS",
+      "durationMs": 4592,
+      "details": {
+        "recoveryFPS": 15,
+        "finalHeapBytes": 53715076,
+        "isCanvasActive": true
+      }
+    }
+  ],
+  "cdpCapabilities": {
+    "Performance": "OK",
+    "HeapProfiler": "OK",
+    "Profiler": "OK",
+    "Tracing": "OK"
+  },
+  "summary": {
+    "totalConsoleLogs": 26,
+    "totalConsoleErrors": 0,
+    "totalNetworkRequests": 282,
+    "totalNetworkFailures": 0,
+    "webglRecoverySuccess": true,
+    "averageFPS": 15,
+    "avgRouteLatency": 520
+  }
+}
