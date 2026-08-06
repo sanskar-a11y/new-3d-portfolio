@@ -63,7 +63,7 @@ export function Preloader() {
   if (!mounted) {
     return (
       <div className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none">
-        <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/40 uppercase">
+        <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/70 uppercase">
           <span>Yuta Abe Style / 3D Experience</span>
           <span>Tokyo, JP</span>
         </div>
@@ -73,13 +73,13 @@ export function Preloader() {
           </div>
           <div className="flex items-baseline gap-2 font-light tracking-tighter">
             <span className="text-7xl sm:text-[9vw] font-bold leading-none font-sans tracking-tight">000</span>
-            <span className="text-sm font-mono tracking-widest text-white/40 uppercase">%</span>
+            <span className="text-sm font-mono tracking-widest text-white/70 uppercase">%</span>
           </div>
           <div className="w-48 sm:w-64 h-[1px] bg-white/15 mt-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 h-full bg-[#30b8ff] w-0" />
           </div>
         </div>
-        <div className="flex justify-between items-end w-full font-mono text-[11px] tracking-[0.2em] text-white/40 uppercase">
+        <div className="flex justify-between items-end w-full font-mono text-[11px] tracking-[0.2em] text-white/70 uppercase">
           <span>[ System Ready ]</span>
           <span>Please Wait</span>
         </div>
@@ -103,7 +103,7 @@ export function Preloader() {
           className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none"
         >
           {/* Top minimal branding */}
-          <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/40 uppercase">
+          <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/70 uppercase">
             <span>Yuta Abe Style / 3D Experience</span>
             <span>Tokyo, JP</span>
           </div>
@@ -126,7 +126,7 @@ export function Preloader() {
               <span className="text-7xl sm:text-[9vw] font-bold leading-none font-sans tracking-tight">
                 {formattedCounter}
               </span>
-              <span className="text-sm font-mono tracking-widest text-white/40 uppercase">%</span>
+              <span className="text-sm font-mono tracking-widest text-white/70 uppercase">%</span>
             </div>
 
             {/* Sleek ultra-thin progress bar */}
@@ -139,7 +139,7 @@ export function Preloader() {
           </div>
 
           {/* Bottom status */}
-          <div className="flex justify-between items-end w-full font-mono text-[11px] tracking-[0.2em] text-white/40 uppercase">
+          <div className="flex justify-between items-end w-full font-mono text-[11px] tracking-[0.2em] text-white/70 uppercase">
             <span>[ System Ready ]</span>
             <span>Please Wait</span>
           </div>

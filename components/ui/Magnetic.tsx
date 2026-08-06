@@ -1,35 +1,47 @@
 'use client'
 
-import { useRef, useState, ReactNode } from 'react'
-import { motion } from 'framer-motion'
+import { useRef, ReactNode, memo } from 'react'
+import gsap from 'gsap'
 
-export function Magnetic({ children, className }: { children: ReactNode, className?: string }) {
+export const Magnetic = memo(function Magnetic({ children, className }: { children: ReactNode, className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return
     const { clientX, clientY } = e
-    const { height, width, left, top } = ref.current!.getBoundingClientRect()
-    const middleX = clientX - (left + width / 2)
-    const middleY = clientY - (top + height / 2)
-    setPosition({ x: middleX * 0.1, y: middleY * 0.1 })
+    const { height, width, left, top } = ref.current.getBoundingClientRect()
+    const middleX = (clientX - (left + width / 2)) * 0.15
+    const middleY = (clientY - (top + height / 2)) * 0.15
+
+    gsap.to(ref.current, {
+      x: middleX,
+      y: middleY,
+      duration: 0.4,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    })
   }
 
   const reset = () => {
-    setPosition({ x: 0, y: 0 })
+    if (!ref.current) return
+    gsap.to(ref.current, {
+      x: 0,
+      y: 0,
+      duration: 0.7,
+      ease: 'elastic.out(1, 0.3)',
+      overwrite: 'auto',
+    })
   }
 
-  const { x, y } = position
   return (
-    <motion.div
+    <div
       className={className}
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      animate={{ x, y }}
-      transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
+      style={{ willChange: 'transform' }}
     >
       {children}
-    </motion.div>
+    </div>
   )
-}
+})

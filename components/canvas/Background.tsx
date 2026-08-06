@@ -3,12 +3,11 @@
 import { Canvas } from '@react-three/fiber'
 import { Suspense, useEffect, useState } from 'react'
 
-export function Background({ children }: { children?: React.ReactNode }) {
+export function Background({ children, frameloop = 'always' }: { children?: React.ReactNode; frameloop?: 'always' | 'demand' | 'never' }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0)
-    return () => clearTimeout(timer)
+    setMounted(true)
   }, [])
 
   if (!mounted) {
@@ -18,7 +17,8 @@ export function Background({ children }: { children?: React.ReactNode }) {
   return (
     <div className="w-full h-full">
       <Canvas 
-        dpr={[1, 2]} 
+        dpr={[1, 1.5]} 
+        frameloop={frameloop}
         gl={{ antialias: true, powerPreference: 'default', alpha: true }} 
         camera={{ position: [0, 0, 5], fov: 50 }}
         eventSource={typeof document !== 'undefined' ? document.body : undefined}
@@ -31,3 +31,4 @@ export function Background({ children }: { children?: React.ReactNode }) {
     </div>
   )
 }
+

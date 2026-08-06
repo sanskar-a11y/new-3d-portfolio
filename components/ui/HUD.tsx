@@ -1,18 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, memo, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { useAppStore } from '@/store/useAppStore'
 import { Magnetic } from '@/components/ui/Magnetic'
 import { isSoundMutedState, toggleSoundMute, playGlassClinkSound } from '@/lib/audio'
 
-export function HUD() {
-  const pathname = usePathname()
-  const isHome = pathname === '/'
-  const isProjects = pathname === '/projects'
-  const mode = useAppStore((state) => state.mode)
+const TimeDisplay = memo(function TimeDisplay() {
   const [timeString, setTimeString] = useState('')
-  const [isMuted, setIsMuted] = useState(isSoundMutedState())
 
   useEffect(() => {
     const updateTime = () => {
@@ -28,6 +23,28 @@ export function HUD() {
   }, [])
 
   return (
+    <span className="font-mono text-white/80">
+      {timeString || "00:00 AM"}
+    </span>
+  )
+})
+
+export const HUD = memo(function HUD() {
+  const pathname = usePathname()
+  const isHome = pathname === '/'
+  const isProjects = pathname === '/projects'
+  const mode = useAppStore((state) => state.mode)
+  const [isMuted, setIsMuted] = useState(isSoundMutedState())
+
+  const handleToggleSound = useCallback(() => {
+    const nextMuted = toggleSoundMute()
+    setIsMuted(nextMuted)
+    if (!nextMuted) {
+      playGlassClinkSound()
+    }
+  }, [])
+
+  return (
     <div className="fixed inset-0 pointer-events-none z-50 flex flex-col justify-between p-6 sm:p-10 font-mono text-xs text-white/80 select-none">
       {/* Bottom Controls Only */}
       <div className="mt-auto flex justify-between items-end w-full">
@@ -35,12 +52,10 @@ export function HUD() {
         <div className="flex flex-col items-start gap-4 pointer-events-auto">
           {/* Time & Location Display */}
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-mono text-white/40 tracking-widest uppercase">
+            <span className="text-[10px] font-mono text-white/70 tracking-widest uppercase">
               NEW DELHI
             </span>
-            <span className="font-mono text-white/80">
-              {timeString || "00:00 AM"}
-            </span>
+            <TimeDisplay />
           </div>
 
           {/* Sleek Minimal Controls: SHIFT & SOUND */}
@@ -66,13 +81,7 @@ export function HUD() {
             {isProjects && (
               <Magnetic>
                 <button
-                  onClick={() => {
-                    const nextMuted = toggleSoundMute()
-                    setIsMuted(nextMuted)
-                    if (!nextMuted) {
-                      playGlassClinkSound()
-                    }
-                  }}
+                  onClick={handleToggleSound}
                   className={`flex items-center gap-2 px-3 py-1.5 border rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer ${
                     isMuted
                       ? 'bg-red-500/20 border-red-500/40 text-red-300 hover:bg-red-500/30'
@@ -122,5 +131,4 @@ export function HUD() {
       </div>
     </div>
   )
-}
-
+})

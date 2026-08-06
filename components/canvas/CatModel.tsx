@@ -113,9 +113,8 @@ const CatShader = {
       vec2 st = gl_FragCoord.xy / max(uResolution.y, 1.0);
       float gridScale = 220.0;
       
-      // Rotate grid by 45 degrees (PI / 4) for signature print aesthetic
-      float angle = 0.78539816339;
-      mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+      // Rotate grid by 45 degrees (PI / 4) using precomputed mat2 constant
+      const mat2 rot = mat2(0.70710678, -0.70710678, 0.70710678, 0.70710678);
       vec2 rotSt = rot * st * gridScale;
       
       vec2 gridPos = floor(rotSt) + 0.5;
@@ -131,57 +130,7 @@ const CatShader = {
     }
 
     void main() {
-      // Razor-sharp flat faceted normal calculation (Yuta Abe's signature look!)
-      vec3 dx = dFdx(vViewPosition);
-      vec3 dy = dFdy(vViewPosition);
-      vec3 faceNormal = normalize(cross(dx, dy));
-      if (length(faceNormal) < 0.1) faceNormal = normalize(vNormal);
-
-      vec3 viewDir = normalize(vViewPosition);
-      
-      // Lighting setup — 100% pure neutral B&W contrast
-      vec3 keyLight = normalize(vec3(0.7, 0.8, 0.7));    // Top-right neutral
-      vec3 fillLight = normalize(vec3(-0.8, -0.4, -0.4)); // Bottom-left neutral
-      float NdotL = max(dot(faceNormal, keyLight), 0.0);
-      
-      // --- PURE WHITE FRESNEL RIM ---
-      float fresnel = pow(1.0 - max(dot(viewDir, faceNormal), 0.0), 2.0);
-      vec3 totalRim = vec3(1.0, 1.0, 1.0) * fresnel * 1.4;
-
-      // Pure B&W palette
-      vec3 darkBg = vec3(0.02, 0.02, 0.02);
-      vec3 facetDark = vec3(0.09, 0.09, 0.09);  // Soft gray facet tone
-      vec3 dotWhite = vec3(0.95, 0.95, 0.95);   // Pure white dots
-      
-      // --- Compute each mode independently for crossfading ---
-      
-      // MODE 0: Crisp Faceted Wireframe Base (using real triangle barycentric edges)
-      float minBary = min(min(vBarycentric.x, vBarycentric.y), vBarycentric.z);
-      float wireEdge = 1.0 - smoothstep(0.0, 0.035, minBary);
-      float facet = floor(NdotL * 5.0) / 5.0;
-      vec3 baseFacet = mix(darkBg, facetDark, facet);
-      vec3 wireColor = mix(baseFacet, dotWhite, wireEdge * 0.85) + totalRim * 0.6;
-      
-      // MODE 1: 45° Halftone Dot Matrix
-      float dotMask = getHalftoneMask(faceNormal, keyLight, fillLight);
-      vec3 halftoneColor = mix(darkBg, dotWhite, dotMask) + totalRim * 0.8;
-      
-      // MODE 2: Holographic LiDAR Laser Sweep
-      float distToScan = vWorldPosition.y - uScanY;
-      float laserCore = smoothstep(0.04, 0.0, abs(distToScan));
-      float trailMask = smoothstep(-0.25, 0.0, distToScan) * step(distToScan, 0.0);
-      float microLines = sin(vWorldPosition.y * 120.0 - uTime * 20.0) * 0.5 + 0.5;
-      float scanIntensity = (laserCore * 3.0) + (trailMask * microLines * 0.5) + (trailMask * 0.15);
-      
-      vec3 halftonePart = mix(darkBg, dotWhite, dotMask);
-      vec3 wirePart = mix(darkBg, facetDark, facet);
-      float planeBlend = smoothstep(-0.05, 0.05, distToScan);
-      vec3 baseSurface = mix(wirePart, halftonePart, planeBlend);
-      
-      vec3 beamColor = vec3(0.2, 0.7, 1.0);
-      vec3 lidarColor = baseSurface + totalRim * 0.7 + (beamColor * scanIntensity);
-
-      // --- AUTO-CYCLING CROSSFADE ---
+      // --- AUTO-CYCLING CROSSFADE WEIGHTS ---
       float wWire = 1.0 - smoothstep(0.88, 1.12, uAutoPhase);
       wWire += smoothstep(2.88, 3.0, uAutoPhase);
       wWire = clamp(wWire, 0.0, 1.0);
@@ -193,7 +142,74 @@ const CatShader = {
       wWire /= totalWeight;
       wHalf /= totalWeight;
       wLidar /= totalWeight;
+
+      // Pure B&W palette
+      vec3 darkBg = vec3(0.02, 0.02, 0.02);
+      vec3 facetDark = vec3(0.09, 0.09, 0.09);  // Soft gray facet tone
+      vec3 dotWhite = vec3(0.95, 0.95, 0.95);   // Pure white dots
       
+      vec3 viewDir = normalize(vViewPosition);
+      vec3 keyLight = normalize(vec3(0.7, 0.8, 0.7));    // Top-right neutral
+      vec3 fillLight = normalize(vec3(-0.8, -0.4, -0.4)); // Bottom-left neutral
+
+      // Compute faceNormal conditionally
+      vec3 faceNormal;
+      if (wWire > 0.001 || wHalf > 0.001 || wLidar > 0.001) {
+        vec3 dx = dFdx(vViewPosition);
+        vec3 dy = dFdy(vViewPosition);
+        faceNormal = normalize(cross(dx, dy));
+        if (length(faceNormal) < 0.1) faceNormal = normalize(vNormal);
+      } else {
+        faceNormal = normalize(vNormal);
+      }
+
+      float NdotL = max(dot(faceNormal, keyLight), 0.0);
+      float fresnel = pow(1.0 - max(dot(viewDir, faceNormal), 0.0), 2.0);
+      vec3 totalRim = vec3(1.0, 1.0, 1.0) * fresnel * 1.4;
+
+      // --- CONDITIONAL COMPUTATION FOR ACTIVE MODES ONLY ---
+      
+      // MODE 0: Crisp Faceted Wireframe Base
+      vec3 wireColor = vec3(0.0);
+      float facet = 0.0;
+      if (wWire > 0.001 || wLidar > 0.001) {
+        facet = floor(NdotL * 5.0) / 5.0;
+      }
+      if (wWire > 0.001) {
+        float minBary = min(min(vBarycentric.x, vBarycentric.y), vBarycentric.z);
+        float wireEdge = 1.0 - smoothstep(0.0, 0.035, minBary);
+        vec3 baseFacet = mix(darkBg, facetDark, facet);
+        wireColor = mix(baseFacet, dotWhite, wireEdge * 0.85) + totalRim * 0.6;
+      }
+      
+      // MODE 1: 45° Halftone Dot Matrix
+      vec3 halftoneColor = vec3(0.0);
+      float dotMask = 0.0;
+      if (wHalf > 0.001 || wLidar > 0.001) {
+        dotMask = getHalftoneMask(faceNormal, keyLight, fillLight);
+      }
+      if (wHalf > 0.001) {
+        halftoneColor = mix(darkBg, dotWhite, dotMask) + totalRim * 0.8;
+      }
+      
+      // MODE 2: Holographic LiDAR Laser Sweep
+      vec3 lidarColor = vec3(0.0);
+      if (wLidar > 0.001) {
+        float distToScan = vWorldPosition.y - uScanY;
+        float laserCore = smoothstep(0.04, 0.0, abs(distToScan));
+        float trailMask = smoothstep(-0.25, 0.0, distToScan) * step(distToScan, 0.0);
+        float microLines = sin(vWorldPosition.y * 120.0 - uTime * 20.0) * 0.5 + 0.5;
+        float scanIntensity = (laserCore * 3.0) + (trailMask * microLines * 0.5) + (trailMask * 0.15);
+        
+        vec3 halftonePart = mix(darkBg, dotWhite, dotMask);
+        vec3 wirePart = mix(darkBg, facetDark, facet);
+        float planeBlend = smoothstep(-0.05, 0.05, distToScan);
+        vec3 baseSurface = mix(wirePart, halftonePart, planeBlend);
+        
+        vec3 beamColor = vec3(0.2, 0.7, 1.0);
+        lidarColor = baseSurface + totalRim * 0.7 + (beamColor * scanIntensity);
+      }
+
       vec3 finalColor = wireColor * wWire + halftoneColor * wHalf + lidarColor * wLidar;
 
       // Add dynamic bluish transition energy during crossfades between modes
@@ -202,7 +218,6 @@ const CatShader = {
       finalColor += transitionBlue;
 
       // --- HOVER CURSOR BLUISH AREA ---
-      // When hovering over the cat, that area lights up with an electric cyan/blue glow!
       vec3 mouseLightPos = vec3(uMouse.x * 3.5, uMouse.y * 3.5, 2.0);
       vec3 mouseLightDir = normalize(mouseLightPos - vWorldPosition);
       float mouseGlow = pow(max(dot(faceNormal, mouseLightDir), 0.0), 5.0);
@@ -570,6 +585,7 @@ export function CatModel() {
         if (posAttr && posAttr.array) {
           const array = posAttr.array as Float32Array
           let ptr = 0
+          let whiskerChanged = false
 
           const whiskerRows = [
             { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
@@ -652,6 +668,18 @@ export function CatModel() {
               for (let seg = 1; seg <= WHISKER_SEGMENTS; seg++) {
                 const t = seg / WHISKER_SEGMENTS
                 evalQuadBezier(_bezierPNext, _start, stateNode.midPos, stateNode.endPos, t)
+                
+                if (
+                  Math.abs(array[ptr] - _bezierP.x) > 1e-5 ||
+                  Math.abs(array[ptr + 1] - _bezierP.y) > 1e-5 ||
+                  Math.abs(array[ptr + 2] - _bezierP.z) > 1e-5 ||
+                  Math.abs(array[ptr + 3] - _bezierPNext.x) > 1e-5 ||
+                  Math.abs(array[ptr + 4] - _bezierPNext.y) > 1e-5 ||
+                  Math.abs(array[ptr + 5] - _bezierPNext.z) > 1e-5
+                ) {
+                  whiskerChanged = true
+                }
+
                 array[ptr++] = _bezierP.x
                 array[ptr++] = _bezierP.y
                 array[ptr++] = _bezierP.z
@@ -666,7 +694,9 @@ export function CatModel() {
             })
           })
 
-          posAttr.needsUpdate = true
+          if (whiskerChanged) {
+            posAttr.needsUpdate = true
+          }
         }
       }
     }

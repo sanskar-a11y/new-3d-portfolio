@@ -21,11 +21,13 @@ export function PlaygroundImageGrid({
   const colSet0Ref = useRef<HTMLDivElement>(null)
   const colSet1Ref = useRef<HTMLDivElement>(null)
 
-  // Physics state refs (to avoid React re-render lag during pan/scroll)
+  // Physics state refs for 60/120 FPS liquid smooth drag & inertia
   const current = useRef({ x: 0, y: 0 })
   const target = useRef({ x: 0, y: 0 })
+  const velocity = useRef({ x: 0, y: 0 })
   const isDragging = useRef(false)
   const lastMouse = useRef({ x: 0, y: 0 })
+  const lastMoveTime = useRef(0)
   const totalDragDistance = useRef(0)
 
   // Split sketches into 6 columns for staggered masonry layout
@@ -37,7 +39,7 @@ export function PlaygroundImageGrid({
     return cols
   }, [sketches])
 
-  // Wheel scroll handler with preventDefault
+  // Silky Smooth Trackpad & Mouse Wheel scroll handler
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -47,8 +49,9 @@ export function PlaygroundImageGrid({
       const deltaX = e.deltaX || (e.shiftKey ? e.deltaY : 0)
       const deltaY = e.shiftKey ? 0 : e.deltaY
 
-      target.current.x -= deltaX * 0.8
-      target.current.y -= deltaY * 0.8
+      // Smooth trackpad / wheel dampening
+      target.current.x -= deltaX * 0.75
+      target.current.y -= deltaY * 0.75
     }
 
     container.addEventListener('wheel', handleWheel, { passive: false })
@@ -57,24 +60,38 @@ export function PlaygroundImageGrid({
     }
   }, [])
 
-  // Window pointer event listeners for robust drag tracking
+  // Window pointer event listeners for drag & flick momentum
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDragging.current) return
+      const now = performance.now()
+      const dt = Math.max(1, now - lastMoveTime.current)
+      
       const dx = e.clientX - lastMouse.current.x
       const dy = e.clientY - lastMouse.current.y
       totalDragDistance.current += Math.hypot(dx, dy)
 
       target.current.x += dx
       target.current.y += dy
+
+      // Calculate instantaneous drag velocity for momentum flick
+      velocity.current.x = (dx / dt) * 14
+      velocity.current.y = (dy / dt) * 14
+
       lastMouse.current = { x: e.clientX, y: e.clientY }
+      lastMoveTime.current = now
     }
 
     const handlePointerUp = () => {
-      isDragging.current = false
+      if (isDragging.current) {
+        isDragging.current = false
+        // Apply inertia release velocity to target
+        target.current.x += velocity.current.x * 1.5
+        target.current.y += velocity.current.y * 1.5
+      }
     }
 
-    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('pointermove', handlePointerMove, { passive: true })
     window.addEventListener('pointerup', handlePointerUp)
     window.addEventListener('pointercancel', handlePointerUp)
 
@@ -85,7 +102,7 @@ export function PlaygroundImageGrid({
     }
   }, [])
 
-  // Animation frame loop for smooth lerp & infinite modulo wrapping
+  // Animation frame loop for butter-smooth lerp & infinite wrapping
   useEffect(() => {
     let animationFrameId: number
 
@@ -119,9 +136,15 @@ export function PlaygroundImageGrid({
         }
       }
 
-      // Smooth lerp (factor 0.09)
-      current.current.x += (target.current.x - current.current.x) * 0.09
-      current.current.y += (target.current.y - current.current.y) * 0.09
+      // Smooth inertia friction decay when not dragging
+      if (!isDragging.current) {
+        velocity.current.x *= 0.92
+        velocity.current.y *= 0.92
+      }
+
+      // Butter-smooth lerp interpolation factor (0.12)
+      current.current.x += (target.current.x - current.current.x) * 0.12
+      current.current.y += (target.current.y - current.current.y) * 0.12
 
       if (gridRef.current) {
         gridRef.current.style.transform = `translate3d(${current.current.x.toFixed(2)}px, ${current.current.y.toFixed(2)}px, 0px)`
@@ -137,13 +160,15 @@ export function PlaygroundImageGrid({
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     isDragging.current = true
     lastMouse.current = { x: e.clientX, y: e.clientY }
+    lastMoveTime.current = performance.now()
+    velocity.current = { x: 0, y: 0 }
     totalDragDistance.current = 0
   }, [])
 
   const handleCardClick = useCallback(
     (sketch: SketchDef) => {
-      // Check if user was dragging vs clicking
-      if (totalDragDistance.current < 5) {
+      // Allow card click if total drag distance is small (< 8px)
+      if (totalDragDistance.current < 8) {
         onSelectSketch(sketch)
       }
     },
@@ -151,8 +176,8 @@ export function PlaygroundImageGrid({
   )
 
   const cardBgStyle = isDark
-    ? 'bg-[#000000] border-[#30b8ff]/40 shadow-[0_0_25px_rgba(48,184,255,0.15)] group-hover:shadow-[0_0_40px_rgba(48,184,255,0.4)]'
-    : 'bg-[#121212] border-white/10 group-hover:border-white/30 group-hover:shadow-2xl'
+    ? 'bg-[#0a0b10] border-cyan-500/20 group-hover:border-cyan-400/80 group-hover:shadow-[0_0_35px_rgba(0,240,255,0.4)]'
+    : 'bg-[#121212] border-white/10 group-hover:border-white/40 group-hover:shadow-2xl'
 
   return (
     <div
@@ -165,11 +190,11 @@ export function PlaygroundImageGrid({
     >
       {/* Center anchor point */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        {/* Moving canvas grid */}
+        {/* Moving canvas grid with 3D compositing */}
         <div
           ref={gridRef}
           className="flex gap-6 sm:gap-10 md:gap-14 w-max p-12 sm:p-20 md:p-32 will-change-transform"
-          style={{ transform: 'translate3d(0px, 0px, 0px)' }}
+          style={{ transform: 'translate3d(0px, 0px, 0px)', backfaceVisibility: 'hidden' }}
         >
           {[0, 1, 2].map((setIdx) => (
             <div
@@ -196,47 +221,39 @@ export function PlaygroundImageGrid({
                       }
                       className="flex flex-col gap-6 sm:gap-10 md:gap-14 shrink-0"
                     >
-                      {colSketches.map((sketch) => {
-                        // All cards uniform 16:9
-                        const aspectClass = 'aspect-[16/9]'
+                      {colSketches.map((sketch) => (
+                        <div
+                          key={`${setIdx}-${colIdx}-${vSetIdx}-${sketch.id}`}
+                          onClick={() => handleCardClick(sketch)}
+                          className={`border rounded-lg overflow-hidden group relative transition-all duration-300 ease-out cursor-pointer aspect-[16/9] ${cardBgStyle}`}
+                        >
+                          <img
+                            src={sketch.image}
+                            alt={sketch.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 filter contrast-110 bg-[#121212]"
+                          />
 
-                        return (
-                          <div
-                            key={`${setIdx}-${colIdx}-${vSetIdx}-${sketch.id}`}
-                            onClick={() => handleCardClick(sketch)}
-                            className={`border rounded-lg overflow-hidden group relative transition-all duration-500 cursor-pointer ${aspectClass} ${cardBgStyle}`}
-                          >
-                            <img
-                              src={sketch.image}
-                              alt={sketch.title}
-                              loading="lazy"
-                              decoding="async"
-                              onError={(e) => {
-                                e.currentTarget.src = `https://picsum.photos/seed/fallback_${sketch.id}/800/450`
-                              }}
-                              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter contrast-110 bg-[#121212]"
-                            />
+                          {/* Overlay on Hover */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 sm:p-8 flex flex-col justify-end pointer-events-none">
+                            {/* Top right badge */}
+                            <div className="absolute top-6 right-6 sm:top-8 sm:right-8 text-xs text-white/70 font-mono border border-white/20 px-2.5 py-1 rounded-full w-fit backdrop-blur-sm bg-black/40">
+                              #{sketch.id}
+                            </div>
 
-                            {/* Overlay on Hover */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 sm:p-8 flex flex-col justify-end pointer-events-none">
-                              {/* Top right badge */}
-                              <div className="absolute top-6 right-6 sm:top-8 sm:right-8 text-xs text-white/60 font-mono border border-white/20 px-2.5 py-1 rounded-full w-fit backdrop-blur-sm bg-black/40">
-                                #{sketch.id}
+                            {/* Bottom left info */}
+                            <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                              <div className="text-xs text-[#30b8ff] font-mono tracking-widest uppercase mb-1.5 font-bold">
+                                {sketch.tech}
                               </div>
-
-                              {/* Bottom left info */}
-                              <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                                <div className="text-xs text-[#30b8ff] font-mono tracking-widest uppercase mb-1.5 font-bold">
-                                  {sketch.tech}
-                                </div>
-                                <h3 className="text-lg sm:text-xl font-bold font-sans text-white uppercase tracking-wider leading-tight">
-                                  {sketch.title}
-                                </h3>
-                              </div>
+                              <h3 className="text-lg sm:text-xl font-bold font-sans text-white uppercase tracking-wider leading-tight">
+                                {sketch.title}
+                              </h3>
                             </div>
                           </div>
-                        )
-                      })}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>

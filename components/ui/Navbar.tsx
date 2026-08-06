@@ -1,52 +1,72 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Magnetic } from '@/components/ui/Magnetic'
 
-export function Navbar() {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
+const ALL_LINKS = [
+  { name: 'About', href: '/about' },
+  { name: 'Projects', href: '/projects' },
+  { name: 'Playground', href: '/playground' },
+  { name: 'Contact', href: '/contact' },
+]
 
-  // Close mobile dropdown when route changes
+const LEFT_LINKS = [
+  { name: 'Projects', href: '/projects' },
+  { name: 'About', href: '/about' },
+]
+
+const RIGHT_LINKS = [
+  { name: 'Contact', href: '/contact' },
+  { name: 'Playground', href: '/playground' },
+]
+
+export const Navbar = memo(function Navbar() {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
+
+  // Close mobile dropdown & reset pending href when route changes
   useEffect(() => {
-    const timer = setTimeout(() => setIsOpen(false), 0)
-    return () => clearTimeout(timer)
+    setPendingHref(null)
+    setIsOpen(false)
   }, [pathname])
 
-  const allLinks = [
-    { name: 'About', href: '/about' },
-    { name: 'Projects', href: '/projects' },
-    { name: 'Playground', href: '/playground' },
-    { name: 'Contact', href: '/contact' },
-  ]
+  const handlePrefetch = (href: string) => {
+    router.prefetch(href)
+  }
 
-  const leftLinks = [
-    { name: 'Projects', href: '/projects' },
-    { name: 'About', href: '/about' },
-  ]
-
-  const rightLinks = [
-    { name: 'Contact', href: '/contact' },
-    { name: 'Playground', href: '/playground' },
-  ]
+  const handleLinkClick = (href: string) => {
+    if (pathname !== href) {
+      setPendingHref(href)
+    }
+  }
 
   return (
     <motion.nav 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-      className="fixed top-0 left-0 w-full z-50 px-6 py-5 sm:px-12 flex justify-between items-center text-xs sm:text-sm tracking-widest uppercase text-white/80 bg-[#050505]/40 backdrop-blur-md"
+      className={`fixed top-0 left-0 w-full z-50 px-6 py-5 sm:px-12 flex justify-between items-center text-xs sm:text-sm tracking-widest uppercase text-white/80 transition-all duration-500 ${
+        pathname === '/' ? 'bg-transparent backdrop-blur-none' : 'bg-[#050505]/40 backdrop-blur-md'
+      }`}
     >
       {/* Desktop Left Links */}
       <div className="hidden md:flex gap-6 sm:gap-12">
-        {leftLinks.map((link) => (
+        {LEFT_LINKS.map((link) => (
           <Magnetic key={link.name}>
             <Link 
               href={link.href}
-              className={`relative hover:text-white transition-colors duration-300 ${pathname === link.href ? 'text-white' : ''}`}
+              onMouseEnter={() => handlePrefetch(link.href)}
+              onFocus={() => handlePrefetch(link.href)}
+              onClick={() => handleLinkClick(link.href)}
+              aria-current={pathname === link.href ? 'page' : undefined}
+              className={`relative hover:text-white transition-colors duration-300 ${
+                pathname === link.href ? 'text-white' : ''
+              } ${pendingHref === link.href ? 'opacity-60 animate-pulse text-cyan-400' : ''}`}
             >
               {link.name}
               {pathname === link.href && (
@@ -65,7 +85,13 @@ export function Navbar() {
         <Link 
           href="/" 
           aria-label="SANSKAR"
-          className="relative group py-1.5 px-4 flex items-center justify-center select-none cursor-pointer transform -skew-x-12"
+          aria-current={pathname === '/' ? 'page' : undefined}
+          onMouseEnter={() => handlePrefetch('/')}
+          onFocus={() => handlePrefetch('/')}
+          onClick={() => handleLinkClick('/')}
+          className={`relative group py-1.5 px-4 flex items-center justify-center select-none cursor-pointer transform -skew-x-12 ${
+            pendingHref === '/' ? 'opacity-70 animate-pulse' : ''
+          }`}
         >
           {/* Subtle Ambient Glow behind text */}
           <div className="absolute inset-0 bg-[#ff0055]/15 rounded-full blur-lg opacity-60 group-hover:opacity-100 group-hover:bg-[#ff0055]/30 transition-all duration-500" />
@@ -96,11 +122,17 @@ export function Navbar() {
 
       {/* Desktop Right Links */}
       <div className="hidden md:flex gap-6 sm:gap-12">
-        {rightLinks.map((link) => (
+        {RIGHT_LINKS.map((link) => (
           <Magnetic key={link.name}>
             <Link 
               href={link.href}
-              className={`relative hover:text-white transition-colors duration-300 ${pathname === link.href ? 'text-white' : ''}`}
+              onMouseEnter={() => handlePrefetch(link.href)}
+              onFocus={() => handlePrefetch(link.href)}
+              onClick={() => handleLinkClick(link.href)}
+              aria-current={pathname === link.href ? 'page' : undefined}
+              className={`relative hover:text-white transition-colors duration-300 ${
+                pathname === link.href ? 'text-white' : ''
+              } ${pendingHref === link.href ? 'opacity-60 animate-pulse text-cyan-400' : ''}`}
             >
               {link.name}
               {pathname === link.href && (
@@ -127,7 +159,7 @@ export function Navbar() {
           </button>
         </Magnetic>
 
-        {/* Dropdown Menu Panel (Matches user screenshot) */}
+        {/* Dropdown Menu Panel */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -137,13 +169,17 @@ export function Navbar() {
               transition={{ duration: 0.2, ease: 'easeOut' }}
               className="absolute right-0 top-12 w-48 bg-[#0a0a0c]/95 border border-white/15 rounded-2xl p-5 shadow-2xl backdrop-blur-xl flex flex-col gap-4 text-right z-50"
             >
-              {allLinks.map((link) => (
+              {ALL_LINKS.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
+                  onMouseEnter={() => handlePrefetch(link.href)}
+                  onFocus={() => handlePrefetch(link.href)}
+                  onClick={() => handleLinkClick(link.href)}
+                  aria-current={pathname === link.href ? 'page' : undefined}
                   className={`text-xs font-mono font-bold tracking-widest uppercase transition-colors duration-200 ${
                     pathname === link.href ? 'text-cyan-400' : 'text-white/80 hover:text-white'
-                  }`}
+                  } ${pendingHref === link.href ? 'opacity-60 animate-pulse text-cyan-400' : ''}`}
                 >
                   {link.name}
                 </Link>
@@ -154,4 +190,4 @@ export function Navbar() {
       </div>
     </motion.nav>
   )
-}
+})

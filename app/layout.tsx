@@ -1,6 +1,7 @@
 import { Syne, Space_Mono } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/ui/Navbar'
+import { HUD } from '@/components/ui/HUD'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ErrorBoundary>
           <Preloader />
           <GlobalCanvas />
+          <HUD />
           <Navbar />
           <SmoothScrollProvider>
             <TransitionProvider>
@@ -47,3 +49,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+

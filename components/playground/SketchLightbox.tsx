@@ -90,12 +90,12 @@ export function SketchLightbox({ sketch, onClose, isDark }: SketchLightboxProps)
 
               {/* Bottom Section */}
               <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-4">
-                <span className="text-[10px] sm:text-xs text-white/40 uppercase tracking-widest hidden sm:inline">
+                <span className="text-[10px] sm:text-xs text-white/70 uppercase tracking-widest hidden sm:inline">
                   ESC
                 </span>
                 <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded border border-white/20 text-xs tracking-widest uppercase font-bold hover:border-[#30b8ff] hover:text-[#30b8ff] hover:bg-[#30b8ff]/5 hover:shadow-[0_0_20px_rgba(48,184,255,0.3)] transition-all duration-300 cursor-pointer text-center ml-auto"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded border border-white/20 text-xs tracking-widest uppercase font-bold hover:border-[#30b8ff] hover:text-[#30b8ff] hover:bg-[#30b8ff]/5 hover:shadow-[0_0_20px_rgba(48,184,255,0.3)] transition-all duration-300 cursor-pointer text-center ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                   CLOSE [X]
                 </button>

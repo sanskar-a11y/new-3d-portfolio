@@ -11,14 +11,32 @@ export function CustomCursor() {
 
     const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
     const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-    
+    let lastMouseMoveTime = performance.now()
+    let tickerActive = false
+
     // QuickSetters for better performance
     const xSet = gsap.quickSetter(cursor.current, 'x', 'px')
     const ySet = gsap.quickSetter(cursor.current, 'y', 'px')
 
+    const startTicker = () => {
+      if (!tickerActive) {
+        gsap.ticker.add(tick)
+        tickerActive = true
+      }
+    }
+
+    const stopTicker = () => {
+      if (tickerActive) {
+        gsap.ticker.remove(tick)
+        tickerActive = false
+      }
+    }
+
     const onMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX
       mouse.y = e.clientY
+      lastMouseMoveTime = performance.now()
+      startTicker()
     }
 
     window.addEventListener('mousemove', onMouseMove)
@@ -30,12 +48,22 @@ export function CustomCursor() {
       
       xSet(pos.x)
       ySet(pos.y)
+
+      // Pause ticker if mouse has been stationary/idle for > 500ms and cursor reached target position
+      const now = performance.now()
+      const distSq = (mouse.x - pos.x) ** 2 + (mouse.y - pos.y) ** 2
+      if (now - lastMouseMoveTime > 500 && distSq < 0.01) {
+        xSet(mouse.x)
+        ySet(mouse.y)
+        stopTicker()
+      }
     }
-    gsap.ticker.add(tick)
+
+    startTicker()
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
-      gsap.ticker.remove(tick)
+      stopTicker()
     }
   }, [])
 
