@@ -9,11 +9,28 @@ interface PlaygroundImageGridProps {
   onSelectSketch: (sketch: SketchDef) => void
 }
 
+const getAspectClass = (aspectRatio?: string) => {
+  switch (aspectRatio) {
+    case '4:5':
+      return 'aspect-[4/5]'
+    case '3:4':
+      return 'aspect-[3/4]'
+    case '1:1':
+      return 'aspect-square'
+    case '2:1':
+      return 'aspect-[2/1]'
+    case '16:9':
+    default:
+      return 'aspect-[16/9]'
+  }
+}
+
 export function PlaygroundImageGrid({
   sketches,
   isDark,
   onSelectSketch,
 }: PlaygroundImageGridProps) {
+
   const containerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const set0Ref = useRef<HTMLDivElement>(null)
@@ -221,12 +238,16 @@ export function PlaygroundImageGrid({
                       }
                       className="flex flex-col gap-6 sm:gap-10 md:gap-14 shrink-0"
                     >
-                      {colSketches.map((sketch) => (
-                        <div
-                          key={`${setIdx}-${colIdx}-${vSetIdx}-${sketch.id}`}
-                          onClick={() => handleCardClick(sketch)}
-                          className={`border rounded-lg overflow-hidden group relative transition-all duration-300 ease-out cursor-pointer aspect-[16/9] ${cardBgStyle}`}
-                        >
+                      {colSketches.map((sketch) => {
+                        const aspectClass = getAspectClass(sketch.aspectRatio)
+
+                        return (
+                          <div
+                            key={`${setIdx}-${colIdx}-${vSetIdx}-${sketch.id}`}
+                            onClick={() => handleCardClick(sketch)}
+                            className={`border rounded-xl overflow-hidden group relative transition-all duration-300 ease-out cursor-pointer ${aspectClass} ${cardBgStyle}`}
+                          >
+
                           <img
                             src={sketch.image}
                             alt={sketch.title}
@@ -253,7 +274,9 @@ export function PlaygroundImageGrid({
                             </div>
                           </div>
                         </div>
-                      ))}
+                        )
+                      })}
+
                     </div>
                   ))}
                 </div>

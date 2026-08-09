@@ -36,29 +36,13 @@ export function PlaygroundHUD({ cellCount, switchCount, lightsOut, onToggleLight
   }, [])
 
   return (
-    <>
-      {/* Main HUD overlay */}
-      <div className={`pg-ui ${isVisible ? 'is-visible' : ''}`}>
-        {/* Bottom-left: Brand */}
-        <div className="pg-ui__corner pg-ui__corner--bl">
-          <h1 className="pg-ui__brand">PLAYGROUND</h1>
-          <div className="pg-ui__sub">— Visual sketches</div>
-        </div>
-
-        {/* Bottom-right: Stats */}
-        <div className="pg-ui__corner pg-ui__corner--br">
-          <div className="pg-ui__stats">
-            <span className="pg-ui__lbl">cells</span>
-            <span className="pg-ui__num">{String(cellCount).padStart(2, '0')}</span>
-            <span className="pg-ui__lbl">elapsed</span>
-            <span className="pg-ui__num">{elapsed}</span>
-            <span className="pg-ui__lbl">switches</span>
-            <span className="pg-ui__num">{String(switchCount).padStart(3, '0')}</span>
-          </div>
-        </div>
+    <div className={`pg-ui ${isVisible ? 'is-visible' : ''}`}>
+      {/* Bottom-left: Minimal Brand Header */}
+      <div className="pg-ui__corner pg-ui__corner--bl">
+        <h1 className="pg-ui__brand">PLAYGROUND</h1>
       </div>
-
-    </>
+    </div>
   )
 }
+
 
