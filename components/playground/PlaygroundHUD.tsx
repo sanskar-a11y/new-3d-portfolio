@@ -58,19 +58,7 @@ export function PlaygroundHUD({ cellCount, switchCount, lightsOut, onToggleLight
         </div>
       </div>
 
-      {/* Lights toggle switch - bottom left, above brand */}
-      <div className={`pg-switcher ${lightsOut ? 'is-active' : ''}`}>
-        <button
-          className="pg-switcher__toggle"
-          type="button"
-          aria-pressed={lightsOut}
-          aria-label="Toggle lights"
-          onClick={onToggleLights}
-        >
-          <span className="pg-switcher__thumb" aria-hidden="true" />
-        </button>
-        <span className="pg-switcher__label" onClick={onToggleLights}>SHIFT</span>
-      </div>
     </>
   )
 }
+
