@@ -102,11 +102,19 @@ const CatShader = {
     varying vec3 vWorldPosition;
     varying vec3 vViewPosition;
 
-    // Anti-aliased wireframe edge
+    // Anti-aliased wireframe edge (Standard)
     float getWireEdge() {
       float minBary = min(min(vBarycentric.x, vBarycentric.y), vBarycentric.z);
       float d = fwidth(minBary);
       float thickness = d * 1.5;
+      return 1.0 - smoothstep(0.0, thickness, minBary);
+    }
+
+    // Thicker wireframe edge for transitions so the blue is visible
+    float getTransitionWireEdge() {
+      float minBary = min(min(vBarycentric.x, vBarycentric.y), vBarycentric.z);
+      float d = fwidth(minBary);
+      float thickness = d * 2.5;
       return 1.0 - smoothstep(0.0, thickness, minBary);
     }
 
@@ -205,11 +213,11 @@ const CatShader = {
 
       // ── Crossfade transition energy (Blue lines only) ──
       float isTransitioning = 1.0 - max(wWire, max(wHalf, wLidar));
-      float transWireEdge = getWireEdge();
-      vec3 transitionBlue = vec3(0.12, 0.65, 1.0);
-      finalColor += transitionBlue * isTransitioning * transWireEdge * 2.5;
+      float transWireEdge = getTransitionWireEdge();
+      vec3 transitionBlue = vec3(0.08, 0.55, 1.0); // Vibrant blue
+      finalColor += transitionBlue * isTransitioning * transWireEdge * 3.5; // Boosted intensity for visibility
 
-      // ── Screen-space corrected hover glow (White instead of Blue) ──
+      // ── Screen-space corrected hover glow (Bluish restored) ──
       vec2 screenPos = (gl_FragCoord.xy / uResolution) * 2.0 - 1.0;
       float aspect = uResolution.x / uResolution.y;
       screenPos.x *= aspect;
@@ -221,7 +229,7 @@ const CatShader = {
       vec3 mouseLightPos = vec3(uMouse.x * 3.5, uMouse.y * 3.5, 2.0);
       vec3 mouseLightDir = normalize(mouseLightPos - vWorldPosition);
       float mouseGlow = pow(max(dot(faceNormal, mouseLightDir), 0.0), 5.0);
-      vec3 hoverGlow = vec3(1.0, 1.0, 1.0) * mouseGlow * hoverArea * 1.8;
+      vec3 hoverGlow = vec3(0.08, 0.55, 1.0) * mouseGlow * hoverArea * 2.2;
       finalColor += hoverGlow;
 
       // ── Smooth opacity blend during initial particle assembly ──
