@@ -23,9 +23,7 @@ const spaceMono = Space_Mono({
   weight: ['400', '700'],
 })
 
-const GlobalCanvas = dynamic(
-  () => import('@/components/canvas/GlobalCanvas').then((mod) => mod.GlobalCanvas)
-)
+import { CanvasWrapper } from '@/components/canvas/CanvasWrapper'
 
 export const metadata = {
   title: '3D Portfolio',
@@ -40,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PixelBackground />
         <ErrorBoundary>
           <Preloader />
-          <GlobalCanvas />
+          <CanvasWrapper />
           <HUD />
           <Navbar />
           <SmoothScrollProvider>

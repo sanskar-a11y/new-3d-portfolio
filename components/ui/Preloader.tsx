@@ -19,43 +19,22 @@ export function Preloader() {
   useEffect(() => {
     if (!mounted) return
 
-    // Fast, responsive interval-based counter
+    // Smooth counter: increment by 2 every 12ms (~600ms total duration)
     const interval = setInterval(() => {
       setCounter((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
+          // Trigger scene entry immediately at 100
+          setLoaded(true)
+          setCursorVariant('default')
           return 100
         }
-        // Increment smoothly by 8 every 16ms (~200ms total duration)
-        return Math.min(prev + 8, 100)
+        return Math.min(prev + 2, 100)
       })
-    }, 16)
-
-    // Trigger transition as soon as counter reaches 100
-    const checkComplete = setInterval(() => {
-      setCounter((current) => {
-        if (current >= 100) {
-          clearInterval(checkComplete)
-          setTimeout(() => {
-            setLoaded(true)
-            setCursorVariant('default')
-          }, 50)
-        }
-        return current
-      })
-    }, 30)
-
-    // Ultimate safety fallback: guarantee entry to landing page after 400ms
-    const fallbackTimer = setTimeout(() => {
-      setCounter(100)
-      setLoaded(true)
-      setCursorVariant('default')
-    }, 400)
+    }, 12)
 
     return () => {
       clearInterval(interval)
-      clearInterval(checkComplete)
-      clearTimeout(fallbackTimer)
     }
   }, [mounted, setLoaded, setCursorVariant])
 
@@ -98,7 +77,7 @@ export function Preloader() {
           initial={{ opacity: 1 }}
           exit={{ 
             y: '-100%',
-            transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] } 
+            transition: { duration: 0.35, ease: [0.76, 0, 0.24, 1] } 
           }}
           className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none"
         >

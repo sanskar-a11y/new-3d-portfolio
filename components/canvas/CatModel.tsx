@@ -30,45 +30,41 @@ function evalQuadBezier(out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector3
   return out
 }
 
-// Pure Black & White Yuta Abe-style shader with continuous auto-cycling transitions & bluish hover/transition glow
-// Upgraded with R2 Soft-Body Mesh Deformation & Ear Vertex Masking
+// ── STATIC DATA (hoisted outside component — zero per-frame allocations) ──
+const WHISKER_ROWS = [
+  { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
+  { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 1.2 },
+  { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 1.4 },
+]
+const WHISKER_SIDES = [-1, 1] as const
+
+// ── Pure White & Black Shader with Particle Assembly ──
 const CatShader = {
   uniforms: {
     uTime: { value: 0 },
-    uAutoPhase: { value: 0 },    // 0-3 continuous cycling: 0-1 wireframe, 1-2 halftone, 2-3 lidar
+    uAutoPhase: { value: 0 },
+    uIntroProgress: { value: 0 },
     uScanY: { value: 0 },
-    uIntroProgress: { value: 0 }, // 0.0 (dispersed particles) -> 1.0 (assembled cat)
     uResolution: { value: new THREE.Vector2(1000, 1000) },
     uMouse: { value: new THREE.Vector2(0, 0) },
-    // Soft-Body Mesh Physics Uniforms (R2 & R3)
     uVelocity: { value: new THREE.Vector3(0, 0, 0) },
     uAcceleration: { value: new THREE.Vector3(0, 0, 0) },
-    uDeformAmount: { value: 0.036 },
     uEarDeform: { value: new THREE.Vector3(0, 0, 0) },
   },
-  vertexShader: `
+  vertexShader: /* glsl */ `
     attribute vec3 barycentric;
     varying vec3 vBarycentric;
     varying vec3 vNormal;
     varying vec3 vWorldPosition;
     varying vec3 vViewPosition;
-    varying vec2 vUv;
 
     uniform float uTime;
-    uniform float uAutoPhase;
-    uniform float uScanY;
     uniform float uIntroProgress;
-    uniform vec2 uMouse;
-
-    uniform vec3 uVelocity;
-    uniform vec3 uAcceleration;
-    uniform float uDeformAmount;
     uniform vec3 uEarDeform;
 
     void main() {
-      vUv = uv;
       vBarycentric = barycentric;
-      
+
       vec3 displacedPos = position;
 
       // Natural subtle ear gravity displacement
@@ -76,11 +72,10 @@ const CatShader = {
       float earMaskX = smoothstep(0.15, 0.30, abs(position.x));
       float earMask = earMaskY * earMaskX;
       if (earMask > 0.001) {
-        vec3 earGravity = uEarDeform * earMask;
-        displacedPos += earGravity;
+        displacedPos += uEarDeform * earMask;
       }
 
-      // 4. Smooth, clean intro assembly dispersion
+      // Smooth, clean intro assembly dispersion (Particle intro restored)
       float dispersion = 1.0 - smoothstep(0.0, 1.0, uIntroProgress);
       if (dispersion > 0.001) {
         displacedPos += normal * (dispersion * 0.12);
@@ -94,105 +89,101 @@ const CatShader = {
       gl_Position = projectionMatrix * mvPosition;
     }
   `,
-  fragmentShader: `
+  fragmentShader: /* glsl */ `
     uniform float uTime;
     uniform float uAutoPhase;
+    uniform float uIntroProgress;
     uniform float uScanY;
     uniform vec2 uResolution;
-    uniform float uIntroProgress;
     uniform vec2 uMouse;
 
     varying vec3 vBarycentric;
     varying vec3 vNormal;
     varying vec3 vWorldPosition;
     varying vec3 vViewPosition;
-    varying vec2 vUv;
 
-    // Helper: 45-Degree Rotated Halftone Dot Matrix (softer grid scale)
+    // Anti-aliased wireframe edge
+    float getWireEdge() {
+      float minBary = min(min(vBarycentric.x, vBarycentric.y), vBarycentric.z);
+      float d = fwidth(minBary);
+      float thickness = d * 1.5;
+      return 1.0 - smoothstep(0.0, thickness, minBary);
+    }
+
+    // World-space 45-degree halftone with fwidth anti-aliasing (surface-adhered)
     float getHalftoneMask(vec3 normal, vec3 lightDir1, vec3 lightDir2) {
-      vec2 st = gl_FragCoord.xy / max(uResolution.y, 1.0);
-      float gridScale = 220.0;
-      
-      // Rotate grid by 45 degrees (PI / 4) using precomputed mat2 constant
+      vec2 st = vWorldPosition.xy;
+      float gridScale = 120.0;
+
       const mat2 rot = mat2(0.70710678, -0.70710678, 0.70710678, 0.70710678);
       vec2 rotSt = rot * st * gridScale;
-      
+
       vec2 gridPos = floor(rotSt) + 0.5;
       float dist = length(rotSt - gridPos);
-      
+
       float NdotL1 = max(dot(normal, lightDir1), 0.0);
       float NdotL2 = max(dot(normal, lightDir2), 0.0);
-      
+
       float intensity = pow(NdotL1, 1.3) * 0.75 + (NdotL2 * 0.25) + 0.08;
       float maxRadius = 0.48 * clamp(intensity, 0.0, 1.0);
-      
-      return smoothstep(maxRadius, maxRadius - 0.05, dist);
+
+      float d = fwidth(dist);
+      return 1.0 - smoothstep(maxRadius - d, maxRadius + d, dist);
     }
 
     void main() {
-      // --- AUTO-CYCLING CROSSFADE WEIGHTS ---
+      // ── NaN-safe face normal ──
+      vec3 dx = dFdx(vViewPosition);
+      vec3 dy = dFdy(vViewPosition);
+      vec3 crossN = cross(dx, dy);
+      vec3 faceNormal = length(crossN) < 1e-4 ? normalize(vNormal) : normalize(crossN);
+
+      // ── View direction & dual-light setup ──
+      vec3 viewDir = normalize(vViewPosition);
+      vec3 keyLight = normalize(vec3(0.7, 0.8, 0.7));
+      vec3 fillLight = normalize(vec3(-0.8, -0.4, -0.4));
+      float NdotL = max(dot(faceNormal, keyLight), 0.0);
+
+      // ── White-tinted Fresnel rim ──
+      float fresnel = pow(1.0 - max(dot(viewDir, faceNormal), 0.0), 3.0);
+      vec3 totalRim = vec3(1.0, 1.0, 1.0) * fresnel * max(NdotL, 0.15) * 1.8;
+
+      // ── Crossfade weights (3 modes, ~12s each, 36s total loop) ──
       float wWire = 1.0 - smoothstep(0.88, 1.12, uAutoPhase);
       wWire += smoothstep(2.88, 3.0, uAutoPhase);
       wWire = clamp(wWire, 0.0, 1.0);
-      
       float wHalf = smoothstep(0.88, 1.12, uAutoPhase) * (1.0 - smoothstep(1.88, 2.12, uAutoPhase));
       float wLidar = smoothstep(1.88, 2.12, uAutoPhase) * (1.0 - smoothstep(2.88, 3.0, uAutoPhase));
-      
-      float totalWeight = max(wWire + wHalf + wLidar, 0.001);
-      wWire /= totalWeight;
-      wHalf /= totalWeight;
-      wLidar /= totalWeight;
 
-      // Pure B&W palette
+      // ── Color palette ──
       vec3 darkBg = vec3(0.02, 0.02, 0.02);
-      vec3 facetDark = vec3(0.09, 0.09, 0.09);  // Soft gray facet tone
-      vec3 dotWhite = vec3(0.95, 0.95, 0.95);   // Pure white dots
-      
-      vec3 viewDir = normalize(vViewPosition);
-      vec3 keyLight = normalize(vec3(0.7, 0.8, 0.7));    // Top-right neutral
-      vec3 fillLight = normalize(vec3(-0.8, -0.4, -0.4)); // Bottom-left neutral
+      vec3 facetDark = vec3(0.09, 0.09, 0.09);
+      vec3 dotWhite = vec3(0.95, 0.95, 0.95);
+      vec3 beamWhite = vec3(1.0, 1.0, 1.0); // Restored to White
 
-      // Compute faceNormal conditionally
-      vec3 faceNormal;
-      if (wWire > 0.001 || wHalf > 0.001 || wLidar > 0.001) {
-        vec3 dx = dFdx(vViewPosition);
-        vec3 dy = dFdy(vViewPosition);
-        faceNormal = normalize(cross(dx, dy));
-        if (length(faceNormal) < 0.1) faceNormal = normalize(vNormal);
-      } else {
-        faceNormal = normalize(vNormal);
-      }
-
-      float NdotL = max(dot(faceNormal, keyLight), 0.0);
-      float fresnel = pow(1.0 - max(dot(viewDir, faceNormal), 0.0), 2.0);
-      vec3 totalRim = vec3(1.0, 1.0, 1.0) * fresnel * 1.4;
-
-      // --- CONDITIONAL COMPUTATION FOR ACTIVE MODES ONLY ---
-      
-      // MODE 0: Crisp Faceted Wireframe Base
+      // ── MODE 0: Wireframe ──
       vec3 wireColor = vec3(0.0);
       float facet = 0.0;
       if (wWire > 0.001 || wLidar > 0.001) {
         facet = floor(NdotL * 5.0) / 5.0;
       }
       if (wWire > 0.001) {
-        float minBary = min(min(vBarycentric.x, vBarycentric.y), vBarycentric.z);
-        float wireEdge = 1.0 - smoothstep(0.0, 0.035, minBary);
+        float wireEdge = getWireEdge();
         vec3 baseFacet = mix(darkBg, facetDark, facet);
-        wireColor = mix(baseFacet, dotWhite, wireEdge * 0.85) + totalRim * 0.6;
+        wireColor = mix(baseFacet, dotWhite, wireEdge * 0.9) + totalRim * 0.5;
       }
-      
-      // MODE 1: 45° Halftone Dot Matrix
+
+      // ── MODE 1: World-Space Halftone ──
       vec3 halftoneColor = vec3(0.0);
       float dotMask = 0.0;
       if (wHalf > 0.001 || wLidar > 0.001) {
         dotMask = getHalftoneMask(faceNormal, keyLight, fillLight);
       }
       if (wHalf > 0.001) {
-        halftoneColor = mix(darkBg, dotWhite, dotMask) + totalRim * 0.8;
+        halftoneColor = mix(darkBg, dotWhite, dotMask) + totalRim * 0.7;
       }
-      
-      // MODE 2: Holographic LiDAR Laser Sweep
+
+      // ── MODE 2: Holographic LiDAR Laser Sweep ──
       vec3 lidarColor = vec3(0.0);
       if (wLidar > 0.001) {
         float distToScan = vWorldPosition.y - uScanY;
@@ -206,27 +197,34 @@ const CatShader = {
         float planeBlend = smoothstep(-0.05, 0.05, distToScan);
         vec3 baseSurface = mix(wirePart, halftonePart, planeBlend);
         
-        vec3 beamColor = vec3(0.2, 0.7, 1.0);
-        lidarColor = baseSurface + totalRim * 0.7 + (beamColor * scanIntensity);
+        lidarColor = baseSurface + totalRim * 0.7 + (beamWhite * scanIntensity);
       }
 
+      // ── Composite all modes ──
       vec3 finalColor = wireColor * wWire + halftoneColor * wHalf + lidarColor * wLidar;
 
-      // Add dynamic bluish transition energy during crossfades between modes
+      // ── Crossfade transition energy (Blue lines only) ──
       float isTransitioning = 1.0 - max(wWire, max(wHalf, wLidar));
-      vec3 transitionBlue = vec3(0.12, 0.65, 1.0) * isTransitioning * 2.5;
-      finalColor += transitionBlue;
+      float transWireEdge = getWireEdge();
+      vec3 transitionBlue = vec3(0.12, 0.65, 1.0);
+      finalColor += transitionBlue * isTransitioning * transWireEdge * 2.5;
 
-      // --- HOVER CURSOR BLUISH AREA ---
+      // ── Screen-space corrected hover glow (White instead of Blue) ──
+      vec2 screenPos = (gl_FragCoord.xy / uResolution) * 2.0 - 1.0;
+      float aspect = uResolution.x / uResolution.y;
+      screenPos.x *= aspect;
+      vec2 mouseScreen = uMouse;
+      mouseScreen.x *= aspect;
+      float mouseDist = length(mouseScreen - screenPos);
+      float hoverArea = 1.0 - smoothstep(0.0, 0.5, mouseDist);
+
       vec3 mouseLightPos = vec3(uMouse.x * 3.5, uMouse.y * 3.5, 2.0);
       vec3 mouseLightDir = normalize(mouseLightPos - vWorldPosition);
       float mouseGlow = pow(max(dot(faceNormal, mouseLightDir), 0.0), 5.0);
-      float mouseDist = length(vec2(uMouse.x * 2.2, uMouse.y * 2.2) - vWorldPosition.xy);
-      float hoverArea = smoothstep(1.4, 0.0, mouseDist);
-      vec3 hoverBlue = vec3(0.05, 0.6, 1.0) * mouseGlow * hoverArea * 2.2;
-      finalColor += hoverBlue;
+      vec3 hoverGlow = vec3(1.0, 1.0, 1.0) * mouseGlow * hoverArea * 1.8;
+      finalColor += hoverGlow;
 
-      // Smooth opacity blend during initial particle assembly
+      // ── Smooth opacity blend during initial particle assembly ──
       finalColor = mix(darkBg, finalColor, smoothstep(0.0, 0.3, uIntroProgress));
 
       gl_FragColor = vec4(finalColor, 1.0);
@@ -268,13 +266,13 @@ export function CatModel() {
   const isLoaded = useAppStore((state) => state.isLoaded)
   const introStartTimeRef = useRef<number | null>(null)
   const { viewport } = useThree()
+  const mobileTiltRef = useRef({ x: 0, y: 0 })
 
   // Dynamic responsive sizing & positioning for desktop, tablet & mobile viewports
   const isMobile = viewport.width < 4.8
   const isTablet = viewport.width >= 4.8 && viewport.width < 7.5
-  const isLaptop = viewport.width >= 7.5 && viewport.height < 5.4 // Laptop screens (~1080p / 768p browser viewports)
+  const isLaptop = viewport.width >= 7.5 && viewport.height < 5.4
 
-  // Smaller scale specifically on mobile phone screens, without touching tablet/laptop/desktop
   const responsiveScale = useMemo(() => {
     if (isMobile) {
       return Math.max(2.6, Math.min(viewport.width * 0.68, 3.2))
@@ -285,11 +283,9 @@ export function CatModel() {
     if (isLaptop) {
       return 4.5
     }
-    // Large Desktop Monitors: Huge hero cat model (~5.0)
     return Math.min(5.2, Math.max(4.5, viewport.width * 0.52))
   }, [viewport.width, isMobile, isTablet, isLaptop])
 
-  // Lift the cat model higher up on screen (-0.06 / -0.08)
   const basePosY = useMemo(() => {
     if (isMobile) return -0.08
     if (isLaptop) return -0.06
@@ -354,7 +350,7 @@ export function CatModel() {
 
     scene.traverse((child: any) => {
       if (child.isMesh && child.geometry) {
-        if (child.name.includes('球') || child.name.includes('001') || child.name.toLowerCase().includes('eye')) {
+        if (child.name.includes('\u7403') || child.name.includes('001') || child.name.toLowerCase().includes('eye')) {
           eyeGeo = child.geometry.clone()
         } else if (!bodyGeo) {
           const nonIndexed = child.geometry.toNonIndexed()
@@ -406,14 +402,50 @@ export function CatModel() {
 
   const whiskerGeoRef = useRef<THREE.BufferGeometry>(null)
 
+  // ── Mobile Device Orientation (tilt-to-track) ──
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    let permissionGranted = false
+
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (!permissionGranted) return
+      const gamma = Math.max(-1, Math.min(1, (e.gamma || 0) / 45))
+      const beta = Math.max(-1, Math.min(1, ((e.beta || 0) - 45) / 45))
+      mobileTiltRef.current.x = gamma * 0.25
+      mobileTiltRef.current.y = -beta * 0.18
+    }
+
+    const init = async () => {
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        try {
+          const result = await (DeviceOrientationEvent as any).requestPermission()
+          permissionGranted = result === 'granted'
+        } catch {
+          permissionGranted = false
+        }
+      } else {
+        permissionGranted = true
+      }
+
+      if (permissionGranted) {
+        window.addEventListener('deviceorientation', handleOrientation, { passive: true })
+      }
+    }
+
+    init()
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation)
+    }
+  }, [])
+
   useFrame((state, delta) => {
     const elapsed = state.clock.getElapsedTime()
-    // Clamp dt to avoid physics explosion on low frame rates or tab switches
     const dt = Math.min(delta, 0.033)
 
-    // -------------------------------------------------------------
-    // R1: MOUSE & SCROLL VELOCITY / ACCELERATION TRACKING
-    // -------------------------------------------------------------
+    // ── R1: MOUSE & SCROLL VELOCITY / ACCELERATION TRACKING ──
     const currentMouseX = state.pointer.x
     const currentMouseY = state.pointer.y
 
@@ -422,7 +454,6 @@ export function CatModel() {
     const ax = (vx - mouseVelRef.current.x) / (dt || 0.016)
     const ay = (vy - mouseVelRef.current.y) / (dt || 0.016)
 
-    // Mutate existing refs instead of allocating new objects every frame
     mouseVelRef.current.x = vx
     mouseVelRef.current.y = vy
     mouseAccelRef.current.x = ax
@@ -430,32 +461,30 @@ export function CatModel() {
     prevMouseRef.current.x = currentMouseX
     prevMouseRef.current.y = currentMouseY
 
-    // Smoothly decay scroll velocity
     scrollVelRef.current *= Math.pow(0.92, dt * 60)
 
-    // -------------------------------------------------------------
-    // R1: 6-DOF 2ND-ORDER SPRING-DAMPER PHYSICS ENGINE
-    // -------------------------------------------------------------
+    // ── R1: 6-DOF 2ND-ORDER SPRING-DAMPER PHYSICS ENGINE ──
     const p = physicsStateRef.current
 
-    // Target rotations (firm, crisp rotation tracking with 80% reduced fluid sway)
-    const targetRotY = currentMouseX * (isMobile ? 0.12 : 0.18) + vx * 0.005
-    const targetRotX = -currentMouseY * (isMobile ? 0.09 : 0.14) + vy * 0.005
+    // Target rotations (blend mobile tilt when available)
+    const tiltX = mobileTiltRef.current.x
+    const tiltY = mobileTiltRef.current.y
+    const targetRotY = currentMouseX * (isMobile ? 0.12 : 0.18) + vx * 0.005 + tiltX
+    const targetRotX = -currentMouseY * (isMobile ? 0.09 : 0.14) + vy * 0.005 + tiltY
     const targetRotZ = currentMouseX * 0.04 - vx * 0.01
 
-    // Target positions (Firm body: gravity sag + breathing float reduced by 80%)
+    // Target positions
     const gravityPull = -currentMouseY * 0.024 - scrollVelRef.current * 0.008
     const gravitySag = Math.sin(elapsed * 1.8) * 0.009 - 0.05
     const breathingFloat = Math.cos(elapsed * 2.8) * 0.003 + Math.sin(elapsed * 0.85) * 0.004
-    
+
     const targetPosX = currentMouseX * 0.03 + vx * 0.003
     const targetPosY = basePosY + gravitySag + gravityPull + breathingFloat - Math.abs(vy) * 0.004
     const targetPosZ = -Math.abs(currentMouseY) * 0.016 - Math.abs(vx) * 0.004
 
-    // 2nd-Order Spring-Damper Equations (Firm body springs)
-    // 1. Position Spring Engine
+    // Position Spring — critically damped (c = 2*sqrt(k) ≈ 37.4)
     const kPos = 350.0
-    const cPos = 28.0
+    const cPos = 37.5
 
     p.accel.x = -kPos * (p.pos.x - targetPosX) - cPos * p.vel.x
     p.accel.y = -kPos * (p.pos.y - targetPosY) - cPos * p.vel.y
@@ -469,9 +498,9 @@ export function CatModel() {
     p.pos.y += p.vel.y * dt
     p.pos.z += p.vel.z * dt
 
-    // 2. Rotation Spring Engine (Firm body rotation)
+    // Rotation Spring — critically damped (c = 2*sqrt(k) ≈ 34.6)
     const kRot = 300.0
-    const cRot = 24.0
+    const cRot = 34.6
 
     p.rotAccel.x = -kRot * (p.rot.x - targetRotX) - cRot * p.rotVel.x
     p.rotAccel.y = -kRot * (p.rot.y - targetRotY) - cRot * p.rotVel.y
@@ -485,35 +514,34 @@ export function CatModel() {
     p.rot.y += p.rotVel.y * dt
     p.rot.z += p.rotVel.z * dt
 
-    // Apply 6-DOF transform to cat group
+    // Apply 6-DOF transform + breathing scale to cat group
     if (groupRef.current) {
       groupRef.current.position.copy(p.pos)
       groupRef.current.rotation.copy(p.rot)
+      // Subtle breathing scale oscillation (0.5%)
+      const breathe = 1.0 + Math.sin(elapsed * 1.2) * 0.005
+      const s = responsiveScale * breathe
+      groupRef.current.scale.set(s, s, s)
     }
 
-    // -------------------------------------------------------------
-    // NON-OSCILLATING CRITICALLY DAMPED EAR GRAVITY TRACKING (ZERO JIGGLE)
-    // -------------------------------------------------------------
+    // ── NON-OSCILLATING CRITICALLY DAMPED EAR GRAVITY TRACKING ──
     const ear = earPhysicsRef.current
     const targetEarX = -p.rot.z * 0.0104 - vx * 0.0052
-    const targetEarY = -Math.abs(p.rot.x) * 0.0104 - vy * 0.0052 - 0.00624  // Ear gravity sag increased by 4%
+    const targetEarY = -Math.abs(p.rot.x) * 0.0104 - vy * 0.0052 - 0.00624
     const targetEarZ = 0.0
 
-    // Critically damped exponential smoothing: smooth follow with ZERO jiggle or spring wobble
     const earDamp = 1.0 - Math.exp(-16.0 * dt)
     ear.pos.x += (targetEarX - ear.pos.x) * earDamp
     ear.pos.y += (targetEarY - ear.pos.y) * earDamp
     ear.pos.z += (targetEarZ - ear.pos.z) * earDamp
     ear.vel.set(0, 0, 0)
 
-    // -------------------------------------------------------------
-    // R2 & R3: UNIFORM UPDATES TO CAT SHADER
-    // -------------------------------------------------------------
+    // ── SHADER UNIFORM UPDATES ──
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = elapsed
       materialRef.current.uniforms.uResolution.value.set(
-        state.gl.domElement.width, 
-        state.gl.domElement.height
+        state.size.width * state.viewport.dpr,
+        state.size.height * state.viewport.dpr
       )
       materialRef.current.uniforms.uMouse.value.set(state.pointer.x, state.pointer.y)
       materialRef.current.uniforms.uScanY.value = Math.sin(elapsed * 1.4) * 1.6
@@ -523,11 +551,7 @@ export function CatModel() {
       materialRef.current.uniforms.uAcceleration.value.copy(p.accel)
       materialRef.current.uniforms.uEarDeform.value.copy(ear.pos)
 
-      // Start auto-cycling only after intro completes (~3.5s); cycle speed 0.027 (~36s full loop, ~12s per mode)
-      const cycleTime = Math.max(0, elapsed - 3.5)
-      materialRef.current.uniforms.uAutoPhase.value = (cycleTime * 0.027) % 3.0
-
-      // Particle assembly intro progress
+      // Particle assembly intro progress (Restored to 3.5s duration)
       if (!isLoaded) {
         materialRef.current.uniforms.uIntroProgress.value = 0.0
         introStartTimeRef.current = null
@@ -537,13 +561,19 @@ export function CatModel() {
         }
         const activeIntroTime = elapsed - introStartTimeRef.current
         const introVal = Math.min(1.0, activeIntroTime / 3.5)
+        // Particle assembly easing
         materialRef.current.uniforms.uIntroProgress.value = 1.0 - Math.pow(1.0 - introVal, 3)
+      }
+
+      // Start auto-cycling only after intro completes (3.5s)
+      if (introStartTimeRef.current !== null) {
+        const introActive = elapsed - introStartTimeRef.current
+        const cycleTime = Math.max(0, introActive - 3.5)
+        materialRef.current.uniforms.uAutoPhase.value = (cycleTime * 0.0833) % 3.0
       }
     }
 
-    // -------------------------------------------------------------
-    // R3: FLUID EYE TRACKING LAG / SPRING INERTIA (NODE 1 / "球")
-    // -------------------------------------------------------------
+    // ── FLUID EYE TRACKING LAG / SPRING INERTIA ──
     if (eyeRef.current) {
       const eye = eyePhysicsRef.current
       const targetEyeRotY = state.pointer.x * 0.14
@@ -573,11 +603,13 @@ export function CatModel() {
 
       eyeRef.current.rotation.set(eye.rot.x, eye.rot.y, 0)
       eyeRef.current.position.set(eye.pos.x, eye.pos.y, 0)
+
+      // Subtle eye glow modulation (idle life)
+      const glowVal = 0.88 + Math.sin(elapsed * 2.0) * 0.08
+      eyeballMaterial.color.setRGB(glowVal, glowVal, Math.min(1.0, glowVal + 0.04))
     }
 
-    // -------------------------------------------------------------
-    // R3: HIGH-FLUID WHISKER ELASTICITY & WHIP INERTIA PHYSICS
-    // -------------------------------------------------------------
+    // ── HIGH-FLUID WHISKER ELASTICITY & WHIP INERTIA PHYSICS ──
     if (whiskerGeoRef.current && groupRef.current) {
       const targetGeo = (whiskerGeoRef.current as any).geometry || whiskerGeoRef.current
       if (targetGeo && targetGeo.attributes && targetGeo.attributes.position) {
@@ -587,23 +619,19 @@ export function CatModel() {
           let ptr = 0
           let whiskerChanged = false
 
-          const whiskerRows = [
-            { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
-            { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 1.2 },
-            { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 1.4 },
-          ]
-
           let whiskerIdx = 0
-          const kWhisker = 140.0  // Balanced spring stiffness for natural whisker posture
-          const cWhisker = 12.0   // Natural damping to prevent drooping
+          const kWhisker = 140.0
+          const cWhisker = 12.0
 
-          ;[-1, 1].forEach((side) => {
-            whiskerRows.forEach((row, rowIdx) => {
+          // Use hoisted WHISKER_SIDES and WHISKER_ROWS (zero per-frame allocations)
+          for (let s = 0; s < WHISKER_SIDES.length; s++) {
+            const side = WHISKER_SIDES[s]
+            for (let rowIdx = 0; rowIdx < WHISKER_ROWS.length; rowIdx++) {
+              const row = WHISKER_ROWS[rowIdx]
               const stateNode = whiskerPhysicsRef.current[whiskerIdx]
               const startX = side * 0.14
               const endX = side * (0.14 + row.len)
 
-              // Realistic gravity sag increased by 10% + movement inertia when cursor moves
               const gravitySag = -0.0088 * row.flex
               const pitchInertia = -p.rot.x * 0.066 * row.flex - vy * 0.0066 * row.flex
               const rollInertia = side * p.rot.y * 0.055 * row.flex - side * vx * 0.0066 * row.flex
@@ -611,7 +639,6 @@ export function CatModel() {
 
               const totalDrop = gravitySag + pitchInertia + rollInertia + sway
 
-              // Use pre-allocated scratchpad vectors (ZERO allocations per frame)
               _start.set(startX, row.y, row.z)
               _idealMid.set(
                 startX + side * row.len * 0.5,
@@ -630,7 +657,6 @@ export function CatModel() {
                 stateNode.initialized = true
               }
 
-              // Subtle spring inertia forces (mutate pre-allocated vectors)
               _midInertia.set(
                 -p.accel.x * 0.02 * row.flex,
                 -p.accel.y * 0.02 * row.flex,
@@ -668,7 +694,7 @@ export function CatModel() {
               for (let seg = 1; seg <= WHISKER_SEGMENTS; seg++) {
                 const t = seg / WHISKER_SEGMENTS
                 evalQuadBezier(_bezierPNext, _start, stateNode.midPos, stateNode.endPos, t)
-                
+
                 if (
                   Math.abs(array[ptr] - _bezierP.x) > 1e-5 ||
                   Math.abs(array[ptr + 1] - _bezierP.y) > 1e-5 ||
@@ -686,13 +712,12 @@ export function CatModel() {
                 array[ptr++] = _bezierPNext.x
                 array[ptr++] = _bezierPNext.y
                 array[ptr++] = _bezierPNext.z
-                // Swap: current next becomes next current
                 _bezierP.copy(_bezierPNext)
               }
 
               whiskerIdx++
-            })
-          })
+            }
+          }
 
           if (whiskerChanged) {
             posAttr.needsUpdate = true
@@ -716,7 +741,7 @@ export function CatModel() {
 
   return (
     <group ref={groupRef} position={[0, basePosY, 0]} scale={[responsiveScale, responsiveScale, responsiveScale]}>
-      {/* Authentic Yuta Abe Head Base with auto-cycling B&W Halftone / LiDAR / Wireframe Shaders */}
+      {/* Authentic Yuta Abe Head Base with Pure White Shaders and Particle Intro */}
       <mesh geometry={bodyGeometry}>
         <primitive object={customMaterial} ref={materialRef} attach="material" />
       </mesh>
