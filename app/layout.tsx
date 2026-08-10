@@ -1,7 +1,13 @@
+import dynamic from 'next/dynamic'
 import { Syne, Space_Mono } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/ui/Navbar'
 import { HUD } from '@/components/ui/HUD'
+import { Preloader } from '@/components/ui/Preloader'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { PixelBackground } from '@/components/ui/PixelBackground'
+import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider'
+import { TransitionProvider } from '@/components/providers/TransitionProvider'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -16,12 +22,10 @@ const spaceMono = Space_Mono({
   display: 'swap',
   weight: ['400', '700'],
 })
-import { Preloader } from '@/components/ui/Preloader'
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
-import { GlobalCanvas } from '@/components/canvas/GlobalCanvas'
-import { PixelBackground } from '@/components/ui/PixelBackground'
-import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider'
-import { TransitionProvider } from '@/components/providers/TransitionProvider'
+
+const GlobalCanvas = dynamic(
+  () => import('@/components/canvas/GlobalCanvas').then((mod) => mod.GlobalCanvas)
+)
 
 export const metadata = {
   title: '3D Portfolio',

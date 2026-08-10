@@ -47,6 +47,28 @@ export function PlaygroundImageGrid({
   const lastMoveTime = useRef(0)
   const totalDragDistance = useRef(0)
 
+  // Ref for cached tile dimensions
+  const tileDims = useRef({ w: 0, h: 0 })
+
+  // Cache tile dimensions to avoid forced layout thrashing per frame
+  useEffect(() => {
+    const updateTileDims = () => {
+      let w = 0
+      if (set0Ref.current && set1Ref.current) {
+        w = set1Ref.current.offsetLeft - set0Ref.current.offsetLeft
+      }
+      let h = 0
+      if (colSet0Ref.current && colSet1Ref.current) {
+        h = colSet1Ref.current.offsetTop - colSet0Ref.current.offsetTop
+      }
+      tileDims.current = { w, h }
+    }
+    
+    updateTileDims()
+    window.addEventListener('resize', updateTileDims)
+    return () => window.removeEventListener('resize', updateTileDims)
+  }, [])
+
   // Split sketches into 6 columns for staggered masonry layout
   const columns = useMemo(() => {
     const cols: SketchDef[][] = [[], [], [], [], [], []]
@@ -102,9 +124,6 @@ export function PlaygroundImageGrid({
     const handlePointerUp = () => {
       if (isDragging.current) {
         isDragging.current = false
-        // Apply inertia release velocity to target
-        target.current.x += velocity.current.x * 1.5
-        target.current.y += velocity.current.y * 1.5
       }
     }
 
@@ -122,17 +141,15 @@ export function PlaygroundImageGrid({
   // Animation frame loop for butter-smooth lerp & infinite wrapping
   useEffect(() => {
     let animationFrameId: number
+    let lastTime = performance.now()
 
-    const update = () => {
-      let tileW = 0
-      if (set0Ref.current && set1Ref.current) {
-        tileW = set1Ref.current.offsetLeft - set0Ref.current.offsetLeft
-      }
+    const update = (time: number) => {
+      const dtMs = time - lastTime
+      const dt = Math.min(dtMs / 1000, 0.1) // Convert to seconds, max 100ms cap
+      lastTime = time
 
-      let tileH = 0
-      if (colSet0Ref.current && colSet1Ref.current) {
-        tileH = colSet1Ref.current.offsetTop - colSet0Ref.current.offsetTop
-      }
+      const tileW = tileDims.current.w
+      const tileH = tileDims.current.h
 
       if (tileW > 0) {
         if (current.current.x > tileW / 2) {
@@ -153,18 +170,28 @@ export function PlaygroundImageGrid({
         }
       }
 
-      // Smooth inertia friction decay when not dragging
+      // Smooth inertia friction decay and momentum integration when not dragging
       if (!isDragging.current) {
-        velocity.current.x *= 0.92
-        velocity.current.y *= 0.92
+        // Continuously integrate velocity into target for momentum scrolling
+        target.current.x += velocity.current.x
+        target.current.y += velocity.current.y
+
+        // Exponential decay for frame-rate independent friction
+        const friction = Math.exp(-4 * dt)
+        velocity.current.x *= friction
+        velocity.current.y *= friction
       }
 
-      // Butter-smooth lerp interpolation factor (0.12)
-      current.current.x += (target.current.x - current.current.x) * 0.12
-      current.current.y += (target.current.y - current.current.y) * 0.12
+      // Frame-rate independent exponential smoothing
+      const smoothing = 1 - Math.exp(-8 * dt)
+      current.current.x += (target.current.x - current.current.x) * smoothing
+      current.current.y += (target.current.y - current.current.y) * smoothing
 
       if (gridRef.current) {
-        gridRef.current.style.transform = `translate3d(${current.current.x.toFixed(2)}px, ${current.current.y.toFixed(2)}px, 0px)`
+        // Use Math.round with sub-pixel precision to avoid string allocation overhead
+        const x = Math.round(current.current.x * 100) / 100
+        const y = Math.round(current.current.y * 100) / 100
+        gridRef.current.style.transform = `translate3d(${x}px, ${y}px, 0px)`
       }
 
       animationFrameId = requestAnimationFrame(update)

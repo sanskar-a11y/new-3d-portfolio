@@ -19,17 +19,17 @@ export function Preloader() {
   useEffect(() => {
     if (!mounted) return
 
-    // 100% reliable interval-based counter (immune to React strict mode and requestAnimationFrame bugs)
+    // Fast, responsive interval-based counter
     const interval = setInterval(() => {
       setCounter((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
           return 100
         }
-        // Increment smoothly by 4 every 30ms (~750ms total duration)
-        return Math.min(prev + 4, 100)
+        // Increment smoothly by 8 every 16ms (~200ms total duration)
+        return Math.min(prev + 8, 100)
       })
-    }, 30)
+    }, 16)
 
     // Trigger transition as soon as counter reaches 100
     const checkComplete = setInterval(() => {
@@ -39,18 +39,18 @@ export function Preloader() {
           setTimeout(() => {
             setLoaded(true)
             setCursorVariant('default')
-          }, 250)
+          }, 50)
         }
         return current
       })
-    }, 50)
+    }, 30)
 
-    // Ultimate safety fallback: guarantee entry to landing page after 1.5s no matter what
+    // Ultimate safety fallback: guarantee entry to landing page after 400ms
     const fallbackTimer = setTimeout(() => {
       setCounter(100)
       setLoaded(true)
       setCursorVariant('default')
-    }, 1500)
+    }, 400)
 
     return () => {
       clearInterval(interval)
@@ -98,7 +98,7 @@ export function Preloader() {
           initial={{ opacity: 1 }}
           exit={{ 
             y: '-100%',
-            transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } 
+            transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] } 
           }}
           className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none"
         >

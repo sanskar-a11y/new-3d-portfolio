@@ -19,7 +19,7 @@ export function Background({ children, frameloop = 'always' }: { children?: Reac
       <Canvas 
         dpr={[1, 1.5]} 
         frameloop={frameloop}
-        gl={{ antialias: true, powerPreference: 'default', alpha: true }} 
+        gl={{ antialias: true, powerPreference: 'high-performance', alpha: true }} 
         camera={{ position: [0, 0, 5], fov: 50 }}
         eventSource={typeof document !== 'undefined' ? document.body : undefined}
         eventPrefix="client"

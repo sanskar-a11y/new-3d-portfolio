@@ -34,15 +34,16 @@ export function SketchLightbox({ sketch, onClose, isDark }: SketchLightboxProps)
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
           className="fixed inset-0 z-100 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.92, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 10 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            layoutId={`sketch-${sketch.id}`}
+            initial={{ scale: 0.92, opacity: 0, y: 20, filter: 'blur(8px)' }}
+            animate={{ scale: 1, opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ scale: 0.95, opacity: 0, y: 10, filter: 'blur(4px)' }}
+            transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             className={`max-w-5xl w-full bg-[#0d0d0d] rounded-xl overflow-hidden flex flex-col md:flex-row relative z-101 transition-all duration-300 ${
               isDark
                 ? 'border border-[#30b8ff]/40 shadow-[0_0_50px_rgba(48,184,255,0.25)]'
@@ -58,7 +59,7 @@ export function SketchLightbox({ sketch, onClose, isDark }: SketchLightboxProps)
                 onError={(e) => {
                   e.currentTarget.src = `https://picsum.photos/seed/fallback_${sketch.id}/800/450`
                 }}
-                className="object-contain w-full h-full max-h-[75vh] transition-transform duration-700 ease-out group-hover:scale-105 bg-[#121212]"
+                className="object-contain w-full h-full max-h-[75vh] will-change-transform transition-transform duration-500 ease-out group-hover:scale-105 bg-[#121212]"
               />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
             </div>

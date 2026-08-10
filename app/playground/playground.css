@@ -14,6 +14,8 @@
   overscroll-behavior: none;
   overflow: hidden;
   cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
 }
 .playground-page.is-dragging {
   cursor: grabbing;
@@ -27,6 +29,8 @@
   width: 100%;
   height: 100%;
   z-index: 0;
+  will-change: transform;
+  contain: layout style paint;
 }
 
 /* HUD Overlay */
@@ -42,7 +46,7 @@
 }
 .pg-ui.is-visible {
   opacity: 1;
-  transition: opacity 1.2s cubic-bezier(.16, 1, .3, 1);
+  transition: opacity 0.8s cubic-bezier(.16, 1, .3, 1);
 }
 
 /* Corner positioning */
@@ -211,7 +215,10 @@
   margin: 0;
   text-align: center;
   opacity: 0;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.16, 1, .3, 1);
+  transition: opacity 0.25s cubic-bezier(.16, 1, .3, 1), transform 0.25s cubic-bezier(.16, 1, .3, 1);
+  will-change: opacity, transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 .reaction-prompt {
   top: calc(50% + 8rem);
@@ -289,7 +296,7 @@
   height: 6px;
   border-radius: 50%;
   background-color: var(--col-white);
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(.16, 1, .3, 1);
 }
 .pg-switcher.is-active .pg-switcher__thumb {
   transform: translateX(14px);
