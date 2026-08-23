@@ -7,8 +7,8 @@ import { playGlassClinkSound } from '@/lib/audio'
 
 import Image from 'next/image'
 
-const makePlaceholder = (title: string, idx: string) =>
-  `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340"><rect width="600" height="340" fill="%230c0d12"/><rect x="1" y="1" width="598" height="338" fill="none" stroke="%23222228" stroke-width="2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="monospace" font-size="20" font-weight="bold" letter-spacing="4">${idx} // ${title}</text></svg>`
+const makePlaceholder = (title: string) =>
+  `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340"><rect width="600" height="340" fill="%230c0d12"/><rect x="1" y="1" width="598" height="338" fill="none" stroke="%23222228" stroke-width="2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="monospace" font-size="20" font-weight="bold" letter-spacing="4">${title}</text></svg>`
 
 export interface ProjectData {
   index: string
@@ -39,7 +39,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     solution: 'Architected and led a development team to build a React PWA with Firebase backend, instant caching, and prompt engineering.',
     outcome: 'Earned national recognition at COER University hackathon and fully deployed live on Netlify.',
     tech: ['React.js', 'Vite', 'Firebase', 'PWA', 'Bootstrap', 'AI Tools'],
-    image: makePlaceholder('DIGITAL LEARNING PLATFORM', '01'),
+    image: makePlaceholder('DIGITAL LEARNING PLATFORM'),
     liveUrl: 'https://serene-daifuku-c1f5bb.netlify.app/',
     githubUrl: 'https://github.com/sanskar-a11y',
     status: 'Live & Deployed',
@@ -55,7 +55,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     solution: 'Engineered an immersive sticky WebGL canvas experience with custom shader atmospheres, interactive product gallery cards, and scroll-linked camera sequences.',
     outcome: 'Deployed live on Vercel delivering 60FPS fluid product storytelling.',
     tech: ['Next.js', 'Three.js / WebGL', 'Tailwind CSS', 'Framer Motion', 'GSAP'],
-    image: makePlaceholder('VELVET LIQUID LUXURY', '02'),
+    image: makePlaceholder('VELVET LIQUID LUXURY'),
     liveUrl: 'https://demo-olive-sigma-32.vercel.app/',
     status: 'Live & Deployed',
   },
@@ -70,7 +70,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     solution: 'Built an interactive timeline roadmap with day-by-day milestone tracking, difficulty tiers, and interactive skill assessments.',
     outcome: 'Deployed live on Vercel as an open-access roadmap for modern AI engineers.',
     tech: ['React.js', 'Vite', 'TypeScript', 'Tailwind CSS', 'Lucide Icons'],
-    image: makePlaceholder('AGENTIC 60 ROADMAP', '03'),
+    image: makePlaceholder('AGENTIC 60 ROADMAP'),
     liveUrl: 'https://roadmap-project-sigma.vercel.app/',
     status: 'Live & Deployed',
   },
@@ -85,7 +85,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     solution: 'Designed an editorial typography layout with responsive menu filters, ingredient showcases, and rooftop ambiance previews.',
     outcome: 'Deployed live on GitHub Pages with instant mobile responsiveness.',
     tech: ['HTML5', 'CSS Custom Properties', 'Modern JavaScript', 'Typography'],
-    image: makePlaceholder('BUBBLIER JAIPUR', '04'),
+    image: makePlaceholder('BUBBLIER JAIPUR'),
     liveUrl: 'https://gonnatakeover.github.io/P2/',
     githubUrl: 'https://github.com/gonnatakeover/P2',
     status: 'Live & Deployed',
@@ -101,7 +101,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     solution: 'Integrated Lenis smooth scrolling with GSAP timeline triggers, staggered image cards, and ambient micro-animations.',
     outcome: 'Deployed live on GitHub Pages delivering ultra-fluid browsing.',
     tech: ['Tailwind CSS', 'GSAP / ScrollTrigger', 'Lenis Scroll', 'JavaScript'],
-    image: makePlaceholder('CALM LUXURY DINING', '05'),
+    image: makePlaceholder('CALM LUXURY DINING'),
     liveUrl: 'https://gonnatakeover.github.io/P3/',
     githubUrl: 'https://github.com/gonnatakeover/P3',
     status: 'Live & Deployed',
@@ -117,7 +117,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     solution: 'Architected a custom Three.js + React Three Fiber rendering pipeline with custom vertex/fragment shaders and optimized Framer Motion interactions.',
     outcome: 'Production-ready 60FPS 3D WebGL portfolio deployed on Vercel.',
     tech: ['Three.js', 'React Three Fiber', 'GLSL Shaders', 'Next.js', 'Framer Motion'],
-    image: makePlaceholder('3D INTERACTIVE PORTFOLIO', '06'),
+    image: makePlaceholder('3D INTERACTIVE PORTFOLIO'),
     liveUrl: 'https://myportfolio-git-main-sanskar-a11ys-projects.vercel.app/',
     githubUrl: 'https://github.com/sanskar-a11y/new-3d-portfolio',
     status: 'Live & Active',
@@ -165,40 +165,30 @@ export const ProjectItem = memo(function ProjectItem({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.25, delay: shouldReduceMotion ? 0 : Math.min(idx * 0.015, 0.2) }}
-      className={`group flex items-center justify-between gap-4 py-5 sm:py-7 border-b border-white/10 transition-all duration-300 select-none cursor-pointer focus-visible:outline-white ${zIndexClass}`}
+      className={`group flex items-center justify-between gap-4 py-6 sm:py-8 border-b border-white/10 transition-all duration-300 select-none cursor-pointer focus-visible:outline-white ${zIndexClass}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={() => onSelect(idx)}
       onKeyDown={handleKeyDown}
     >
-      {/* Left side: Kinetic Typography Project Title & Category */}
+      {/* Left side: Pure Kinetic Typography Project Title */}
       <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
         {isSelected && (
           <motion.div
             layoutId="activeIndicator"
-            className="w-1 h-8 sm:h-12 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)] shrink-0"
+            className="w-1.5 h-10 sm:h-14 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)] shrink-0"
             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
           />
         )}
-        <div className="flex flex-col gap-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-white/90 font-bold tracking-widest uppercase">
-              {`[ ${project.index} // ${project.year} ]`}
-            </span>
-            <span className="text-[10px] font-mono text-white/40 tracking-wider uppercase truncate">
-              {project.category}
-            </span>
-          </div>
-          <h3
-            className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none transition-all duration-300 ${
-              isSelected
-                ? 'text-white translate-x-1 sm:translate-x-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-                : 'text-white/40 group-hover:text-white/70'
-            }`}
-          >
-            {project.title}
-          </h3>
-        </div>
+        <h3
+          className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none transition-all duration-300 ${
+            isSelected
+              ? 'text-white translate-x-1 sm:translate-x-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+              : 'text-white/40 group-hover:text-white/70'
+          }`}
+        >
+          {project.title}
+        </h3>
       </div>
 
       {/* Right side: Classic black / monochrome preview image */}
