@@ -40,8 +40,8 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`noise-overlay bg-[#050505] ${syne.variable} ${spaceMono.variable}`}>
-        <div className="fixed inset-0 z-0 bg-[#050505] pointer-events-none" />
+      <body className={`noise-overlay bg-[#0a0a0a] ${syne.variable} ${spaceMono.variable}`}>
+        <div className="fixed inset-0 z-0 bg-[#0a0a0a] pointer-events-none" />
         <PixelBackground />
         <ErrorBoundary>
           <Preloader />
