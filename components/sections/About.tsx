@@ -216,7 +216,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           02. MANIFESTO — Core Identity
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -260,7 +260,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           03. METHODOLOGY — Observe Before I Move
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -297,7 +297,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           04. CRAFT — I Build What I Want to See Exist
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -340,7 +340,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           05. AMBITION — Chasing Capability
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -389,7 +389,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           06. PERSPECTIVE — Weapon vs Mind
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -434,7 +434,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           07. CAPABILITIES — Quiet Flowing List
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -467,7 +467,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           08. CREDENTIALS — Pure Minimalist List
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 py-20 sm:py-36">
+      <section className="px-5 sm:px-10 lg:px-20 py-14 sm:py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
@@ -500,7 +500,7 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           09. MANTRA & ELEGANT LINKS
       ═══════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-14 lg:px-24 pt-20 sm:pt-36 pb-32 sm:pb-48">
+      <section className="px-5 sm:px-10 lg:px-20 pt-16 sm:pt-28 pb-28 sm:pb-40">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 max-w-6xl">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">

@@ -181,7 +181,7 @@ export const ProjectItem = memo(function ProjectItem({
           />
         )}
         <h3
-          className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none transition-all duration-300 ${
+          className={`text-lg sm:text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-tight sm:leading-none transition-all duration-300 break-words ${
             isSelected
               ? 'text-white translate-x-1 sm:translate-x-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
               : 'text-white/40 group-hover:text-white/70'
@@ -193,7 +193,7 @@ export const ProjectItem = memo(function ProjectItem({
 
       {/* Right side: Classic black / monochrome preview image */}
       <div
-        className={`relative aspect-video w-[100px] sm:w-[150px] md:w-[185px] lg:w-[220px] rounded-lg overflow-hidden transition-all duration-300 shadow-xl shrink-0 border ${
+        className={`relative aspect-video w-[75px] sm:w-[130px] md:w-[185px] lg:w-[220px] rounded-lg overflow-hidden transition-all duration-300 shadow-xl shrink-0 border ${
           isSelected
             ? 'opacity-100 scale-105 border-white/50 shadow-[0_0_25px_rgba(255,255,255,0.15)] ring-1 ring-white/40'
             : 'opacity-30 border-white/10 group-hover:opacity-70 group-hover:scale-102'

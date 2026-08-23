@@ -57,7 +57,7 @@ export default function ContactPage() {
       </div>
 
       {/* Main Content Container — Zero Boxes */}
-      <div className="relative z-[15] max-w-6xl mx-auto px-6 sm:px-14 lg:px-24 flex flex-col gap-20 sm:gap-32">
+      <div className="relative z-[15] max-w-6xl mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-16 sm:gap-28">
         
         {/* 01. Hero Header */}
         <section className="flex flex-col gap-6 sm:gap-8 max-w-4xl">
@@ -73,7 +73,7 @@ export default function ContactPage() {
             </p>
           </motion.div>
 
-          <h1 className="text-[clamp(2.4rem,6vw,5.5rem)] font-extralight leading-[1.02] tracking-tighter text-white">
+          <h1 className="text-[clamp(2.2rem,6vw,5.5rem)] font-extralight leading-[1.02] tracking-tighter text-white">
             <motion.span
               initial={{ opacity: 0, y: 35, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -103,7 +103,7 @@ export default function ContactPage() {
         </section>
 
         {/* 02. Direct Email — Large Interactive Typography */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.08] pt-16 sm:pt-24">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.08] pt-14 sm:pt-24">
           <div className="lg:col-span-3">
             <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
               Direct Inbox
@@ -120,7 +120,7 @@ export default function ContactPage() {
             >
               <a
                 href={`mailto:${email}`}
-                className="text-2xl sm:text-4xl md:text-5xl font-extralight tracking-tight text-white hover:text-white/75 transition-colors leading-tight"
+                className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extralight tracking-tight text-white hover:text-white/75 transition-colors leading-tight break-all sm:break-normal"
               >
                 {email}
               </a>
