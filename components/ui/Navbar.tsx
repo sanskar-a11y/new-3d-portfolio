@@ -1,179 +1,143 @@
 'use client'
 
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Magnetic } from '@/components/ui/Magnetic'
 
-const ALL_LINKS = [
-  { name: 'About', href: '/about' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Playground', href: '/playground' },
-  { name: 'Contact', href: '/contact' },
-]
-
-const LEFT_LINKS = [
+const NAV_LINKS = [
   { name: 'Projects', href: '/projects' },
   { name: 'About', href: '/about' },
-]
-
-const RIGHT_LINKS = [
-  { name: 'Contact', href: '/contact' },
   { name: 'Playground', href: '/playground' },
+  { name: 'Contact', href: '/contact' },
 ]
 
 export const Navbar = memo(function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
-  const [pendingHref, setPendingHref] = useState<string | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Close mobile dropdown & reset pending href when route changes
+  // Reset menu when route changes
   useEffect(() => {
-    setPendingHref(null)
     setIsOpen(false)
   }, [pathname])
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setIsOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(false)
+    }, 250)
+  }
 
   const handlePrefetch = (href: string) => {
     router.prefetch(href)
   }
 
-  const handleLinkClick = (href: string) => {
-    if (pathname !== href) {
-      setPendingHref(href)
-    }
-  }
-
   return (
-    <motion.nav 
-      initial={{ y: -100, opacity: 0 }}
+    <motion.nav
+      initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-      className={`fixed top-0 left-0 w-full z-50 px-6 py-5 sm:px-12 flex justify-between items-center text-xs sm:text-sm tracking-widest uppercase text-white/80 transition-all duration-500 ${
-        pathname === '/' || pathname === '/projects' ? 'bg-transparent backdrop-blur-none' : 'bg-[#050505]/40 backdrop-blur-md'
-      }`}
-
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-0 left-0 w-full z-50 px-6 sm:px-14 lg:px-20 py-6 sm:py-8 flex justify-between items-start pointer-events-none select-none"
+      style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
     >
-      {/* Desktop Left Links */}
-      <div className="hidden md:flex gap-6 sm:gap-12">
-        {LEFT_LINKS.map((link) => (
-          <Magnetic key={link.name}>
-            <Link 
-              href={link.href}
-              onMouseEnter={() => handlePrefetch(link.href)}
-              onFocus={() => handlePrefetch(link.href)}
-              onClick={() => handleLinkClick(link.href)}
-              aria-current={pathname === link.href ? 'page' : undefined}
-              className={`relative hover:text-white transition-colors duration-300 ${
-                pathname === link.href ? 'text-white' : ''
-              } ${pendingHref === link.href ? 'opacity-60 animate-pulse text-cyan-400' : ''}`}
-            >
-              {link.name}
-              {pathname === link.href && (
-                <motion.div 
-                  layoutId="nav-dot-left"
-                  className="absolute -bottom-2 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2"
-                />
-              )}
-            </Link>
-          </Magnetic>
-        ))}
-      </div>
-
-      {/* SANSKAR Center Logo (Desktop & Mobile) */}
-      <Magnetic>
-        <Link 
-          href="/" 
-          aria-label="SANSKAR"
-          aria-current={pathname === '/' ? 'page' : undefined}
-          onMouseEnter={() => handlePrefetch('/')}
-          onFocus={() => handlePrefetch('/')}
-          onClick={() => handleLinkClick('/')}
-          className={`relative group py-1 px-3 flex items-center justify-center select-none cursor-pointer ${
-            pendingHref === '/' ? 'opacity-70 animate-pulse' : ''
-          }`}
-        >
-          {/* Subtle Ambient Glow behind logo */}
-          <div className="absolute inset-0 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          
-          {/* Official SANSKAR Logo */}
-          <Image
-            src="/logo.png"
-            alt="SANSKAR"
-            width={160}
-            height={53}
-            priority
-            className="h-8 sm:h-10 w-auto object-contain mix-blend-screen brightness-110 contrast-125 filter transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
-          />
-        </Link>
-      </Magnetic>
-
-      {/* Desktop Right Links */}
-      <div className="hidden md:flex gap-6 sm:gap-12">
-        {RIGHT_LINKS.map((link) => (
-          <Magnetic key={link.name}>
-            <Link 
-              href={link.href}
-              onMouseEnter={() => handlePrefetch(link.href)}
-              onFocus={() => handlePrefetch(link.href)}
-              onClick={() => handleLinkClick(link.href)}
-              aria-current={pathname === link.href ? 'page' : undefined}
-              className={`relative hover:text-white transition-colors duration-300 ${
-                pathname === link.href ? 'text-white' : ''
-              } ${pendingHref === link.href ? 'opacity-60 animate-pulse text-cyan-400' : ''}`}
-            >
-              {link.name}
-              {pathname === link.href && (
-                <motion.div 
-                  layoutId="nav-dot-right"
-                  className="absolute -bottom-2 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2"
-                />
-              )}
-            </Link>
-          </Magnetic>
-        ))}
-      </div>
-
-      {/* Mobile Top-Right MENU Button & Dropdown */}
-      <div className="md:hidden relative">
+      {/* SANSKAR Logo / Home Link (Zero Box) */}
+      <div className="pointer-events-auto">
         <Magnetic>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 px-3.5 py-1.5 bg-black/60 hover:bg-white/10 border border-white/20 hover:border-white/50 text-white rounded-full transition-all duration-300 backdrop-blur-md cursor-pointer font-bold tracking-widest text-xs uppercase"
-            aria-label="Toggle Navigation Menu"
+          <Link
+            href="/"
+            aria-label="SANSKAR"
+            onMouseEnter={() => handlePrefetch('/')}
+            className="group inline-flex items-center gap-3 cursor-pointer py-1"
           >
-            <span>{isOpen ? 'CLOSE' : 'MENU'}</span>
-            <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-cyan-400' : 'bg-white'} transition-colors duration-300`} />
-          </button>
+            <Image
+              src="/logo.png"
+              alt="SANSKAR"
+              width={140}
+              height={46}
+              priority
+              className="h-6 sm:h-7 w-auto object-contain mix-blend-screen brightness-110 contrast-125 filter transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]"
+            />
+          </Link>
         </Magnetic>
+      </div>
 
-        {/* Dropdown Menu Panel */}
+      {/* Pure Typographic MENU + Dropdown (Zero Box, Zero BG) */}
+      <div
+        className="pointer-events-auto relative flex flex-col items-end"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* The MENU Trigger — Pure Text */}
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="group inline-flex items-center gap-2 text-xs sm:text-sm font-light uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-300 py-1 cursor-pointer focus:outline-none"
+          aria-expanded={isOpen}
+          aria-label="Toggle Navigation Menu"
+        >
+          <span className="group-hover:translate-x-[-2px] transition-transform duration-300">
+            {isOpen ? 'Close' : 'Menu'}
+          </span>
+          <span
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+              isOpen ? 'bg-white scale-125' : 'bg-white/40 group-hover:bg-white'
+            }`}
+          />
+        </button>
+
+        {/* Floating Dropdown Links — Pure Typography, No Box, No Background */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="absolute right-0 top-12 w-48 bg-[#0a0a0c]/95 border border-white/15 rounded-2xl p-5 shadow-2xl backdrop-blur-xl flex flex-col gap-4 text-right z-50"
+              initial={{ opacity: 0, y: -6, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -6, filter: 'blur(6px)' }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute right-0 top-full pt-4 flex flex-col items-end gap-3.5 z-50"
             >
-              {ALL_LINKS.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onMouseEnter={() => handlePrefetch(link.href)}
-                  onFocus={() => handlePrefetch(link.href)}
-                  onClick={() => handleLinkClick(link.href)}
-                  aria-current={pathname === link.href ? 'page' : undefined}
-                  className={`text-xs font-mono font-bold tracking-widest uppercase transition-colors duration-200 ${
-                    pathname === link.href ? 'text-cyan-400' : 'text-white/80 hover:text-white'
-                  } ${pendingHref === link.href ? 'opacity-60 animate-pulse text-cyan-400' : ''}`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+              {NAV_LINKS.map((link, idx) => {
+                const isActive = pathname === link.href
+
+                return (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: 12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 12 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: idx * 0.04,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                  >
+                    <Link
+                      href={link.href}
+                      onMouseEnter={() => handlePrefetch(link.href)}
+                      onClick={() => setIsOpen(false)}
+                      className={`group relative inline-flex items-center gap-2 text-xs sm:text-sm font-light uppercase tracking-[0.25em] transition-all duration-300 py-0.5 ${
+                        isActive
+                          ? 'text-white'
+                          : 'text-white/45 hover:text-white hover:translate-x-[-3px]'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="active-nav-dot"
+                          className="w-1 h-1 rounded-full bg-white mr-1"
+                        />
+                      )}
+                      <span>{link.name}</span>
+                    </Link>
+                  </motion.div>
+                )
+              })}
             </motion.div>
           )}
         </AnimatePresence>
