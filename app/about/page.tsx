@@ -11,10 +11,13 @@ const AboutBackground = dynamic(
 export default function AboutPage() {
   return (
     <main className="relative min-h-screen w-full pt-20" style={{ background: '#0a0a0a' }}>
-      <AboutBackground />
-      <div className="relative z-10">
+      <div className="fixed inset-0 z-[5]">
+        <AboutBackground />
+      </div>
+      <div className="relative z-[15]">
         <About />
       </div>
     </main>
   )
 }
+

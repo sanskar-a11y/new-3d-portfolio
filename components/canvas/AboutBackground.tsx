@@ -1,25 +1,26 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
-/* ─────────────────────────────────────────────
-   GLSL Vertex Shader
-   Displaces a plane mesh with layered simplex noise,
-   creating slow organic undulation like dark water.
-   Mouse position warps the displacement locally.
-───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   GLSL Shaders: Kinetic Liquid Wave Surface
+   Features analytical normal estimation, dynamic specular shine,
+   Fresnel rim glow, and mouse interaction ripples.
+───────────────────────────────────────────────────────────── */
 
-const vertexShader = /* glsl */ `
+const liquidVertexShader = /* glsl */ `
   uniform float uTime;
   uniform vec2 uMouse;
-  varying vec2 vUv;
-  varying float vDisplacement;
+  uniform float uScroll;
 
-  //
-  // Simplex 3D noise (Ashima Arts)
-  //
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  varying float vElevation;
+
+  // Simplex 3D Noise function
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
@@ -68,80 +69,125 @@ const vertexShader = /* glsl */ `
     return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
   }
 
+  // Displacement function
+  float getElevation(vec2 pos, float time) {
+    float t = time * 0.25;
+    
+    // Large undulating waves
+    float elevation = snoise(vec3(pos.x * 0.4, pos.y * 0.4 - uScroll * 0.001, t * 0.5)) * 0.65;
+    
+    // Medium secondary ripples
+    elevation += snoise(vec3(pos.x * 0.9 + t * 0.2, pos.y * 0.9, t * 0.7)) * 0.3;
+    
+    // Fine capillary texture
+    elevation += snoise(vec3(pos.x * 2.2, pos.y * 2.2 - t * 0.4, t * 1.2)) * 0.12;
+
+    // Interactive mouse distortion wave
+    float dist = distance(pos, uMouse);
+    float mouseWave = sin(dist * 6.0 - time * 3.5) * exp(-dist * 1.5) * 0.45;
+    elevation += mouseWave;
+
+    return elevation;
+  }
+
   void main() {
     vUv = uv;
-
     vec3 pos = position;
 
-    // Layered noise displacement
-    float slow = uTime * 0.08;
-    float n1 = snoise(vec3(pos.x * 0.8, pos.y * 0.8, slow)) * 0.35;
-    float n2 = snoise(vec3(pos.x * 1.6, pos.y * 1.6, slow * 1.5)) * 0.15;
-    float n3 = snoise(vec3(pos.x * 3.2, pos.y * 3.2, slow * 2.0)) * 0.05;
+    float elevation = getElevation(pos.xy, uTime);
+    pos.z += elevation;
+    vElevation = elevation;
 
-    float displacement = n1 + n2 + n3;
+    // Compute normal using finite differences for accurate light reflection
+    float offset = 0.04;
+    float elRight = getElevation(pos.xy + vec2(offset, 0.0), uTime);
+    float elUp    = getElevation(pos.xy + vec2(0.0, offset), uTime);
 
-    // Mouse proximity warp
-    float mouseDist = distance(pos.xy, uMouse);
-    float mouseInfluence = smoothstep(2.0, 0.0, mouseDist);
-    displacement += mouseInfluence * 0.25 * snoise(vec3(pos.x * 2.0, pos.y * 2.0, slow * 3.0));
+    vec3 v1 = vec3(offset, 0.0, elRight - elevation);
+    vec3 v2 = vec3(0.0, offset, elUp - elevation);
+    vec3 calculatedNormal = normalize(cross(v1, v2));
 
-    pos.z += displacement;
-    vDisplacement = displacement;
+    vNormal = normalMatrix * calculatedNormal;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+    vViewPosition = -mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
   }
 `
 
-/* ─────────────────────────────────────────────
-   GLSL Fragment Shader
-   Renders the displaced plane as a dark surface
-   with subtle edge/ridge lighting from the
-   displacement normals — like dark liquid silk.
-───────────────────────────────────────────── */
-
-const fragmentShader = /* glsl */ `
+const liquidFragmentShader = /* glsl */ `
   uniform float uTime;
+  uniform vec2 uMouse;
+
   varying vec2 vUv;
-  varying float vDisplacement;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  varying float vElevation;
 
   void main() {
-    // Base matt black
-    vec3 baseColor = vec3(0.04, 0.04, 0.045);
+    vec3 normal = normalize(vNormal);
+    vec3 viewDir = normalize(vViewPosition);
 
-    // Subtle highlight on ridges
-    float ridge = smoothstep(-0.1, 0.4, vDisplacement);
-    vec3 highlight = vec3(0.12, 0.12, 0.13) * ridge;
+    // Directional light following cursor
+    vec3 lightDir = normalize(vec3(uMouse.x * 0.8, uMouse.y * 0.8 + 0.3, 1.2));
+    
+    // Diffuse component
+    float diff = max(dot(normal, lightDir), 0.0);
 
-    // Very faint edge shimmer
-    float edge = smoothstep(0.2, 0.5, abs(vDisplacement));
-    vec3 shimmer = vec3(0.08, 0.08, 0.09) * edge * 0.5;
+    // Specular highlight (glossy metallic reflection)
+    vec3 halfDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfDir), 0.0), 28.0);
 
-    vec3 finalColor = baseColor + highlight + shimmer;
+    // Fresnel rim sheen (creates that luminous edge contour)
+    float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.2);
 
-    // Subtle vignette to darken edges
+    // Deep matte black base with titanium-silver sheen
+    vec3 matteBase = vec3(0.035, 0.035, 0.04);
+    vec3 midTone = vec3(0.09, 0.095, 0.11);
+    vec3 silverHighlight = vec3(0.75, 0.78, 0.85);
+    vec3 rimColor = vec3(0.4, 0.43, 0.5);
+
+    // Composite surface color
+    vec3 color = mix(matteBase, midTone, diff * 0.6);
+    color += spec * silverHighlight * 0.65;
+    color += fresnel * rimColor * 0.4;
+
+    // Elevation glow on wave crests
+    float crest = smoothstep(0.2, 0.8, vElevation);
+    color += crest * vec3(0.08, 0.09, 0.11);
+
+    // Subtle edge vignette
     vec2 center = vUv - 0.5;
-    float vignette = 1.0 - dot(center, center) * 0.8;
-    finalColor *= vignette;
+    float vignette = 1.0 - dot(center, center) * 0.9;
+    color *= clamp(vignette, 0.3, 1.0);
 
-    gl_FragColor = vec4(finalColor, 1.0);
+    gl_FragColor = vec4(color, 0.95);
   }
 `
 
-/* ─── Displacement Mesh ─── */
-
-function DisplacementPlane() {
+/* ─── 3D Liquid Plane ─── */
+function LiquidMesh() {
   const meshRef = useRef<THREE.Mesh>(null)
   const mouseRef = useRef(new THREE.Vector2(0, 0))
+  const scrollRef = useRef(0)
   const { viewport } = useThree()
 
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
       uMouse: { value: new THREE.Vector2(0, 0) },
+      uScroll: { value: 0 },
     }),
     []
   )
+
+  useEffect(() => {
+    const handleScroll = () => {
+      scrollRef.current = window.scrollY
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useFrame(({ clock, pointer }) => {
     if (!meshRef.current) return
@@ -149,42 +195,99 @@ function DisplacementPlane() {
 
     mat.uniforms.uTime.value = clock.getElapsedTime()
 
-    // Smooth mouse tracking in world space
+    // Smooth cursor interpolation
     const targetX = pointer.x * viewport.width * 0.5
     const targetY = pointer.y * viewport.height * 0.5
-    mouseRef.current.x += (targetX - mouseRef.current.x) * 0.05
-    mouseRef.current.y += (targetY - mouseRef.current.y) * 0.05
+    mouseRef.current.x += (targetX - mouseRef.current.x) * 0.08
+    mouseRef.current.y += (targetY - mouseRef.current.y) * 0.08
     mat.uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y)
+
+    // Smooth scroll interpolation
+    mat.uniforms.uScroll.value += (scrollRef.current - mat.uniforms.uScroll.value) * 0.05
   })
 
   return (
-    <mesh ref={meshRef} rotation={[0, 0, 0]} position={[0, 0, 0]}>
-      <planeGeometry args={[viewport.width * 1.4, viewport.height * 1.4, 128, 128]} />
+    <mesh ref={meshRef} position={[0, 0, -0.5]} rotation={[-0.15, 0, 0]}>
+      <planeGeometry args={[viewport.width * 1.6, viewport.height * 1.6, 160, 160]} />
       <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
+        vertexShader={liquidVertexShader}
+        fragmentShader={liquidFragmentShader}
         uniforms={uniforms}
-        side={THREE.DoubleSide}
+        transparent
       />
     </mesh>
   )
 }
 
-/* ─── Exported Canvas Component ─── */
+/* ─── Floating 3D Particle Dust ─── */
+const PARTICLE_COUNT = 120
+const PARTICLE_POSITIONS = new Float32Array(PARTICLE_COUNT * 3)
+const PARTICLE_SCALES = new Float32Array(PARTICLE_COUNT)
 
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  // Deterministic pseudo-random distribution based on index
+  const seed1 = Math.sin(i * 12.9898 + 78.233) * 43758.5453
+  const seed2 = Math.sin(i * 93.9898 + 67.345) * 24634.6345
+  const seed3 = Math.sin(i * 45.1234 + 12.876) * 58392.1234
+  const rand1 = seed1 - Math.floor(seed1)
+  const rand2 = seed2 - Math.floor(seed2)
+  const rand3 = seed3 - Math.floor(seed3)
+
+  PARTICLE_POSITIONS[i * 3] = (rand1 - 0.5) * 15
+  PARTICLE_POSITIONS[i * 3 + 1] = (rand2 - 0.5) * 15
+  PARTICLE_POSITIONS[i * 3 + 2] = (rand3 - 0.5) * 6 + 1
+  PARTICLE_SCALES[i] = rand1 * 0.04 + 0.015
+}
+
+function ParticleDust() {
+  const pointsRef = useRef<THREE.Points>(null)
+
+  useFrame(({ clock, pointer }) => {
+    if (!pointsRef.current) return
+    const t = clock.getElapsedTime()
+    pointsRef.current.rotation.y = t * 0.015 + pointer.x * 0.05
+    pointsRef.current.rotation.x = t * 0.01 + pointer.y * 0.05
+  })
+
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[PARTICLE_POSITIONS, 3]}
+        />
+        <bufferAttribute
+          attach="attributes-scale"
+          args={[PARTICLE_SCALES, 1]}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.035}
+        color="#c8d0e0"
+        transparent
+        opacity={0.35}
+        blending={THREE.AdditiveBlending}
+        sizeAttenuation
+      />
+    </points>
+  )
+}
+
+/* ─── Exported Fullscreen Background Component ─── */
 export function AboutBackground() {
   return (
-    <div className="fixed inset-0 z-0" style={{ background: '#0a0a0a' }}>
+    <div className="fixed inset-0 z-0 pointer-events-none w-full h-full overflow-hidden bg-[#0a0a0a]">
       <Canvas
         dpr={[1, 1.5]}
         gl={{
           antialias: true,
           powerPreference: 'high-performance',
-          alpha: false,
+          alpha: true,
         }}
-        camera={{ position: [0, 0, 3], fov: 50 }}
+        camera={{ position: [0, 0, 4.2], fov: 50 }}
       >
-        <DisplacementPlane />
+        <LiquidMesh />
+        <ParticleDust />
       </Canvas>
     </div>
   )
