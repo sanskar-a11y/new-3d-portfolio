@@ -165,7 +165,7 @@ export const ProjectItem = memo(function ProjectItem({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.25, delay: shouldReduceMotion ? 0 : Math.min(idx * 0.015, 0.2) }}
-      className={`group flex items-center justify-between gap-4 py-6 sm:py-8 border-b border-white/10 transition-all duration-300 select-none cursor-pointer focus-visible:outline-white ${zIndexClass}`}
+      className={`group flex items-center justify-between gap-4 py-6 sm:py-8 transition-all duration-300 select-none cursor-pointer focus-visible:outline-white ${zIndexClass}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={() => onSelect(idx)}
