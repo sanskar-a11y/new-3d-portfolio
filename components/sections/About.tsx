@@ -178,13 +178,13 @@ export function About() {
       {/* ═══════════════════════════════════════════════
           01. HERO — Name & Opening Hook
       ═══════════════════════════════════════════════ */}
-      <section className="min-h-[80vh] flex flex-col justify-end px-6 sm:px-14 lg:px-24 pb-20 sm:pb-32">
-        <motion.div style={{ y: yHero }} className="max-w-5xl">
+      <section className="min-h-[85vh] flex flex-col justify-center items-center text-center px-6 sm:px-14 lg:px-24 pb-16 sm:pb-24">
+        <motion.div style={{ y: yHero }} className="max-w-5xl flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-3 mb-8"
+            className="flex items-center justify-center gap-3 mb-8"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             <p className="uppercase tracking-[0.3em] text-white/45 text-[11px] font-light">
@@ -192,7 +192,7 @@ export function About() {
             </p>
           </motion.div>
 
-          <h1 className="text-[clamp(2.4rem,6.5vw,5.5rem)] font-extralight leading-[1.05] tracking-tight text-white">
+          <h1 className="text-[clamp(2.4rem,6.5vw,5.5rem)] font-extralight leading-[1.05] tracking-tight text-white text-center">
             <motion.span
               initial={{ opacity: 0, y: 35, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -205,9 +205,9 @@ export function About() {
               initial={{ opacity: 0, y: 35, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.95, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="block text-white/40 font-thin italic mt-1"
+              className="block text-white/40 font-thin italic mt-2"
             >
-              I hunt for the answer.
+              I hunt for complete dominance.
             </motion.span>
           </h1>
         </motion.div>
