@@ -24,7 +24,7 @@ export function Footer() {
         <div className="flex flex-col gap-6">
           <h3 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white">Let&apos;s Talk</h3>
           <Magnetic>
-            <a href="mailto:sanskarsharma923@gmail.com" className="text-xl sm:text-2xl text-cyan-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded">
+            <a href="mailto:sanskarsharma923@gmail.com" className="text-xl sm:text-2xl text-white hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded">
               sanskarsharma923@gmail.com
             </a>
           </Magnetic>
@@ -38,7 +38,7 @@ export function Footer() {
                   href="https://www.fiverr.com/sanskar6008/buying?source=avatar_menu_profile" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-400 transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                  className="hover:text-white transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
                 >
                   Fiverr
                 </a>
@@ -50,7 +50,7 @@ export function Footer() {
                   href="https://www.linkedin.com/in/sanskar-sharma-b5830433a/" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-400 transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                  className="hover:text-white transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
                 >
                   LinkedIn
                 </a>
@@ -62,7 +62,7 @@ export function Footer() {
                   href="https://github.com/sanskar-a11y" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-400 transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                  className="hover:text-white transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
                 >
                   GitHub
                 </a>

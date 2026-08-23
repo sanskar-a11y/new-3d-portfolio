@@ -157,7 +157,7 @@ export const HUD = memo(function HUD() {
               <div className="relative w-7 h-3.5 rounded-full border border-white/60 group-hover:border-white transition-colors duration-200 box-border p-0.5 flex items-center">
                 <div
                   className={`w-2 h-2 rounded-full bg-white transition-transform duration-300 ${
-                    mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-3 bg-cyan-300'
+                    mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-3 bg-white'
                   }`}
                 />
               </div>

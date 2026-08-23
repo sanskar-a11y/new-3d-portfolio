@@ -69,7 +69,7 @@ export function About() {
       {/* 01: Hero Intro */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         <div className="md:col-span-4 flex flex-col gap-2">
-          <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
             [ 01 // IDENTITY ]
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight">
@@ -83,7 +83,7 @@ export function About() {
           </p>
 
           <blockquote className="p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
-            <p className="italic text-base sm:text-lg text-cyan-200/90 leading-relaxed font-light">
+            <p className="italic text-base sm:text-lg text-white/90 leading-relaxed font-light">
               “I treat every project like a product launch. Clean structure, premium feel, no shortcuts.”
             </p>
             <footer className="mt-3 text-xs font-mono tracking-widest uppercase text-white/40">
@@ -96,7 +96,7 @@ export function About() {
       {/* 02: Journey Timeline */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
         <div className="md:col-span-4 flex flex-col gap-2">
-          <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
             [ 02 // JOURNEY ]
           </span>
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
@@ -105,16 +105,16 @@ export function About() {
         </div>
 
         <div className="md:col-span-8 flex flex-col gap-6 relative">
-          <div className="absolute left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-cyan-400 via-cyan-400/30 to-transparent" />
+          <div className="absolute left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-white/60 via-white/20 to-transparent" />
           
           {TIMELINE.map((item, idx) => (
             <div key={idx} className="flex items-start gap-5 relative pl-2">
-              <div className="w-5 h-5 rounded-full border-2 border-cyan-400 bg-[#080810] flex items-center justify-center shrink-0 z-10 shadow-[0_0_10px_rgba(0,240,255,0.6)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <div className="w-5 h-5 rounded-full border-2 border-white/60 bg-[#080810] flex items-center justify-center shrink-0 z-10 shadow-[0_0_10px_rgba(255,255,255,0.4)]">
+                <div className="w-1.5 h-1.5 rounded-full bg-white" />
               </div>
               <div className="flex flex-col gap-1 pb-6">
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs font-bold text-cyan-400 tracking-wider">
+                  <span className="font-mono text-xs font-bold text-white tracking-wider">
                     {item.year}
                   </span>
                   <span className="font-mono text-xs text-white/40 uppercase tracking-widest">
@@ -136,7 +136,7 @@ export function About() {
       {/* 03: Skills & Tooling */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
         <div className="md:col-span-4 flex flex-col gap-2">
-          <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
             [ 03 // EXPERTISE ]
           </span>
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
@@ -148,9 +148,9 @@ export function About() {
           {SKILL_GROUPS.map((group, idx) => (
             <div
               key={idx}
-              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-cyan-400/30 transition-all duration-300"
+              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/30 transition-all duration-300"
             >
-              <h3 className="font-mono text-xs font-bold tracking-widest uppercase text-cyan-400 mb-3">
+              <h3 className="font-mono text-xs font-bold tracking-widest uppercase text-white/90 mb-3">
                 {group.category}
               </h3>
               <div className="flex flex-wrap gap-1.5">
@@ -171,7 +171,7 @@ export function About() {
       {/* 04: Certificates */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
         <div className="md:col-span-4 flex flex-col gap-2">
-          <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
             [ 04 // CREDENTIALS ]
           </span>
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
@@ -183,10 +183,10 @@ export function About() {
           {CERTIFICATES.map((cert, idx) => (
             <div
               key={idx}
-              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-cyan-400/40 hover:bg-cyan-950/10 transition-all duration-300 flex flex-col justify-between gap-3"
+              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/40 hover:bg-white/[0.06] transition-all duration-300 flex flex-col justify-between gap-3"
             >
               <div className="flex items-start justify-between">
-                <span className="font-mono text-[10px] font-bold text-cyan-400 border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 rounded-full tracking-widest uppercase">
+                <span className="font-mono text-[10px] font-bold text-white/90 border border-white/30 bg-white/10 px-2 py-0.5 rounded-full tracking-widest uppercase">
                   {cert.badge}
                 </span>
                 <svg className="w-4 h-4 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -218,7 +218,7 @@ export function About() {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/contact"
-            className="px-8 py-3 rounded-full bg-cyan-400 hover:bg-cyan-300 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-[0_0_20px_rgba(0,240,255,0.4)]"
+            className="px-8 py-3 rounded-full bg-white hover:bg-white/90 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-[0_0_20px_rgba(255,255,255,0.4)]"
           >
             Get In Touch
           </Link>

@@ -20,13 +20,13 @@ export default function ContactPage() {
         {/* Header */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
-            <span className="font-mono text-xs text-emerald-400 font-bold tracking-widest uppercase">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+            <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
               AVAILABLE FOR NEW PROJECTS // 2026
             </span>
           </div>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white">
-            Let&apos;s build something <span className="text-cyan-400">remarkable.</span>
+            Let&apos;s build something <span className="text-white underline decoration-white/30 underline-offset-8">remarkable.</span>
           </h1>
           <p className="text-base sm:text-xl text-white/60 font-light max-w-2xl">
             Whether you need a high-performance web application, full-stack React PWA, cinematic video cut, or high-CTR thumbnail assets — my inbox is open.
@@ -41,7 +41,7 @@ export default function ContactPage() {
             </span>
             <a
               href={`mailto:${email}`}
-              className="text-lg sm:text-2xl font-mono font-bold text-white hover:text-cyan-400 transition-colors"
+              className="text-lg sm:text-2xl font-mono font-bold text-white hover:text-white/80 transition-colors"
             >
               {email}
             </a>
@@ -56,7 +56,7 @@ export default function ContactPage() {
             </button>
             <a
               href={`mailto:${email}`}
-              className="px-6 py-2.5 rounded-full bg-cyan-400 hover:bg-cyan-300 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-[0_0_15px_rgba(0,240,255,0.4)]"
+              className="px-6 py-2.5 rounded-full bg-white hover:bg-white/90 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-[0_0_15px_rgba(255,255,255,0.4)]"
             >
               SEND MAIL
             </a>
@@ -71,13 +71,13 @@ export default function ContactPage() {
             href="https://www.fiverr.com/sanskar6008/buying?source=avatar_menu_profile" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-400/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
+            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-white/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
           >
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+              <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
                 [ FREELANCE // SERVICES ]
               </span>
-              <svg className="w-4 h-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M7 17L17 7M17 7H7M17 7V17"/>
               </svg>
             </div>
@@ -92,13 +92,13 @@ export default function ContactPage() {
             href="https://www.linkedin.com/in/sanskar-sharma-b5830433a/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-400/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
+            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-white/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
           >
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+              <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
                 [ NETWORK // CAREER ]
               </span>
-              <svg className="w-4 h-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M7 17L17 7M17 7H7M17 7V17"/>
               </svg>
             </div>
@@ -113,13 +113,13 @@ export default function ContactPage() {
             href="https://github.com/sanskar-a11y" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-400/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
+            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-white/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
           >
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+              <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
                 [ SOURCE // REPOSITORIES ]
               </span>
-              <svg className="w-4 h-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M7 17L17 7M17 7H7M17 7V17"/>
               </svg>
             </div>
