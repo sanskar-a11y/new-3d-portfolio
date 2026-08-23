@@ -41,6 +41,14 @@ export function PixelBackground() {
       size: number
       baseOpacity: number
       currentOpacity: number
+      phaseX: number
+      phaseY: number
+      speedX: number
+      speedY: number
+      ampX: number
+      ampY: number
+      pulseSpeed: number
+      pulsePhase: number
     }
 
     let particles: Particle[] = []
@@ -63,8 +71,8 @@ export function PixelBackground() {
           if (Math.random() < blockFillProbability) {
             const baseX = c * virtualBlockSize + Math.random() * virtualBlockSize
             const baseY = r * virtualBlockSize + Math.random() * virtualBlockSize
-            const size = 2.5 + Math.random() * 0.5
-            const baseOpacity = 0.16 + Math.random() * 0.10
+            const size = 2.0 + Math.random() * 1.2
+            const baseOpacity = 0.18 + Math.random() * 0.16
 
             particles.push({
               x: baseX,
@@ -76,6 +84,14 @@ export function PixelBackground() {
               size,
               baseOpacity,
               currentOpacity: baseOpacity,
+              phaseX: Math.random() * Math.PI * 2,
+              phaseY: Math.random() * Math.PI * 2,
+              speedX: 0.4 + Math.random() * 0.8,
+              speedY: 0.4 + Math.random() * 0.8,
+              ampX: 12 + Math.random() * 18,
+              ampY: 12 + Math.random() * 18,
+              pulseSpeed: 0.8 + Math.random() * 1.5,
+              pulsePhase: Math.random() * Math.PI * 2,
             })
           }
         }
@@ -104,6 +120,8 @@ export function PixelBackground() {
         return
       }
 
+      const time = performance.now() * 0.001
+
       // Smooth lerp mouse tracking
       mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.18
       mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.18
@@ -116,14 +134,24 @@ export function PixelBackground() {
       for (let i = 0; i < particles.length; i++) {
         const pt = particles[i]
 
-        // Calculate distance from mouse to resting anchor coordinate
-        const dx = pt.baseX - mx
-        const dy = pt.baseY - my
+        // Continuous organic floating & wave drift
+        const driftX = Math.sin(time * pt.speedX + pt.phaseX) * pt.ampX + Math.cos(time * pt.speedY * 0.7 + pt.phaseY) * (pt.ampX * 0.4)
+        const driftY = Math.cos(time * pt.speedY + pt.phaseY) * pt.ampY + Math.sin(time * pt.speedX * 0.7 + pt.phaseX) * (pt.ampY * 0.4)
+
+        const anchorX = pt.baseX + driftX
+        const anchorY = pt.baseY + driftY
+
+        // Calculate distance from mouse to dynamic anchor coordinate
+        const dx = anchorX - mx
+        const dy = anchorY - my
         const distSq = dx * dx + dy * dy
 
-        let targetX = pt.baseX
-        let targetY = pt.baseY
-        let targetOpacity = pt.baseOpacity
+        let targetX = anchorX
+        let targetY = anchorY
+
+        // Dynamic twinkling opacity pulsation
+        const twinkle = 0.7 + 0.35 * Math.sin(time * pt.pulseSpeed + pt.pulsePhase)
+        let targetOpacity = pt.baseOpacity * twinkle
 
         // Mouse hover interaction (vanishing + gentle push away)
         if (distSq < maxRepelDistSq && distSq > 0.001) {
@@ -133,19 +161,19 @@ export function PixelBackground() {
           const factor = 1 - dist / maxRepelDist // 1.0 at center, 0.0 at radius edge
 
           // Smoothly drop opacity to 0 when near cursor (vanishing effect)
-          targetOpacity = pt.baseOpacity * Math.max(0, 1 - Math.pow(factor, 0.6) * 1.5)
+          targetOpacity = targetOpacity * Math.max(0, 1 - Math.pow(factor, 0.6) * 1.5)
 
           // Gently repel particle away from cursor
-          const repelForce = Math.pow(factor, 1.5) * 22
-          targetX = pt.baseX + normX * repelForce
-          targetY = pt.baseY + normY * repelForce
+          const repelForce = Math.pow(factor, 1.5) * 28
+          targetX = anchorX + normX * repelForce
+          targetY = anchorY + normY * repelForce
         }
 
-        // Spring physics (Hooke's law) back to anchor target position
-        const ax = (targetX - pt.x) * 0.18
-        const ay = (targetY - pt.y) * 0.18
-        pt.vx = (pt.vx + ax) * 0.72
-        pt.vy = (pt.vy + ay) * 0.72
+        // Spring physics back to target anchor position
+        const ax = (targetX - pt.x) * 0.16
+        const ay = (targetY - pt.y) * 0.16
+        pt.vx = (pt.vx + ax) * 0.74
+        pt.vy = (pt.vy + ay) * 0.74
         pt.x += pt.vx
         pt.y += pt.vy
 
