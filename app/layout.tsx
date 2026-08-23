@@ -26,8 +26,15 @@ const spaceMono = Space_Mono({
 import { CanvasWrapper } from '@/components/canvas/CanvasWrapper'
 
 export const metadata = {
-  title: '3D Portfolio',
-  description: 'Interactive 3D Portfolio Experience',
+  title: 'Sanskar — Creative Developer, Video Editor & Designer',
+  description: 'Portfolio of Sanskar — a creative developer, video editor, and designer building premium digital experiences.',
+  authors: [{ name: 'Sanskar Sharma', url: 'https://github.com/sanskar-a11y' }],
+  keywords: ['Sanskar', 'Creative Developer', 'Video Editor', 'Thumbnail Designer', 'Next.js', 'React', 'Three.js', 'WebGL', 'Portfolio'],
+  openGraph: {
+    title: 'Sanskar — Creative Developer, Video Editor & Designer',
+    description: 'Websites, videos, and thumbnails crafted to feel premium.',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

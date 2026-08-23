@@ -1,41 +1,139 @@
 'use client'
 
-export default function ContactPage() {
-  return (
-    <main className="relative min-h-screen w-full pt-32 px-6 sm:px-12 flex flex-col justify-between">
-      <div className="mx-auto max-w-7xl w-full my-auto">
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tighter mb-8">Get In Touch</h1>
-        <p className="text-xl text-gray-400 max-w-2xl mb-12">
-          Interested in working together or just want to say hi? Connect via LinkedIn or check out my repositories on GitHub.
-        </p>
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 
-        <div className="flex flex-wrap gap-4">
+export default function ContactPage() {
+  const [copied, setCopied] = useState(false)
+  const email = 'sanskarsharma923@gmail.com'
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText(email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
+
+  return (
+    <main className="relative min-h-screen w-full pt-32 pb-24 px-6 sm:px-12 flex flex-col justify-center max-w-6xl mx-auto">
+      <div className="flex flex-col gap-10">
+        
+        {/* Header */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
+            <span className="font-mono text-xs text-emerald-400 font-bold tracking-widest uppercase">
+              AVAILABLE FOR NEW PROJECTS // 2026
+            </span>
+          </div>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white">
+            Let&apos;s build something <span className="text-cyan-400">remarkable.</span>
+          </h1>
+          <p className="text-base sm:text-xl text-white/60 font-light max-w-2xl">
+            Whether you need a high-performance web application, full-stack React PWA, cinematic video cut, or high-CTR thumbnail assets — my inbox is open.
+          </p>
+        </div>
+
+        {/* Primary Email Direct Copy Box */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="font-mono text-xs text-white/40 uppercase tracking-widest">
+              DIRECT INBOX
+            </span>
+            <a
+              href={`mailto:${email}`}
+              className="text-lg sm:text-2xl font-mono font-bold text-white hover:text-cyan-400 transition-colors"
+            >
+              {email}
+            </a>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={copyEmail}
+              className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200"
+            >
+              {copied ? '✓ COPIED' : 'COPY EMAIL'}
+            </button>
+            <a
+              href={`mailto:${email}`}
+              className="px-6 py-2.5 rounded-full bg-cyan-400 hover:bg-cyan-300 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-[0_0_15px_rgba(0,240,255,0.4)]"
+            >
+              SEND MAIL
+            </a>
+          </div>
+        </div>
+
+        {/* Social / Work Channels */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          
+          {/* Fiverr */}
+          <a 
+            href="https://www.fiverr.com/sanskar6008/buying?source=avatar_menu_profile" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-400/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+                [ FREELANCE // SERVICES ]
+              </span>
+              <svg className="w-4 h-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">Fiverr Profile</h2>
+              <p className="text-xs font-mono text-white/50">Hire for Video Editing & Thumbnails</p>
+            </div>
+          </a>
+
+          {/* LinkedIn */}
           <a 
             href="https://www.linkedin.com/in/sanskar-sharma-b5830433a/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 text-white rounded-full transition-all duration-300 backdrop-blur-sm text-sm font-semibold tracking-wider uppercase"
+            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-400/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
           >
-            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-            </svg>
-            LinkedIn
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+                [ NETWORK // CAREER ]
+              </span>
+              <svg className="w-4 h-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">LinkedIn</h2>
+              <p className="text-xs font-mono text-white/50">Sanskar Sharma</p>
+            </div>
           </a>
 
+          {/* GitHub */}
           <a 
             href="https://github.com/sanskar-a11y" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 text-white rounded-full transition-all duration-300 backdrop-blur-sm text-sm font-semibold tracking-wider uppercase"
+            className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-400/40 transition-all duration-300 flex flex-col justify-between gap-4 group"
           >
-            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-            GitHub
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest uppercase">
+                [ SOURCE // REPOSITORIES ]
+              </span>
+              <svg className="w-4 h-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">GitHub</h2>
+              <p className="text-xs font-mono text-white/50">@sanskar-a11y</p>
+            </div>
           </a>
+
         </div>
+
       </div>
     </main>
   )
 }
+
 
