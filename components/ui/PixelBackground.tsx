@@ -26,9 +26,9 @@ export function PixelBackground() {
     let height = 0
 
     // Configuration parameters
-    const virtualBlockSize = 36 // Grid cell size in px
-    const blockFillProbability = 0.6 // Exactly 6 out of 10 blocks contain a pixel (0.6 density)
-    const maxRepelDist = 140 // Mouse hover interaction radius in px
+    const virtualBlockSize = 20 // Dense grid cell size in px (3.5x higher particle count)
+    const blockFillProbability = 0.85 // High density particle distribution
+    const maxRepelDist = 150 // Mouse hover interaction radius in px
     const maxRepelDistSq = maxRepelDist * maxRepelDist
 
     interface Particle {
@@ -71,8 +71,8 @@ export function PixelBackground() {
           if (Math.random() < blockFillProbability) {
             const baseX = c * virtualBlockSize + Math.random() * virtualBlockSize
             const baseY = r * virtualBlockSize + Math.random() * virtualBlockSize
-            const size = 2.0 + Math.random() * 1.2
-            const baseOpacity = 0.18 + Math.random() * 0.16
+            const size = 1.4 + Math.random() * 1.8
+            const baseOpacity = 0.15 + Math.random() * 0.28
 
             particles.push({
               x: baseX,
