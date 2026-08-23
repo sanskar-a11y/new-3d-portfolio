@@ -1,15 +1,17 @@
-'use client'
+import type { Metadata } from 'next'
+import { ProjectsClient } from './ProjectsClient'
 
-import { Works } from '@/components/sections/Works'
-import { ProjectsLoader } from '@/components/ui/ProjectsLoader'
-
-export default function ProjectsPage() {
-  return (
-    <main className="min-h-screen w-full pt-20 sm:pt-24">
-      <ProjectsLoader />
-      {/* Transparent — 3D cat visible behind project titles */}
-      <Works />
-    </main>
-  )
+export const metadata: Metadata = {
+  title: 'Projects',
+  description:
+    'Featured engineering builds, 3D WebGL experiences, AI engineering curriculum, and creative digital solutions by Sanskar.',
+  openGraph: {
+    title: 'Projects | Sanskar — Selected Works & Engineering Builds',
+    description:
+      'Featured web engineering, 3D WebGL experiences, AI engineering curriculum, and full-stack software applications.',
+  },
 }
 
+export default function ProjectsPage() {
+  return <ProjectsClient />
+}
