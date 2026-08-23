@@ -4,30 +4,22 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link'
 
-const TIMELINE = [
-  { year: '2023', title: 'Diploma in Computer Science', org: 'Sanskriti University', desc: 'Commenced foundational computer science, algorithmics, and core software engineering.' },
-  { year: '2025', title: 'Digital Learning Platform (PWA)', org: 'React.js + Firebase', desc: 'Architected offline-capable PWA with Firebase Auth, Firestore, and AI-prompt workflows.' },
-  { year: '2025', title: 'National Hackathon Team Leader', org: 'COER University', desc: 'Led a cross-functional team in high-pressure rapid prototyping and live product presentation.' },
-  { year: '2026', title: 'AI Productivity Suite', org: 'Next.js + AI Tooling', desc: 'Engineering next-generation workflow and context automation pipelines.' },
-  { year: '2026', title: 'CS Graduation', org: 'Sanskriti University', desc: 'Completing final-semester degree with focus on full-stack web and creative media.' },
-]
-
 const SKILL_GROUPS = [
   {
     category: 'Frontend & Creative Web',
-    skills: ['React.js', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Vite', 'Bootstrap', 'Three.js / WebGL', 'HTML5 / CSS3'],
+    skills: ['React.js', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Vite', 'Three.js / WebGL', 'Framer Motion', 'HTML5 / CSS3'],
   },
   {
-    category: 'Backend & Cloud',
-    skills: ['Firebase', 'Firestore', 'Vercel', 'Netlify', 'GitHub', 'Linux Basics'],
+    category: 'AI, Automation & Systems',
+    skills: ['Python', 'AI APIs', 'Prompt Engineering', 'Automation Pipelines', 'Firebase', 'Firestore', 'Vercel', 'Git & GitHub'],
   },
   {
-    category: 'Programming Languages',
-    skills: ['JavaScript', 'TypeScript', 'Python', 'C'],
+    category: 'Visual & Creative Media',
+    skills: ['Video Editing', 'Motion Graphics', 'High-CTR Thumbnails', 'Sound Design', 'Storytelling', 'Color Grading'],
   },
   {
-    category: 'Visual & Creative Direction',
-    skills: ['Video Editing', 'Motion Graphics', 'Thumbnail Design', 'Sound Design', 'Prompt Engineering', 'PWA Development'],
+    category: 'Core Disciplines',
+    skills: ['Problem Solving', 'Human Behavior & Psychology', 'Rapid Prototyping', 'System Architecture', 'Product Design'],
   },
 ]
 
@@ -61,83 +53,180 @@ export function About() {
     offset: ['start end', 'end start']
   })
 
-  const y = useTransform(scrollYProgress, [0, 1], [60, -60])
+  const y = useTransform(scrollYProgress, [0, 1], [40, -40])
 
   return (
-    <div ref={container} className="relative w-full text-white px-5 sm:px-10 lg:px-16 py-16 sm:py-24 max-w-6xl mx-auto flex flex-col gap-24">
+    <div ref={container} className="relative w-full text-white px-5 sm:px-10 lg:px-16 py-16 sm:py-24 max-w-6xl mx-auto flex flex-col gap-20 sm:gap-24">
       
-      {/* 01: Hero Intro */}
+      {/* 01: Hook & Core Manifesto */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         <div className="md:col-span-4 flex flex-col gap-2">
           <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
-            [ 01 // IDENTITY ]
+            [ 01 // MANIFESTO ]
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight">
-            The person behind the work.
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-tight">
+            I don&apos;t just build. I hunt for the answer.
           </h2>
         </div>
 
-        <motion.div style={{ y }} className="md:col-span-8 flex flex-col gap-6">
-          <p className="text-lg sm:text-2xl font-light text-white/90 leading-relaxed">
-            I&apos;m <span className="font-bold text-white">Sanskar Sharma</span>, a final-semester Computer Science student from Uttar Pradesh, India. I build web apps, edit videos, and design thumbnails — and I care deeply about making things that look and feel premium.
+        <motion.div style={{ y }} className="md:col-span-8 flex flex-col gap-6 text-white/85 text-base sm:text-lg leading-relaxed font-light">
+          <p className="text-lg sm:text-2xl font-light text-white leading-relaxed">
+            I&apos;m <span className="font-bold text-white">Sanskar</span>, a developer, problem solver, and relentless learner who likes turning curiosity into something real.
           </p>
 
-          <blockquote className="p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
-            <p className="italic text-base sm:text-lg text-white/90 leading-relaxed font-light">
-              “I treat every project like a product launch. Clean structure, premium feel, no shortcuts.”
+          <p>
+            I have never been very good at accepting <span className="italic text-white">“that&apos;s just how it works.”</span>
+          </p>
+
+          <div className="p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col gap-2">
+            <p className="font-mono text-xs sm:text-sm text-white/90 leading-relaxed">
+              If something catches my attention, I investigate it.<br/>
+              If I don&apos;t understand it, I learn it.<br/>
+              If something can be built better, I rebuild it.<br/>
+              And if there&apos;s a problem standing between me and the result, I keep pulling it apart until I find the way through.
             </p>
-            <footer className="mt-3 text-xs font-mono tracking-widest uppercase text-white/40">
-              — Sanskar // Creative Developer & Storyteller
-            </footer>
-          </blockquote>
+          </div>
+
+          <p>
+            That mindset is what pulled me into technology. I started with the fundamentals of programming and web development, then moved deeper into <span className="font-semibold text-white">Python, JavaScript, AI, automation, modern web technologies, APIs, databases, and creative digital experiences</span>. I&apos;m especially interested in the space where software stops being static and starts becoming intelligent, automated, and alive.
+          </p>
         </motion.div>
       </section>
 
-      {/* 02: Journey Timeline */}
+      {/* 02: Methodology - Stalking the Problem */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
         <div className="md:col-span-4 flex flex-col gap-2">
           <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
-            [ 02 // JOURNEY ]
+            [ 02 // METHODOLOGY ]
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
-            Timeline & Milestones
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight leading-tight">
+            I observe before I move.
           </h2>
         </div>
 
-        <div className="md:col-span-8 flex flex-col gap-6 relative">
-          <div className="absolute left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-white/60 via-white/20 to-transparent" />
-          
-          {TIMELINE.map((item, idx) => (
-            <div key={idx} className="flex items-start gap-5 relative pl-2">
-              <div className="w-5 h-5 rounded-full border-2 border-white/60 bg-[#080810] flex items-center justify-center shrink-0 z-10 shadow-[0_0_10px_rgba(255,255,255,0.4)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-white" />
-              </div>
-              <div className="flex flex-col gap-1 pb-6">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs font-bold text-white tracking-wider">
-                    {item.year}
-                  </span>
-                  <span className="font-mono text-xs text-white/40 uppercase tracking-widest">
-                    {item.org}
-                  </span>
-                </div>
-                <h3 className="text-base sm:text-lg font-bold text-white">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-white/60 leading-relaxed font-mono">
-                  {item.desc}
-                </p>
-              </div>
+        <div className="md:col-span-8 flex flex-col gap-6 text-white/80 text-base sm:text-lg leading-relaxed font-light">
+          <p>
+            One thing I value more than writing code is <span className="font-bold text-white">understanding the problem behind the code</span>.
+          </p>
+          <p>
+            I like watching how people interact with a product, where a process breaks, what wastes time, what could be automated, and what nobody has thought about yet.
+          </p>
+
+          <blockquote className="p-6 rounded-2xl bg-white/[0.03] border border-white/15 backdrop-blur-md flex flex-col gap-3">
+            <div className="font-mono text-sm sm:text-base font-bold tracking-widest uppercase text-white">
+              Observe. Understand. Adapt. Execute.
             </div>
-          ))}
+            <p className="text-sm sm:text-base text-white/70 italic leading-relaxed">
+              “Like a cat stalking its target, I don&apos;t need to rush toward every opportunity. I watch. I learn the environment. I find the weak point. Then I move.”
+            </p>
+          </blockquote>
         </div>
       </section>
 
-      {/* 03: Skills & Tooling */}
+      {/* 03: Experimentation & Creation */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
         <div className="md:col-span-4 flex flex-col gap-2">
           <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
-            [ 03 // EXPERTISE ]
+            [ 03 // CRAFT ]
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight leading-tight">
+            I build what I want to see exist.
+          </h2>
+        </div>
+
+        <div className="md:col-span-8 flex flex-col gap-6 text-white/80 text-base sm:text-lg leading-relaxed font-light">
+          <p>
+            My projects are where experimentation turns into something tangible. I&apos;ve worked across <span className="font-bold text-white">web development, AI-assisted development, automation, interactive interfaces, creative coding, and digital experiences</span>, constantly experimenting with new tools and approaches.
+          </p>
+          <p>
+            Sometimes I&apos;m trying to solve a practical business problem. Sometimes I&apos;m building something simply because I want to know whether I can.
+          </p>
+          <p>
+            And sometimes the most interesting projects begin with a completely unreasonable question:
+          </p>
+          <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            “What if I actually built this?”
+          </p>
+          <p className="text-white/60 text-sm font-mono">
+            That&apos;s usually where things get interesting.
+          </p>
+        </div>
+      </section>
+
+      {/* 04: Chasing Capability */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
+        <div className="md:col-span-4 flex flex-col gap-2">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
+            [ 04 // AMBITION ]
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight leading-tight">
+            I&apos;m not chasing a title. I&apos;m chasing capability.
+          </h2>
+        </div>
+
+        <div className="md:col-span-8 flex flex-col gap-6 text-white/80 text-base sm:text-lg leading-relaxed font-light">
+          <p>
+            I want to become the kind of person who can walk into an unfamiliar problem and figure it out.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs sm:text-sm">
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
+              <span className="text-white/50 block mb-1">A new framework?</span>
+              <span className="text-white font-bold">I&apos;ll learn it.</span>
+            </div>
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
+              <span className="text-white/50 block mb-1">A system I&apos;ve never touched?</span>
+              <span className="text-white font-bold">I&apos;ll understand it.</span>
+            </div>
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
+              <span className="text-white/50 block mb-1">A business process that takes hours?</span>
+              <span className="text-white font-bold">I&apos;ll look for a way to automate it.</span>
+            </div>
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
+              <span className="text-white/50 block mb-1">A problem nobody knows how to solve?</span>
+              <span className="text-white font-bold">Give me some time.</span>
+            </div>
+          </div>
+          <p className="text-white/90">
+            I don&apos;t expect to know everything. I expect to be able to <span className="font-bold text-white">learn whatever I need next.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* 05: Technology vs Mind & Never Stopping the Hunt */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
+        <div className="md:col-span-4 flex flex-col gap-2">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
+            [ 05 // PERSPECTIVE ]
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight leading-tight">
+            Technology is only the weapon.
+          </h2>
+        </div>
+
+        <div className="md:col-span-8 flex flex-col gap-6 text-white/80 text-base sm:text-lg leading-relaxed font-light">
+          <p className="text-lg sm:text-xl text-white font-normal">
+            The real advantage is the mind using it.
+          </p>
+          <p>
+            That&apos;s why my interests extend beyond code. I&apos;m fascinated by <span className="font-semibold text-white">psychology, human behavior, AI, automation, design, systems, and the way people make decisions</span>.
+          </p>
+          <p>
+            Understanding technology lets me build things. Understanding people lets me build things that actually matter. And understanding both creates a much bigger playground.
+          </p>
+          <p>
+            I&apos;m still early. And I&apos;m completely fine with that. I&apos;m building my skills, working on real projects, making mistakes, breaking things, fixing them, and learning faster with every iteration.
+          </p>
+          <p className="text-white/90">
+            I don&apos;t want my portfolio to tell you that I&apos;m already the best. I&apos;d rather it show you <span className="font-bold text-white">how far I&apos;m willing to go to become better.</span> Because I&apos;m not building a career around knowing everything. I&apos;m building one around <span className="font-bold text-white underline decoration-white/30 underline-offset-8">never stopping the hunt for what&apos;s next.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* 06: Technical Stack & Tooling */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
+        <div className="md:col-span-4 flex flex-col gap-2">
+          <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
+            [ 06 // EXPERTISE ]
           </span>
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
             Skills & Technical Stack
@@ -168,11 +257,11 @@ export function About() {
         </div>
       </section>
 
-      {/* 04: Certificates */}
+      {/* 07: Credentials & Honors */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-8 border-t border-white/10">
         <div className="md:col-span-4 flex flex-col gap-2">
           <span className="font-mono text-xs text-white/80 font-bold tracking-widest uppercase">
-            [ 04 // CREDENTIALS ]
+            [ 07 // CREDENTIALS ]
           </span>
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
             Certificates & Honors
@@ -207,15 +296,21 @@ export function About() {
         </div>
       </section>
 
-      {/* 05: Call to Action */}
-      <section className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent border border-white/15 text-center flex flex-col items-center gap-6">
-        <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight">
-          Want to collaborate on your next project?
+      {/* 08: Final Mantra & Direct Links Call to Action */}
+      <section className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-white/[0.06] to-transparent border border-white/15 text-center flex flex-col items-center gap-6">
+        <div className="font-mono text-xs tracking-widest uppercase text-white/60">
+          [ CORE MANTRA ]
+        </div>
+        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight max-w-3xl">
+          Observe. Learn. Build. Adapt.<br/>
+          <span className="text-white/70">Then go after the next target.</span>
         </h2>
-        <p className="text-white/60 font-mono text-sm max-w-xl">
-          Available for freelance web development, full-stack builds, high-CTR thumbnail design, and visual storytelling.
+        
+        <p className="text-white/60 font-mono text-xs sm:text-sm max-w-xl">
+          Available for freelance web engineering, full-stack builds, creative coding, video editing, and high-CTR thumbnail strategy.
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <Link
             href="/contact"
             className="px-8 py-3 rounded-full bg-white hover:bg-white/90 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-[0_0_20px_rgba(255,255,255,0.4)]"
@@ -228,7 +323,23 @@ export function About() {
             rel="noopener noreferrer"
             className="px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200"
           >
-            Order On Fiverr
+            Fiverr Profile
+          </a>
+          <a
+            href="https://www.linkedin.com/in/sanskar-sharma-b5830433a/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/15 text-white/80 font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://github.com/sanskar-a11y"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/15 text-white/80 font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200"
+          >
+            GitHub
           </a>
         </div>
       </section>
