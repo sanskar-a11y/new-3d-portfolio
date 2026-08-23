@@ -6,125 +6,150 @@ import { useAppStore } from '@/store/useAppStore'
 
 export function Preloader() {
   const [mounted, setMounted] = useState(false)
+  const [stage, setStage] = useState<'meow' | 'loading' | 'done'>('meow')
   const [counter, setCounter] = useState(0)
   const isLoaded = useAppStore((state) => state.isLoaded)
   const setLoaded = useAppStore((state) => state.setLoaded)
   const setCursorVariant = useAppStore((state) => state.setCursorVariant)
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0)
-    return () => clearTimeout(timer)
+    setMounted(true)
   }, [])
 
+  // Stage 1: "meow meow" prologue duration
   useEffect(() => {
     if (!mounted) return
+    const meowTimer = setTimeout(() => {
+      setStage('loading')
+    }, 1400)
 
-    // Smooth counter: increment by 2 every 12ms (~600ms total duration)
+    return () => clearTimeout(meowTimer)
+  }, [mounted])
+
+  // Stage 2: Smooth numeric progress counter (0 -> 100)
+  useEffect(() => {
+    if (stage !== 'loading') return
+
     const interval = setInterval(() => {
       setCounter((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
           return 100
         }
-        return Math.min(prev + 2, 100)
+        // Smooth non-linear acceleration
+        const increment = prev < 70 ? 2 : prev < 95 ? 3 : 1
+        return Math.min(prev + increment, 100)
       })
-    }, 12)
+    }, 18)
 
-    return () => {
-      clearInterval(interval)
-    }
-  }, [mounted])
+    return () => clearInterval(interval)
+  }, [stage])
 
+  // Stage 3: Transition to complete
   useEffect(() => {
     if (counter >= 100) {
-      setLoaded(true)
-      setCursorVariant('default')
+      const exitTimer = setTimeout(() => {
+        setLoaded(true)
+        setCursorVariant('default')
+        setStage('done')
+      }, 350)
+      return () => clearTimeout(exitTimer)
     }
   }, [counter, setLoaded, setCursorVariant])
 
-  // If not mounted yet (SSR or initial hydration), render consistent static state to prevent hydration error
   if (!mounted) {
     return (
-      <div className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none">
-        <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/70 uppercase">
-          <span>SANSKAR / 3D Experience</span>
-          <span>New Delhi, IN</span>
-        </div>
-        <div className="flex flex-col items-center justify-center my-auto">
-          <div className="font-mono text-xs sm:text-sm tracking-[0.3em] text-[#30b8ff] uppercase mb-4 text-center">
-            Loading Experience
-          </div>
-          <div className="flex items-baseline gap-2 font-light tracking-tighter">
-            <span className="text-7xl sm:text-[9vw] font-bold leading-none font-sans tracking-tight">000</span>
-            <span className="text-sm font-mono tracking-widest text-white/70 uppercase">%</span>
-          </div>
-          <div className="w-48 sm:w-64 h-[1px] bg-white/15 mt-8 relative overflow-hidden">
-            <div className="absolute top-0 left-0 h-full bg-[#30b8ff] w-0" />
-          </div>
-        </div>
-        <div className="flex justify-between items-end w-full font-mono text-[11px] tracking-[0.2em] text-white/70 uppercase">
-          <span>[ System Ready ]</span>
-          <span>Please Wait</span>
-        </div>
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0a0a0a] text-white select-none">
+        <span className="font-extralight tracking-[0.4em] text-2xl uppercase opacity-60">
+          meow meow
+        </span>
       </div>
     )
   }
 
-  // Format number as classic 3-digit counter (000 -> 100)
   const formattedCounter = counter.toString().padStart(3, '0')
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {!isLoaded && (
         <motion.div
-          key="preloader"
+          key="master-preloader"
           initial={{ opacity: 1 }}
-          exit={{ 
+          exit={{
             y: '-100%',
-            transition: { duration: 0.35, ease: [0.76, 0, 0.24, 1] } 
+            transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
           }}
-          className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none"
+          className="fixed inset-0 z-[200] flex flex-col justify-between p-6 sm:p-12 lg:p-16 bg-[#0a0a0a] text-white select-none overflow-hidden"
+          style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
         >
-          {/* Top minimal branding */}
-          <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/70 uppercase">
-            <span>SANSKAR / 3D Experience</span>
-            <span>New Delhi, IN</span>
+          {/* Top subtle metadata */}
+          <div className="flex justify-between items-center w-full font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/40 uppercase">
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              SANSKAR // 3D CORE
+            </span>
+            <span>NEW DELHI [28°36&apos;N 77°12&apos;E]</span>
           </div>
 
-          {/* Center classic minimalist loader */}
-          <div className="flex flex-col items-center justify-center my-auto">
-            <div className="overflow-hidden mb-6">
-              <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                className="font-mono text-xs sm:text-sm tracking-[0.3em] text-[#30b8ff] uppercase mb-4 text-center"
-              >
-                Loading Experience
-              </motion.div>
-            </div>
+          {/* Center Stage: Meow Prologue vs Classic Minimalist Progress */}
+          <div className="flex flex-col items-center justify-center my-auto w-full max-w-xl mx-auto min-h-[220px]">
+            <AnimatePresence mode="wait">
+              {stage === 'meow' ? (
+                /* ─── Phase 1: Majestic "meow meow" Reveal ─── */
+                <motion.div
+                  key="meow-phase"
+                  initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -20, filter: 'blur(12px)' }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col items-center text-center gap-4"
+                >
+                  <span className="text-[clamp(2rem,6vw,4rem)] font-extralight tracking-[0.45em] lowercase italic text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">
+                    meow meow
+                  </span>
+                  <p className="font-mono text-[10px] sm:text-xs tracking-[0.3em] uppercase text-white/35">
+                    [ Awakening Consciousness // Cat Core ]
+                  </p>
+                </motion.div>
+              ) : (
+                /* ─── Phase 2: Minimalist Classic Monochromatic Counter ─── */
+                <motion.div
+                  key="counter-phase"
+                  initial={{ opacity: 0, y: 25, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col items-center justify-center w-full"
+                >
+                  <p className="font-mono text-[11px] tracking-[0.35em] text-white/40 uppercase mb-4 text-center">
+                    INITIALIZING ENVIRONMENT
+                  </p>
 
-            {/* Classic Typography Progress Counter */}
-            <div className="flex items-baseline gap-2 font-light tracking-tighter">
-              <span className="text-7xl sm:text-[9vw] font-bold leading-none font-sans tracking-tight">
-                {formattedCounter}
-              </span>
-              <span className="text-sm font-mono tracking-widest text-white/70 uppercase">%</span>
-            </div>
+                  <div className="flex items-baseline gap-2 font-light tracking-tighter">
+                    <span className="text-[clamp(4.5rem,14vw,9rem)] font-extralight leading-none font-sans tracking-tight text-white">
+                      {formattedCounter}
+                    </span>
+                    <span className="text-xs sm:text-sm font-mono tracking-widest text-white/40 uppercase">
+                      %
+                    </span>
+                  </div>
 
-            {/* Sleek ultra-thin progress bar */}
-            <div className="w-48 sm:w-64 h-[1px] bg-white/15 mt-8 relative overflow-hidden">
-              <div 
-                className="absolute top-0 left-0 h-full bg-[#30b8ff] transition-all duration-75 ease-out"
-                style={{ width: `${counter}%` }}
-              />
-            </div>
+                  {/* Ultra-thin hairline progress bar */}
+                  <div className="w-56 sm:w-72 h-[1px] bg-white/10 mt-8 relative overflow-hidden">
+                    <motion.div
+                      className="absolute top-0 left-0 h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)]"
+                      style={{ width: `${counter}%` }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Bottom status */}
-          <div className="flex justify-between items-end w-full font-mono text-[11px] tracking-[0.2em] text-white/70 uppercase">
-            <span>[ System Ready ]</span>
-            <span>Please Wait</span>
+          {/* Bottom minimal telemetry */}
+          <div className="flex justify-between items-end w-full font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-white/40 uppercase">
+            <span>{stage === 'meow' ? '[ SYSTEM_PROLOGUE ]' : `[ BUFFER_STREAM: ${counter}% ]`}</span>
+            <span>{stage === 'meow' ? 'INITIALIZING' : counter >= 100 ? 'READY // LAUNCHING' : 'PLEASE STANDBY'}</span>
           </div>
         </motion.div>
       )}
