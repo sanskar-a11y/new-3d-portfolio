@@ -8,6 +8,7 @@ import { useAppStore } from '@/store/useAppStore'
 
 // ── PRE-ALLOCATED SCRATCHPAD VECTORS (zero GC pressure in render loop) ──
 const _start = new THREE.Vector3()
+const _rootArc = new THREE.Vector3()
 const _idealMid = new THREE.Vector3()
 const _idealEnd = new THREE.Vector3()
 const _midInertia = new THREE.Vector3()
@@ -18,15 +19,26 @@ const _tempVel = new THREE.Vector3()
 const _bezierP = new THREE.Vector3()
 const _bezierPNext = new THREE.Vector3()
 
-/** Evaluate quadratic bezier at parameter t, writing result into `out` */
-function evalQuadBezier(out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, t: number): THREE.Vector3 {
+/** Evaluate cubic bezier at parameter t, writing result into `out` */
+function evalCubicBezier(
+  out: THREE.Vector3,
+  p0: THREE.Vector3,
+  p1: THREE.Vector3,
+  p2: THREE.Vector3,
+  p3: THREE.Vector3,
+  t: number
+): THREE.Vector3 {
   const t1 = 1 - t
   const t1sq = t1 * t1
+  const t1cb = t1sq * t1
   const tsq = t * t
-  const t12t = 2 * t1 * t
-  out.x = t1sq * p0.x + t12t * p1.x + tsq * p2.x
-  out.y = t1sq * p0.y + t12t * p1.y + tsq * p2.y
-  out.z = t1sq * p0.z + t12t * p1.z + tsq * p2.z
+  const tcb = tsq * t
+  const m1 = 3 * t1sq * t
+  const m2 = 3 * t1 * tsq
+
+  out.x = t1cb * p0.x + m1 * p1.x + m2 * p2.x + tcb * p3.x
+  out.y = t1cb * p0.y + m1 * p1.y + m2 * p2.y + tcb * p3.y
+  out.z = t1cb * p0.z + m1 * p1.z + m2 * p2.z + tcb * p3.z
   return out
 }
 
@@ -244,20 +256,21 @@ const CatShader = {
 function createWhiskerGeometry() {
   const points: THREE.Vector3[] = []
   const rows = [
-    { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04 },
-    { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02 },
-    { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08 },
+    { y: -0.12, z: 0.36, len: 0.54, angleY: 0.04 },
+    { y: -0.17, z: 0.36, len: 0.58, angleY: -0.02 },
+    { y: -0.22, z: 0.35, len: 0.52, angleY: -0.08 },
   ]
 
   ;[-1, 1].forEach((side) => {
     rows.forEach((row) => {
       const startX = side * 0.14
       const endX = side * (0.14 + row.len)
-      const start = new THREE.Vector3(startX, row.y, row.z)
-      const mid = new THREE.Vector3(startX + side * row.len * 0.5, row.y + row.angleY * 0.5, row.z - 0.05)
-      const end = new THREE.Vector3(endX, row.y + row.angleY, row.z - 0.15)
-      const curve = new THREE.QuadraticBezierCurve3(start, mid, end)
-      const curvePoints = curve.getPoints(20)
+      const p0 = new THREE.Vector3(startX, row.y, row.z)
+      const p1 = new THREE.Vector3(startX + side * 0.14, row.y + 0.04, row.z + 0.05)
+      const p2 = new THREE.Vector3(startX + side * row.len * 0.55, row.y + row.angleY * 0.5 - 0.02, row.z - 0.06)
+      const p3 = new THREE.Vector3(endX, row.y + row.angleY - 0.05, row.z - 0.18)
+      const curve = new THREE.CubicBezierCurve3(p0, p1, p2, p3)
+      const curvePoints = curve.getPoints(24)
       for (let i = 0; i < curvePoints.length - 1; i++) {
         points.push(curvePoints[i], curvePoints[i + 1])
       }
@@ -272,6 +285,9 @@ export function CatModel() {
   const eyeRef = useRef<THREE.Mesh>(null)
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const isLoaded = useAppStore((state) => state.isLoaded)
+  const setTelemetry = useAppStore((state) => state.setTelemetry)
+  const setStoreMode = useAppStore((state) => state.setMode)
+  const telemetryKeyRef = useRef('')
   const introStartTimeRef = useRef<number | null>(null)
   const { viewport } = useThree()
   const mobileTiltRef = useRef({ x: 0, y: 0 })
@@ -348,7 +364,7 @@ export function CatModel() {
     }))
   )
 
-  // Load authentic Yuta Abe cat 3D model
+  // Load 3D cat model
   const { scene } = useGLTF('/cat.glb') as any
 
   // Extract body and eye meshes, convert to non-indexed and inject barycentric coordinates for wireframe
@@ -571,13 +587,77 @@ export function CatModel() {
         const introVal = Math.min(1.0, activeIntroTime / 3.5)
         // Particle assembly easing
         materialRef.current.uniforms.uIntroProgress.value = 1.0 - Math.pow(1.0 - introVal, 3)
+
+        if (activeIntroTime < 3.5) {
+          if (telemetryKeyRef.current !== 'intro') {
+            telemetryKeyRef.current = 'intro'
+            setTelemetry({
+              line1: 'ASSEMBLING 3D CORE',
+              line2: 'SYSTEM INITIALIZED',
+              isTransition: true,
+            })
+          }
+        }
       }
 
       // Start auto-cycling only after intro completes (3.5s)
       if (introStartTimeRef.current !== null) {
         const introActive = elapsed - introStartTimeRef.current
-        const cycleTime = Math.max(0, introActive - 3.5)
-        materialRef.current.uniforms.uAutoPhase.value = (cycleTime * 0.0833) % 3.0
+        if (introActive >= 3.5) {
+          const cycleTime = Math.max(0, introActive - 3.5)
+          const phase = (cycleTime * 0.0833) % 3.0
+          materialRef.current.uniforms.uAutoPhase.value = phase
+
+          let currentKey = ''
+          let line1 = ''
+          let line2 = ''
+          let isTransition = false
+          let currentModeIndex = 0
+
+          if (phase >= 0.0 && phase < 0.88) {
+            currentKey = 'mode-0'
+            line1 = 'BRAIN IS OFFLINE'
+            line2 = 'BE BACK LATER'
+            isTransition = false
+            currentModeIndex = 0
+          } else if (phase >= 0.88 && phase < 1.12) {
+            currentKey = 'trans-0-1'
+            line1 = 'RECONFIGURING MESH'
+            line2 = 'HALFTONE ENGAGED'
+            isTransition = true
+            currentModeIndex = 1
+          } else if (phase >= 1.12 && phase < 1.88) {
+            currentKey = 'mode-1'
+            line1 = 'QUANTUM HALFTONE'
+            line2 = 'PHOTON DOT MATRIX'
+            isTransition = false
+            currentModeIndex = 1
+          } else if (phase >= 1.88 && phase < 2.12) {
+            currentKey = 'trans-1-2'
+            line1 = 'CALIBRATING OPTICS'
+            line2 = 'INITIATING LIDAR'
+            isTransition = true
+            currentModeIndex = 2
+          } else if (phase >= 2.12 && phase < 2.88) {
+            currentKey = 'mode-2'
+            line1 = 'LIDAR PHOTON SWEEP'
+            line2 = '120HZ VOLUMETRIC'
+            isTransition = false
+            currentModeIndex = 2
+          } else {
+            currentKey = 'trans-2-0'
+            line1 = 'SYNTHESIZING FACETS'
+            line2 = 'ORIGAMI PROTOCOL'
+            isTransition = true
+            currentModeIndex = 0
+          }
+
+          if (telemetryKeyRef.current !== currentKey) {
+            telemetryKeyRef.current = currentKey
+            setTelemetry({ line1, line2, isTransition })
+            setStoreMode(currentModeIndex)
+          }
+        }
       }
     }
 
@@ -628,8 +708,8 @@ export function CatModel() {
           let whiskerChanged = false
 
           let whiskerIdx = 0
-          const kWhisker = 140.0
-          const cWhisker = 12.0
+          const kWhisker = 72.0
+          const cWhisker = 6.2
 
           // Use hoisted WHISKER_SIDES and WHISKER_ROWS (zero per-frame allocations)
           for (let s = 0; s < WHISKER_SIDES.length; s++) {
@@ -640,23 +720,37 @@ export function CatModel() {
               const startX = side * 0.14
               const endX = side * (0.14 + row.len)
 
-              const gravitySag = -0.0088 * row.flex
-              const pitchInertia = -p.rot.x * 0.066 * row.flex - vy * 0.0066 * row.flex
-              const rollInertia = side * p.rot.y * 0.055 * row.flex - side * vx * 0.0066 * row.flex
-              const sway = Math.sin(elapsed * 2.2 + rowIdx * 0.8 + side * 1.2) * 0.0055 * row.flex
+              // Multi-harmonic aerodynamic breeze & subtle organic twitching
+              const breathSway = Math.sin(elapsed * 2.8 + rowIdx * 0.85 + side * 1.4) * 0.018 * row.flex
+              const flutter = Math.cos(elapsed * 5.4 + rowIdx * 1.2 + side * 0.7) * 0.009 * row.flex
+              const twitchImpulse = Math.sin(elapsed * 0.65) > 0.92 ? Math.sin(elapsed * 26.0) * 0.022 * row.flex : 0.0
+              const dynamicWind = breathSway + flutter + twitchImpulse
 
-              const totalDrop = gravitySag + pitchInertia + rollInertia + sway
+              // Head turn inertia & drag lag
+              const headTurnDragZ = -p.rot.y * side * 0.07 * row.flex - vx * side * 0.035 * row.flex
+              const headPitchDrag = -p.rot.x * 0.11 * row.flex - vy * 0.045 * row.flex
+              const lateralFlare = side * (Math.abs(p.rot.y) * 0.03 + Math.abs(vx) * 0.02) * row.flex
+
+              const totalDrop = -0.012 * row.flex + headPitchDrag + dynamicWind
 
               _start.set(startX, row.y, row.z)
+              
+              // Initial natural outward curvature arc sprouting from muzzle
+              _rootArc.set(
+                startX + side * 0.14,
+                row.y + 0.04 + Math.sin(elapsed * 2.8 + side) * 0.006,
+                row.z + 0.05
+              )
+
               _idealMid.set(
-                startX + side * row.len * 0.5,
-                row.y + row.angleY * 0.5 + totalDrop * 0.45,
-                row.z - 0.05
+                startX + side * row.len * 0.55 + lateralFlare * 0.5,
+                row.y + row.angleY * 0.5 - 0.02 + totalDrop * 0.55,
+                row.z - 0.06 + headTurnDragZ * 0.5
               )
               _idealEnd.set(
-                endX,
-                row.y + row.angleY + totalDrop,
-                row.z - 0.15
+                endX + lateralFlare,
+                row.y + row.angleY - 0.05 + totalDrop,
+                row.z - 0.18 + headTurnDragZ
               )
 
               if (!stateNode.initialized) {
@@ -665,15 +759,16 @@ export function CatModel() {
                 stateNode.initialized = true
               }
 
+              // Dynamic whip inertia from head rotation and mouse movement velocity
               _midInertia.set(
-                -p.accel.x * 0.02 * row.flex,
-                -p.accel.y * 0.02 * row.flex,
-                -p.accel.z * 0.015 * row.flex
+                (-p.accel.x * 0.06 - vx * 0.08) * row.flex,
+                (-p.accel.y * 0.06 - vy * 0.08) * row.flex,
+                (-p.accel.z * 0.04) * row.flex
               )
               _endInertia.set(
-                -p.accel.x * 0.04 * row.flex,
-                -p.accel.y * 0.04 * row.flex,
-                -p.accel.z * 0.025 * row.flex
+                (-p.accel.x * 0.14 - vx * 0.18) * row.flex,
+                (-p.accel.y * 0.14 - vy * 0.18) * row.flex,
+                (-p.accel.z * 0.09) * row.flex
               )
 
               // Spring update for Mid Node (zero-alloc)
@@ -688,7 +783,7 @@ export function CatModel() {
 
               // Spring update for End Tip Node (zero-alloc)
               _fEnd.subVectors(_idealEnd, stateNode.endPos)
-                .multiplyScalar(kWhisker * 0.9)
+                .multiplyScalar(kWhisker * 0.85)
               _tempVel.copy(stateNode.endVel).multiplyScalar(cWhisker)
               _fEnd.sub(_tempVel).add(_endInertia)
 
@@ -696,12 +791,18 @@ export function CatModel() {
               _tempVel.copy(stateNode.endVel).multiplyScalar(dt)
               stateNode.endPos.add(_tempVel)
 
-              // Generate 20 sub-segments via inline quadratic bezier (no curve/getPoints allocation)
-              const WHISKER_SEGMENTS = 20
-              evalQuadBezier(_bezierP, _start, stateNode.midPos, stateNode.endPos, 0)
+              // Generate 24 sub-segments via inline cubic bezier + 10% organic fluid wave ripple
+              const WHISKER_SEGMENTS = 24
+              evalCubicBezier(_bezierP, _start, _rootArc, stateNode.midPos, stateNode.endPos, 0)
               for (let seg = 1; seg <= WHISKER_SEGMENTS; seg++) {
                 const t = seg / WHISKER_SEGMENTS
-                evalQuadBezier(_bezierPNext, _start, stateNode.midPos, stateNode.endPos, t)
+                evalCubicBezier(_bezierPNext, _start, _rootArc, stateNode.midPos, stateNode.endPos, t)
+
+                // 10% organic fluid traveling ripple towards tip (t * t ensures root stays firmly anchored)
+                const fluidWaveY = Math.sin(elapsed * 3.5 - t * 4.5 + rowIdx * 1.1 + side * 1.3) * (0.015 * t * t * row.flex)
+                const fluidWaveZ = Math.cos(elapsed * 3.0 - t * 3.8 + rowIdx * 0.9) * (0.008 * t * t * row.flex)
+                _bezierPNext.y += fluidWaveY
+                _bezierPNext.z += fluidWaveZ
 
                 if (
                   Math.abs(array[ptr] - _bezierP.x) > 1e-5 ||
@@ -749,7 +850,7 @@ export function CatModel() {
 
   return (
     <group ref={groupRef} position={[0, basePosY, 0]} scale={[responsiveScale, responsiveScale, responsiveScale]}>
-      {/* Authentic Yuta Abe Head Base with Pure White Shaders and Particle Intro */}
+      {/* Cyber Cat Head Base with Pure White Shaders and Particle Intro */}
       <mesh geometry={bodyGeometry}>
         <primitive object={customMaterial} ref={materialRef} attach="material" />
       </mesh>

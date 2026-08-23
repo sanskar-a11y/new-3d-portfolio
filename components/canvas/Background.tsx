@@ -1,14 +1,16 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useSyncExternalStore } from 'react'
+
+const emptySubscribe = () => () => {}
 
 export function Background({ children, frameloop = 'always' }: { children?: React.ReactNode; frameloop?: 'always' | 'demand' | 'never' }) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
 
   if (!mounted) {
     return null

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, memo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Magnetic } from '@/components/ui/Magnetic'
@@ -90,34 +91,22 @@ export const Navbar = memo(function Navbar() {
           onMouseEnter={() => handlePrefetch('/')}
           onFocus={() => handlePrefetch('/')}
           onClick={() => handleLinkClick('/')}
-          className={`relative group py-1.5 px-4 flex items-center justify-center select-none cursor-pointer transform -skew-x-12 ${
+          className={`relative group py-1 px-3 flex items-center justify-center select-none cursor-pointer ${
             pendingHref === '/' ? 'opacity-70 animate-pulse' : ''
           }`}
         >
-          {/* Subtle Ambient Glow behind text */}
-          <div className="absolute inset-0 bg-[#ff0055]/15 rounded-full blur-lg opacity-60 group-hover:opacity-100 group-hover:bg-[#ff0055]/30 transition-all duration-500" />
+          {/* Subtle Ambient Glow behind logo */}
+          <div className="absolute inset-0 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           
-          {/* Elegant Fine Cat Claw Slash Overlay */}
-          <svg 
-            className="absolute -inset-x-6 -inset-y-2 w-[135%] h-[150%] pointer-events-none stroke-[#ff0055] transition-all duration-300 transform group-hover:scale-105 group-hover:stroke-[#ff3377] group-hover:drop-shadow-[0_0_10px_rgba(255,0,85,0.9)]"
-            viewBox="0 0 180 50"
-            fill="none"
-          >
-            {/* Fine Jagged Cat Claw Slashes */}
-            <path d="M 10 42 L 32 12 M 25 45 L 48 10 M 42 44 L 68 8 M 65 46 L 95 6 M 90 42 L 115 10 M 112 45 L 138 8 M 132 44 L 162 6" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
-            <path d="M 10 40 C 45 25 100 15 170 6" strokeWidth="2" strokeLinecap="round" opacity="0.85" strokeDasharray="12 3 6 2" />
-            <path d="M 16 44 C 52 27 110 17 175 8" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" strokeDasharray="14 4 5 2" />
-          </svg>
-
-          {/* Elegant Scratched SANSKAR Typography */}
-          <span 
-            className="font-scratchy relative z-10 text-lg sm:text-2xl tracking-[0.22em] uppercase text-[#ff0055] group-hover:text-[#ff3377] transition-all duration-300 font-bold"
-            style={{
-              textShadow: '0 0 8px rgba(255, 0, 85, 0.8), 0 0 16px rgba(255, 0, 85, 0.4), 1.5px 1.5px 0px #000',
-            }}
-          >
-            SANSKAR
-          </span>
+          {/* Official SANSKAR Logo */}
+          <Image
+            src="/logo.png"
+            alt="SANSKAR"
+            width={160}
+            height={53}
+            priority
+            className="h-8 sm:h-10 w-auto object-contain mix-blend-screen brightness-110 contrast-125 filter transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
+          />
         </Link>
       </Magnetic>
 

@@ -24,9 +24,6 @@ export function Preloader() {
       setCounter((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
-          // Trigger scene entry immediately at 100
-          setLoaded(true)
-          setCursorVariant('default')
           return 100
         }
         return Math.min(prev + 2, 100)
@@ -36,15 +33,22 @@ export function Preloader() {
     return () => {
       clearInterval(interval)
     }
-  }, [mounted, setLoaded, setCursorVariant])
+  }, [mounted])
+
+  useEffect(() => {
+    if (counter >= 100) {
+      setLoaded(true)
+      setCursorVariant('default')
+    }
+  }, [counter, setLoaded, setCursorVariant])
 
   // If not mounted yet (SSR or initial hydration), render consistent static state to prevent hydration error
   if (!mounted) {
     return (
       <div className="fixed inset-0 z-[200] flex flex-col justify-between p-8 sm:p-12 bg-[#080808] text-[#F0EDE8] select-none">
         <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/70 uppercase">
-          <span>Yuta Abe Style / 3D Experience</span>
-          <span>Tokyo, JP</span>
+          <span>SANSKAR / 3D Experience</span>
+          <span>New Delhi, IN</span>
         </div>
         <div className="flex flex-col items-center justify-center my-auto">
           <div className="font-mono text-xs sm:text-sm tracking-[0.3em] text-[#30b8ff] uppercase mb-4 text-center">
@@ -83,8 +87,8 @@ export function Preloader() {
         >
           {/* Top minimal branding */}
           <div className="flex justify-between items-center w-full font-mono text-xs tracking-[0.25em] text-white/70 uppercase">
-            <span>Yuta Abe Style / 3D Experience</span>
-            <span>Tokyo, JP</span>
+            <span>SANSKAR / 3D Experience</span>
+            <span>New Delhi, IN</span>
           </div>
 
           {/* Center classic minimalist loader */}
