@@ -133,6 +133,7 @@ export const REAL_PROJECTS: ProjectData[] = [
     outcome: 'Production-ready 60FPS 3D WebGL portfolio deployed on Vercel.',
     tech: ['Three.js', 'React Three Fiber', 'GLSL Shaders', 'Next.js', 'Framer Motion'],
     image: makePlaceholder('3D INTERACTIVE PORTFOLIO', '07'),
+    liveUrl: 'https://myportfolio-git-main-sanskar-a11ys-projects.vercel.app/',
     githubUrl: 'https://github.com/sanskar-a11y/new-3d-portfolio',
     status: 'Live & Active',
   },
