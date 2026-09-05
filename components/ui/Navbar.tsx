@@ -55,8 +55,8 @@ export const Navbar = memo(function Navbar() {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-0 left-0 w-full z-50 px-5 sm:px-10 lg:px-16 py-4 sm:py-6 md:py-8 flex justify-between items-center pointer-events-none select-none"
-      style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+      className="fixed top-0 left-0 w-full z-50 px-5 sm:px-10 py-5 flex justify-between items-center pointer-events-none select-none"
+      style={{ fontFamily: 'var(--font-space-mono), monospace' }}
     >
       {/* ─── Desktop Left Links ─── */}
       <div className="hidden md:flex items-center gap-8 lg:gap-14 pointer-events-auto">
@@ -67,17 +67,17 @@ export const Navbar = memo(function Navbar() {
               <Link
                 href={link.href}
                 onMouseEnter={() => handlePrefetch(link.href)}
-                className={`relative group inline-flex items-center text-xs sm:text-sm font-light uppercase tracking-[0.25em] transition-all duration-300 py-1 ${
-                  isActive ? 'text-white' : 'text-white/75 hover:text-white'
+                className={`link-sweep relative group inline-flex items-center uppercase py-1 transition-opacity duration-300 ${
+                  isActive ? 'opacity-100' : 'opacity-50 hover:opacity-100'
                 }`}
+                style={{
+                  fontFamily: 'var(--font-space-mono), monospace',
+                  fontSize: 'max(12px, 0.75rem)',
+                  letterSpacing: '0.05em',
+                  color: 'var(--col-white)',
+                }}
               >
                 <span>{link.name}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="active-dot-left"
-                    className="absolute -bottom-1 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2 shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                  />
-                )}
               </Link>
             </Magnetic>
           )
@@ -99,7 +99,7 @@ export const Navbar = memo(function Navbar() {
               width={200}
               height={66}
               priority
-              className="h-8 sm:h-10 md:h-12 w-auto object-contain mix-blend-screen brightness-110 contrast-125 filter transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_16px_rgba(255,255,255,0.85)]"
+              className="h-8 sm:h-10 md:h-12 w-auto object-contain mix-blend-screen brightness-110 contrast-125 filter transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_16px_rgba(48,184,255,0.6)]"
             />
           </Link>
         </Magnetic>
@@ -114,17 +114,17 @@ export const Navbar = memo(function Navbar() {
               <Link
                 href={link.href}
                 onMouseEnter={() => handlePrefetch(link.href)}
-                className={`relative group inline-flex items-center text-xs sm:text-sm font-light uppercase tracking-[0.25em] transition-all duration-300 py-1 ${
-                  isActive ? 'text-white' : 'text-white/75 hover:text-white'
+                className={`link-sweep relative group inline-flex items-center uppercase py-1 transition-opacity duration-300 ${
+                  isActive ? 'opacity-100' : 'opacity-50 hover:opacity-100'
                 }`}
+                style={{
+                  fontFamily: 'var(--font-space-mono), monospace',
+                  fontSize: 'max(12px, 0.75rem)',
+                  letterSpacing: '0.05em',
+                  color: 'var(--col-white)',
+                }}
               >
                 <span>{link.name}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="active-dot-right"
-                    className="absolute -bottom-1 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2 shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                  />
-                )}
               </Link>
             </Magnetic>
           )
@@ -139,16 +139,18 @@ export const Navbar = memo(function Navbar() {
       >
         <button
           onClick={() => setIsOpen((prev) => !prev)}
-          className="group inline-flex items-center gap-2.5 text-xs font-light uppercase tracking-[0.25em] text-white/75 hover:text-white transition-colors duration-300 py-2 px-1 cursor-pointer focus:outline-none"
+          className="group inline-flex items-center uppercase transition-opacity duration-300 py-1 px-0.5 cursor-pointer focus:outline-none"
+          style={{
+            fontFamily: 'var(--font-space-mono), monospace',
+            fontSize: 'max(13px, 0.8125rem)',
+            letterSpacing: '0.06em',
+            color: 'var(--col-white)',
+            opacity: isOpen ? 1 : 0.65,
+          }}
           aria-expanded={isOpen}
           aria-label="Toggle Navigation Menu"
         >
-          <span>{isOpen ? 'Close' : 'Menu'}</span>
-          <span
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-              isOpen ? 'bg-white scale-125 shadow-[0_0_8px_rgba(255,255,255,0.9)]' : 'bg-white/40 group-hover:bg-white'
-            }`}
-          />
+          <span>{isOpen ? 'CLOSE' : 'MENU'}</span>
         </button>
 
         {/* Mobile Floating Dropdown — Pure Typography, Zero Box */}
@@ -180,14 +182,20 @@ export const Navbar = memo(function Navbar() {
                       href={link.href}
                       onMouseEnter={() => handlePrefetch(link.href)}
                       onClick={() => setIsOpen(false)}
-                      className={`group relative inline-flex items-center gap-2 text-xs font-light uppercase tracking-[0.25em] transition-all duration-300 py-0.5 ${
+                      className={`link-sweep group relative inline-flex items-center gap-2 uppercase transition-all duration-300 py-0.5 ${
                         isActive
-                          ? 'text-white'
-                          : 'text-white/75 hover:text-white hover:translate-x-[-3px]'
+                          ? 'opacity-100'
+                          : 'opacity-50 hover:opacity-100 hover:translate-x-[-3px]'
                       }`}
+                      style={{
+                        fontFamily: 'var(--font-space-mono), monospace',
+                        fontSize: 'max(12px, 0.75rem)',
+                        letterSpacing: '0.05em',
+                        color: 'var(--col-white)',
+                      }}
                     >
                       {isActive && (
-                        <span className="w-1 h-1 rounded-full bg-white mr-1" />
+                        <span className="w-1 h-1 rounded-full mr-1" style={{ background: 'var(--col-blue)' }} />
                       )}
                       <span>{link.name}</span>
                     </Link>

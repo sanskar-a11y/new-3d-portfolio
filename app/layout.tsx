@@ -160,8 +160,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`noise-overlay bg-[#0a0a0a] ${syne.variable} ${spaceMono.variable}`}>
-        <div className="fixed inset-0 z-0 bg-[#0a0a0a] pointer-events-none" />
+      <body className={`noise-overlay bg-[#080808] ${syne.variable} ${spaceMono.variable}`}>
+        <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none" />
         <PixelBackground />
         <ErrorBoundary>
           <Preloader />

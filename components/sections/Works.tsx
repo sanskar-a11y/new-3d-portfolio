@@ -146,7 +146,7 @@ export const ProjectItem = memo(function ProjectItem({
   const shouldReduceMotion = useReducedMotion()
   const zIndexClass = isSelected
     ? 'relative z-30 opacity-100'
-    : 'relative z-10 opacity-40 hover:opacity-80'
+    : 'relative z-10 opacity-20 hover:opacity-80'
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -184,7 +184,7 @@ export const ProjectItem = memo(function ProjectItem({
           className={`text-lg sm:text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-tight sm:leading-none transition-all duration-300 break-words ${
             isSelected
               ? 'text-white translate-x-1 sm:translate-x-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-              : 'text-white/40 group-hover:text-white/70'
+              : 'text-white/25 group-hover:text-white/80'
           }`}
         >
           {project.title}
@@ -196,7 +196,7 @@ export const ProjectItem = memo(function ProjectItem({
         className={`relative aspect-video w-[75px] sm:w-[130px] md:w-[185px] lg:w-[220px] rounded-lg overflow-hidden transition-all duration-300 shadow-xl shrink-0 border ${
           isSelected
             ? 'opacity-100 scale-105 border-white/50 shadow-[0_0_25px_rgba(255,255,255,0.15)] ring-1 ring-white/40'
-            : 'opacity-30 border-white/10 group-hover:opacity-70 group-hover:scale-102'
+            : 'opacity-20 border-white/10 group-hover:opacity-75 group-hover:scale-102'
         }`}
       >
         <Image

@@ -134,17 +134,17 @@ function ElegantLink({
     <motion.span
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="relative inline-flex items-center gap-1.5 text-xs sm:text-sm font-light uppercase tracking-[0.2em] text-white/80 hover:text-white transition-colors duration-300 py-1"
+      className="link-sweep relative inline-flex items-center gap-1.5 uppercase py-1 transition-all duration-300"
+      style={{
+        fontFamily: 'var(--font-space-mono), monospace',
+        fontSize: 'max(12px, 0.75rem)',
+        letterSpacing: '0.2em',
+        color: 'var(--col-white)',
+        opacity: hovered ? 1 : 0.7,
+      }}
     >
       <span>{label}</span>
       <span className="text-[10px] opacity-80">{isExternal ? '↗' : '→'}</span>
-      <motion.span
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: hovered ? 1 : 0 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        style={{ originX: hovered ? 0 : 1 }}
-        className="absolute bottom-0 left-0 right-0 h-[1px] bg-white"
-      />
     </motion.span>
   )
 
@@ -173,8 +173,8 @@ export function About() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full text-white antialiased selection:bg-white selection:text-black overflow-hidden"
-      style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+      className="relative w-full text-[var(--col-white)] antialiased overflow-hidden"
+      style={{ fontFamily: 'var(--font-syne), sans-serif' }}
     >
       {/* ═══════════════════════════════════════════════
           01. HERO — The Opening Roar

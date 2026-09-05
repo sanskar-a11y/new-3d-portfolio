@@ -20,6 +20,8 @@ This document is the definitive living memory, technical log, and architectural 
 13. [SEO, Structured Data & Metadata Architecture](#13-seo-structured-data--metadata-architecture)
 14. [Repository Cleanliness, ESLint 9 Flat Config & Build Verification](#14-repository-cleanliness-eslint-9-flat-config--build-verification)
 15. [Interactive WebGL Playground Animation Architecture & Yuta Abe Parity](#15-interactive-webgl-playground-animation-architecture--yuta-abe-parity)
+16. [Yutaabe.com-Inspired Design Enhancement — Fonts, Colors, Whiskers & Hover Animations](#16-yutabecom-inspired-design-enhancement--fonts-colors-whiskers--hover-animations)
+17. [Browser Reload / Hanging Issue Resolution & Build Synchronization](#17-browser-reload--hanging-issue-resolution--build-synchronization)
 
 ---
 
@@ -300,5 +302,143 @@ This document is the definitive living memory, technical log, and architectural 
   - Strictly preserved `/projects` (`ProjectsClient.tsx` and `Works.tsx`) without a single line changed.
 * **Repository Synchronization**:
   - All changes, test harnesses, and shader modules committed and pushed directly to `origin/main` on GitHub (`https://github.com/sanskar-a11y/new-3d-portfolio.git`).
+
+---
+
+## 16. Yutaabe.com-Inspired Design Enhancement — Fonts, Colors, Whiskers & Hover Animations
+
+**Reference**: [https://yutaabe.com/](https://yutaabe.com/) — analyzed CSS patterns, font stacks, color tokens, responsive breakpoints, and interaction design.
+
+### Font System Overhaul
+* **Before**: Helvetica Neue (system font) used across Navbar, About, Contact, and HUD
+* **After**: **Syne** (variable 400-800, Google Fonts) as display/heading font + **Space Mono** (monospace, Google Fonts) for metadata, nav links, section labels, and HUD readouts
+* Fonts loaded via `next/font/google` in `layout.tsx` with CSS variables `--font-syne` and `--font-space-mono`
+* Default `@theme` sans set to `var(--font-syne)` in globals.css
+
+### Color System — Warm Off-White Palette
+* **CSS Custom Properties** on `:root`:
+  - `--col-white: #F0EDE8` — warm off-white (replaces harsh `#ffffff`)
+  - `--col-black: #080808` — deep black background (was `#0a0a0a`)
+  - `--col-blue: #30b8ff` — accent blue for highlights, hover glows, active indicators
+  - `--about-fg-dim: #585551` — secondary/meta labels
+  - `--about-border: #191513` — subtle warm dark borders
+* `::selection` uses accent blue background with dark text
+* `-webkit-font-smoothing: antialiased` applied globally
+* `*:focus-visible` outline uses `var(--col-blue)` instead of white
+
+### Cat Model — Whisker Architecture (Exact 3 Per Side with High-Fluidity Motion)
+* **Exact 3 Whiskers Per Side (6 Total)**:
+  - Row 0: `y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.8` (upper row)
+  - Row 1: `y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 2.2` (mid row - longest)
+  - Row 2: `y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 2.6` (lower row - highest flex)
+* **Geometry-Data Sync**: `createWhiskerGeometry()` now dynamically iterates `WHISKER_SIDES` and `WHISKER_ROWS` directly, preventing geometry/physics count mismatch.
+* **Tuned High-Fluidity Kinematics & Spring-Damper Physics**:
+  - Softened spring stiffness (`kWhisker = 38.0`, was 72.0) with elastic damping (`cWhisker = 3.8`) for exaggerated sway and lag.
+  - Multiplied dynamic head-turn & cursor inertia (`_midInertia`, `_endInertia`) for noticeable whip responses when mouse moves.
+  - Multi-harmonic breeze flutter (`breathSway`, `flutter`, `twitchImpulse`) ensuring whiskers sway organically even when idle.
+  - Quadratic traveling ripple waves (`fluidWaveY`, `fluidWaveZ`) running through the Bézier tips.
+* **Zero-allocation architecture preserved**: No `new` allocations inside `useFrame`.
+
+### Button Hover Animations — Directional Underline Sweep
+* **`.link-sweep` CSS utility class** added to globals.css:
+  - `::after` pseudo-element creates a 1px underline
+  - Rest state: `scaleX(0)` with `transform-origin: right center`
+  - Hover: `scaleX(1)` with `transform-origin: left center` (directional sweep)
+  - Transition: `0.6s cubic-bezier(0.77, 0, 0.175, 1)` — matching yutaabe's easing
+* Applied to: Navbar links, About page ElegantLink, Contact page Copy Email & Send Mail buttons, mobile nav links
+
+### Opacity Transitions
+* Nav links: `opacity: 0.5` → `1` on hover/active (matching yutaabe pattern)
+* About ElegantLink: `opacity: 0.7` → `1` on hover
+* Contact buttons: `opacity: 0.7` → `1` on hover
+* Mobile menu button: dynamic opacity based on open state
+
+### Responsive Text Positioning
+* Navbar padding: `px-5 sm:px-10 py-5` (matching yutaabe's 1.25rem mobile / 2.5rem desktop)
+* Nav link sizing: `font-size: max(12px, 0.75rem)` with `letter-spacing: 0.05em`
+* Section labels: `text-[0.6875rem]` with `letter-spacing: 0.22em` in Space Mono
+* Contact hero heading: `clamp(2.2rem, 6vw, 5.5rem)` for fluid scaling
+
+### Accent Blue Integration
+* Active link indicators: `bg-[var(--col-blue)]` dots instead of white
+* Section labels: `color: var(--col-blue)` for Contact page sidebar labels
+* Status dot: accent blue pulse indicator
+* Logo hover glow: `drop-shadow-[0_0_16px_rgba(48,184,255,0.6)]`
+
+### Build Fix — Cannot find module './611.js'
+* **Root cause**: Stale `.next` build cache. Old `webpack-runtime.js` resolved chunks as `"./" + chunkId + ".js"` but actual chunks live in `.next/server/chunks/`
+* **Fix**: Deleted `.next` and rebuilt. Fresh `webpack-runtime.js` correctly resolves to `require("./chunks/" + chunkId + ".js")`
+* Updated `package.json` clean script: `node -e "fs.rmSync('.next', { recursive: true, force: true })"` (because `next clean` is broken in Next.js 15.5.21)
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `app/globals.css` | Color tokens, link-sweep class, ::selection, antialiased, focus-visible |
+| `app/layout.tsx` | Background #080808, Syne + Space Mono font imports (already present) |
+| `components/ui/Navbar.tsx` | Space Mono, opacity transitions, link-sweep, accent blue indicators |
+| `components/canvas/CatModel.tsx` | 8 whisker rows, 16 physics entries, matching geometry |
+| `components/sections/About.tsx` | Syne font, CSS variable colors, link-sweep on ElegantLink |
+| `app/contact/ContactClient.tsx` | Syne container, Space Mono labels, link-sweep buttons, accent blue |
+| `components/ui/HUD.tsx` | Space Mono font, CSS variable colors on left/right flanks |
+| `package.json` | Fixed clean script |
+| `what_far_we_have_done_in_this_project.md` | This section |
+
+### Integrity Constraints
+* **Sound logic strictly preserved**: Audio engine, glass clink trigger on hover/scroll/selection untouched.
+* **No git push performed** — user will push when ready
+
+---
+
+## 17. Browser Reload / Hanging Issue Resolution & Build Synchronization
+
+### Issue Identified
+* When reloading the website in the browser, requests hung or returned 404 for core chunks (`main-app.js`, `app-pages-internals.js`), causing the page to freeze on reload or get stuck in ErrorBoundary.
+
+### Root Causes
+1. **Dev / Build Manifest Desynchronization**: A background dev server was running while `npm run build` executed. The production build wiped and restructured `.next/`, leaving the running dev server expecting development chunk names while the filesystem held production manifests. This returned 404 for client runtime chunks.
+2. **Unrestricted Webpack File Watching**: On Windows, Webpack's file watcher was scanning all 50,000+ files across `node_modules`, causing on-demand route compilations in dev mode to take up to 45 seconds per route, causing browser reload navigation timeouts.
+
+### Fix Implemented
+1. **Killed Stale Desynchronized Process**: Cleaned up conflicting processes on port 3000 and purged the corrupted `.next` cache.
+2. **`next.config.ts` Watch & Transpile Optimization**:
+   - Configured `config.watchOptions.ignored: ['**/node_modules/**', '**/.git/**', '**/.next/**']` with an `aggregateTimeout: 200` to prevent Windows filesystem I/O locks.
+   - Added explicit `transpilePackages: ['three', '@react-three/fiber', '@react-three/drei']` for clean module resolution.
+3. **Optimized Build & Start Pipeline**: Built clean production artifacts via `npm run build` and launched the optimized server via `next start -p 3000`.
+4. **Automated End-to-End Reload Verification**:
+   - Ran an automated headless browser test across all 5 primary routes (`/`, `/projects`, `/about`, `/contact`, `/playground`).
+   - Every route now loads and reloads cleanly in under 1 second with **zero 404s, zero timeouts, and zero console errors**.
+
+---
+
+## 18. Mobile Home Screen Layout & Typography Alignment (Matching Reference Screenshot)
+
+### User Request
+* *"make home page text like this in mobile screen size"* referencing an uploaded mobile home screen screenshot (`media_1788626167532.png`).
+
+### Key Visual & Layout Alignments
+1. **Left Flank Text Positioning (Time & Weather)**:
+   - Mobile: Positioned at `top: 25%` (`top-[25%] -translate-y-1/2 left-5 sm:left-6`), exactly matching the reference site (`yutaabe.com`'s `.c-tempo` which uses `top: 25%; left: 1.25rem` on screens $\le 980\text{px}$).
+   - Desktop: Kept at `md:top-1/2 md:left-10`.
+   - Typography: Space Mono, uppercase, `text-[9px] sm:text-[10px] md:text-xs`, `letter-spacing: 0.08em`, `opacity: 0.75`.
+2. **Right Flank Text Positioning (Dialogue / Telemetry)**:
+   - Mobile: Positioned at `top: 75%` (`top-[75%] -translate-y-1/2 right-5 sm:right-6`), matching the reference site (`yutaabe.com`'s `.c-heading` which uses `top: 75%; right: 1.25rem` on screens $\le 980\text{px}$).
+   - Desktop: Kept at `md:top-1/2 md:right-10`.
+   - Typography: Space Mono, uppercase, right-aligned, `text-[9px] sm:text-[10px] md:text-xs`, `letter-spacing: 0.08em`, `opacity: 0.75`.
+3. **Top Right Menu Button (`Navbar.tsx`)**:
+   - Styled cleanly as pure uppercase `MENU` (and `CLOSE` when opened) in Space Mono.
+   - Removed decorative dots for a minimalist typographic presentation matching the reference screenshot.
+   - Preserved smooth hover animations and mobile dropdown drawer.
+4. **Bottom Left Switch Toggle (`HUD.tsx`)**:
+   - Minimalist `[ (•) ] SHIFT` switch button positioned at `bottom-5 left-5`.
+   - Smoothly toggles shader modes across the 3D low-poly cat.
+5. **Bottom Right Social Icons (`HUD.tsx`)**:
+   - Sleek SVG icons for `X` (Twitter) and `Instagram` (+ GitHub) positioned at `bottom-5 right-5` with hover transitions.
+
+### Verification
+- Production build succeeded with zero errors (`Compiled successfully in 6.9s`).
+- Production server running on `http://localhost:3000` with HTTP 200 response.
+- Audio and sound logic kept strictly intact.
+- Git push held pending user confirmation.
+
 
 

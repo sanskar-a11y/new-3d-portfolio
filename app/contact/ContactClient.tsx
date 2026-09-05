@@ -48,8 +48,8 @@ export function ContactClient() {
 
   return (
     <main
-      className="relative min-h-screen w-full pt-28 sm:pt-36 pb-24 sm:pb-36 bg-[#0a0a0a] text-white antialiased selection:bg-white selection:text-black overflow-hidden"
-      style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+      className="relative min-h-screen w-full pt-28 sm:pt-36 pb-24 sm:pb-36 bg-[var(--col-black)] text-[var(--col-white)] antialiased overflow-hidden"
+      style={{ fontFamily: 'var(--font-syne), sans-serif' }}
     >
       {/* 3D Liquid Wave Shader Background */}
       <div className="fixed inset-0 z-[5] pointer-events-none">
@@ -67,8 +67,15 @@ export function ContactClient() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-center gap-3"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            <p className="uppercase tracking-[0.3em] text-white/80 text-[11px] font-light">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--col-blue)] animate-pulse" />
+            <p
+              className="uppercase text-[11px]"
+              style={{
+                fontFamily: 'var(--font-space-mono), monospace',
+                letterSpacing: '0.22em',
+                color: 'var(--col-blue)',
+              }}
+            >
               Contact // Inquiries
             </p>
           </motion.div>
@@ -105,7 +112,7 @@ export function ContactClient() {
         {/* 02. Direct Email — Large Interactive Typography */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.12] pt-14 sm:pt-24">
           <div className="lg:col-span-3">
-            <span className="uppercase tracking-[0.25em] text-white/75 text-[11px] font-mono sticky top-32 block">
+            <span className="uppercase text-[0.6875rem] sticky top-32 block" style={{ fontFamily: 'var(--font-space-mono), monospace', letterSpacing: '0.22em', color: 'var(--col-blue)' }}>
               Direct Inbox
             </span>
           </div>
@@ -128,18 +135,28 @@ export function ContactClient() {
               <div className="flex items-center gap-6 pt-3">
                 <button
                   onClick={copyEmail}
-                  className="group relative inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-light text-white/80 hover:text-white transition-colors duration-300 py-1 cursor-pointer"
+                  className="link-sweep group relative inline-flex items-center gap-2 uppercase py-1 cursor-pointer transition-opacity duration-300 opacity-70 hover:opacity-100"
+                  style={{
+                    fontFamily: 'var(--font-space-mono), monospace',
+                    fontSize: 'max(12px, 0.75rem)',
+                    letterSpacing: '0.2em',
+                    color: 'var(--col-white)',
+                  }}
                 >
                   <span>{copied ? '✓ Copied to clipboard' : 'Copy Email'}</span>
-                  <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/60 group-hover:bg-white transition-colors" />
                 </button>
 
                 <a
                   href={`mailto:${email}`}
-                  className="group relative inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-light text-white/80 hover:text-white transition-colors duration-300 py-1"
+                  className="link-sweep group relative inline-flex items-center gap-2 uppercase py-1 transition-opacity duration-300 opacity-70 hover:opacity-100"
+                  style={{
+                    fontFamily: 'var(--font-space-mono), monospace',
+                    fontSize: 'max(12px, 0.75rem)',
+                    letterSpacing: '0.2em',
+                    color: 'var(--col-white)',
+                  }}
                 >
                   <span>Send Mail ↗</span>
-                  <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/60 group-hover:bg-white transition-colors" />
                 </a>
               </div>
             </motion.div>
@@ -149,7 +166,7 @@ export function ContactClient() {
         {/* 03. Directory & Channels — Clean Typographic Rows */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.12] pt-16 sm:pt-24">
           <div className="lg:col-span-3">
-            <span className="uppercase tracking-[0.25em] text-white/75 text-[11px] font-mono sticky top-32 block">
+            <span className="uppercase text-[0.6875rem] sticky top-32 block" style={{ fontFamily: 'var(--font-space-mono), monospace', letterSpacing: '0.22em', color: 'var(--col-blue)' }}>
               Channels
             </span>
           </div>

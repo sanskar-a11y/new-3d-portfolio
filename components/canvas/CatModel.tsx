@@ -44,9 +44,9 @@ function evalCubicBezier(
 
 // ── STATIC DATA (hoisted outside component — zero per-frame allocations) ──
 const WHISKER_ROWS = [
-  { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.0 },
-  { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 1.2 },
-  { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 1.4 },
+  { y: -0.12, z: 0.36, len: 0.52, angleY: 0.04, flex: 1.8 },
+  { y: -0.17, z: 0.36, len: 0.56, angleY: -0.02, flex: 2.2 },
+  { y: -0.22, z: 0.35, len: 0.50, angleY: -0.08, flex: 2.6 },
 ]
 const WHISKER_SIDES = [-1, 1] as const
 
@@ -252,17 +252,12 @@ const CatShader = {
   `
 }
 
-// Generate 6 sleek cubic bezier whisker curves (3 left, 3 right) exactly on the muzzle
+// Generate sleek cubic bezier whisker curves (3 left, 3 right) exactly on the muzzle
 function createWhiskerGeometry() {
   const points: THREE.Vector3[] = []
-  const rows = [
-    { y: -0.12, z: 0.36, len: 0.54, angleY: 0.04 },
-    { y: -0.17, z: 0.36, len: 0.58, angleY: -0.02 },
-    { y: -0.22, z: 0.35, len: 0.52, angleY: -0.08 },
-  ]
 
-  ;[-1, 1].forEach((side) => {
-    rows.forEach((row) => {
+  WHISKER_SIDES.forEach((side) => {
+    WHISKER_ROWS.forEach((row) => {
       const startX = side * 0.14
       const endX = side * (0.14 + row.len)
       const p0 = new THREE.Vector3(startX, row.y, row.z)
@@ -708,8 +703,8 @@ export function CatModel() {
           let whiskerChanged = false
 
           let whiskerIdx = 0
-          const kWhisker = 72.0
-          const cWhisker = 6.2
+          const kWhisker = 38.0
+          const cWhisker = 3.8
 
           // Use hoisted WHISKER_SIDES and WHISKER_ROWS (zero per-frame allocations)
           for (let s = 0; s < WHISKER_SIDES.length; s++) {
@@ -721,24 +716,24 @@ export function CatModel() {
               const endX = side * (0.14 + row.len)
 
               // Multi-harmonic aerodynamic breeze & subtle organic twitching
-              const breathSway = Math.sin(elapsed * 2.8 + rowIdx * 0.85 + side * 1.4) * 0.018 * row.flex
-              const flutter = Math.cos(elapsed * 5.4 + rowIdx * 1.2 + side * 0.7) * 0.009 * row.flex
-              const twitchImpulse = Math.sin(elapsed * 0.65) > 0.92 ? Math.sin(elapsed * 26.0) * 0.022 * row.flex : 0.0
+              const breathSway = Math.sin(elapsed * 2.4 + rowIdx * 1.1 + side * 1.6) * 0.045 * row.flex
+              const flutter = Math.cos(elapsed * 4.8 + rowIdx * 1.5 + side * 0.9) * 0.025 * row.flex
+              const twitchImpulse = Math.sin(elapsed * 0.9) > 0.82 ? Math.sin(elapsed * 22.0) * 0.055 * row.flex : 0.0
               const dynamicWind = breathSway + flutter + twitchImpulse
 
               // Head turn inertia & drag lag
-              const headTurnDragZ = -p.rot.y * side * 0.07 * row.flex - vx * side * 0.035 * row.flex
-              const headPitchDrag = -p.rot.x * 0.11 * row.flex - vy * 0.045 * row.flex
-              const lateralFlare = side * (Math.abs(p.rot.y) * 0.03 + Math.abs(vx) * 0.02) * row.flex
+              const headTurnDragZ = -p.rot.y * side * 0.16 * row.flex - vx * side * 0.08 * row.flex
+              const headPitchDrag = -p.rot.x * 0.22 * row.flex - vy * 0.08 * row.flex
+              const lateralFlare = side * (Math.abs(p.rot.y) * 0.08 + Math.abs(vx) * 0.05) * row.flex
 
-              const totalDrop = -0.012 * row.flex + headPitchDrag + dynamicWind
+              const totalDrop = -0.015 * row.flex + headPitchDrag + dynamicWind
 
               _start.set(startX, row.y, row.z)
               
               // Initial natural outward curvature arc sprouting from muzzle
               _rootArc.set(
                 startX + side * 0.14,
-                row.y + 0.04 + Math.sin(elapsed * 2.8 + side) * 0.006,
+                row.y + 0.04 + Math.sin(elapsed * 2.8 + side) * 0.008,
                 row.z + 0.05
               )
 
@@ -761,14 +756,14 @@ export function CatModel() {
 
               // Dynamic whip inertia from head rotation and mouse movement velocity
               _midInertia.set(
-                (-p.accel.x * 0.06 - vx * 0.08) * row.flex,
-                (-p.accel.y * 0.06 - vy * 0.08) * row.flex,
-                (-p.accel.z * 0.04) * row.flex
+                (-p.accel.x * 0.14 - vx * 0.22) * row.flex,
+                (-p.accel.y * 0.14 - vy * 0.22) * row.flex,
+                (-p.accel.z * 0.10) * row.flex
               )
               _endInertia.set(
-                (-p.accel.x * 0.14 - vx * 0.18) * row.flex,
-                (-p.accel.y * 0.14 - vy * 0.18) * row.flex,
-                (-p.accel.z * 0.09) * row.flex
+                (-p.accel.x * 0.35 - vx * 0.48) * row.flex,
+                (-p.accel.y * 0.35 - vy * 0.48) * row.flex,
+                (-p.accel.z * 0.22) * row.flex
               )
 
               // Spring update for Mid Node (zero-alloc)
@@ -798,9 +793,9 @@ export function CatModel() {
                 const t = seg / WHISKER_SEGMENTS
                 evalCubicBezier(_bezierPNext, _start, _rootArc, stateNode.midPos, stateNode.endPos, t)
 
-                // 10% organic fluid traveling ripple towards tip (t * t ensures root stays firmly anchored)
-                const fluidWaveY = Math.sin(elapsed * 3.5 - t * 4.5 + rowIdx * 1.1 + side * 1.3) * (0.015 * t * t * row.flex)
-                const fluidWaveZ = Math.cos(elapsed * 3.0 - t * 3.8 + rowIdx * 0.9) * (0.008 * t * t * row.flex)
+                // Traveling fluid ripple towards tip (t * t ensures root stays firmly anchored)
+                const fluidWaveY = Math.sin(elapsed * 4.5 - t * 4.8 + rowIdx * 1.2 + side * 1.4) * (0.045 * t * t * row.flex)
+                const fluidWaveZ = Math.cos(elapsed * 3.8 - t * 4.0 + rowIdx * 1.0) * (0.028 * t * t * row.flex)
                 _bezierPNext.y += fluidWaveY
                 _bezierPNext.z += fluidWaveZ
 

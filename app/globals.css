@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rock+Salt&family=Rubik+Glitch&family=Permanent+Marker&display=swap');
 
 @theme {
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-syne);
 }
 
 .font-scratchy {
@@ -21,16 +21,54 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* ── yutaabe.com-inspired directional underline sweep ── */
+.link-sweep {
+  position: relative;
+  display: inline-block;
+}
+.link-sweep::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+}
+.link-sweep:hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
 @layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ffffff;
-    --col-white: #ffffff;
-    --accent: #ff4500; /* Subtle accent */
+    --background: #080808;
+    --foreground: #F0EDE8;
+    --col-white: #F0EDE8;
+    --col-black: #080808;
+    --col-blue: #30b8ff;
+    --about-fg: #efebe4;
+    --about-fg-dim: #585551;
+    --about-border: #191513;
+    --accent: #30b8ff;
+  }
+
+  html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-[var(--background)] text-[var(--foreground)] antialiased overflow-x-hidden selection:bg-white selection:text-black;
+    @apply bg-[var(--background)] text-[var(--foreground)] antialiased overflow-x-hidden;
+  }
+
+  ::selection {
+    background: var(--col-blue);
+    color: var(--col-black);
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -61,7 +99,6 @@
 }
 
 *:focus-visible {
-  outline: 2px solid #ffffff !important;
+  outline: 2px solid var(--col-blue) !important;
   outline-offset: 2px !important;
 }
-
