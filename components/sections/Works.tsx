@@ -122,6 +122,22 @@ export const REAL_PROJECTS: ProjectData[] = [
     githubUrl: 'https://github.com/sanskar-a11y/new-3d-portfolio',
     status: 'Live & Active',
   },
+  {
+    index: '07',
+    title: 'CULINARY CONNECTIONS',
+    subtitle: 'PREMIUM SOCIAL NETWORK FOR COOKS',
+    category: 'Full-Stack Web App / Social Network',
+    year: '2026',
+    description: 'A dedicated social platform and culinary community built for food enthusiasts and chefs. Features rich recipe creation with step-by-step instructions, direct cook-to-cook messaging, culinary identity profiles, and a distraction-free timeline for high-quality food content.',
+    problem: 'Home chefs and passionate cooks lack a distraction-free, dedicated platform designed exclusively to share recipes, connect with fellow foodies, and exchange culinary craft without algorithmic noise.',
+    solution: 'Engineered a modern, responsive web application with fast recipe sharing, rich media presentations, authenticated cook profiles, and real-time community chat interactions.',
+    outcome: 'Deployed live on Vercel delivering an engaging, intuitive community experience for culinary creators.',
+    tech: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Lucide Icons'],
+    image: makePlaceholder('CULINARY CONNECTIONS'),
+    liveUrl: 'https://my-app-vert-three-40.vercel.app/',
+    githubUrl: 'https://github.com/sanskar-a11y',
+    status: 'Live & Deployed',
+  },
 ]
 
 interface ProjectItemProps {
