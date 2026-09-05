@@ -462,6 +462,27 @@ This document is the definitive living memory, technical log, and architectural 
 - Production build verified clean (`Compiled successfully in 5.9s`).
 - Verified HTTP 200 on `http://localhost:3000/projects`.
 - Audio sound logic strictly preserved.
+- Pushed to GitHub in commit `cdf3a86`.
+
+---
+
+## 20. Updated Footer / HUD Social Links (LinkedIn & GitHub Only)
+
+### User Request
+* *"bro do not add my insta add my linkedin and github only"*
+
+### Changes Implemented
+- In `components/ui/HUD.tsx`:
+  - Removed Twitter/X and Instagram icons.
+  - Linked official **LinkedIn** profile (`https://www.linkedin.com/in/sanskar-sharma-b5830433a/`) using the official vector icon.
+  - Retained official **GitHub** profile (`https://github.com/sanskar-a11y`).
+  - Preserved magnetic cursor physics, subtle white hover transitions, and responsive positioning (`bottom-5 right-5` on mobile, `bottom-8 right-10` on desktop).
+
+### Verification
+- Production build succeeded with 0 errors (`Compiled successfully in 14.8s`).
+- Production server active on `http://localhost:3000` with HTTP 200.
+- Audio engine and sound triggers remain completely untouched.
+
 
 
 
