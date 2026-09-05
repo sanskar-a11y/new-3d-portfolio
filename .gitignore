@@ -12,3 +12,4 @@ reports/
 benchmark_results.json
 advanced_metrics_results.json
 metadata.json
+*.tsbuildinfo

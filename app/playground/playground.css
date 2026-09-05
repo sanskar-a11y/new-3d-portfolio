@@ -1,5 +1,5 @@
 :root {
-  --col-white: #F0EDE8;
+  --col-white: #ffffff;
   --col-black: #080808;
   --col-blue: #30b8ff;
   --font-syne: 'Syne', sans-serif;
@@ -90,7 +90,7 @@
   font-size: 0.625rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  opacity: 0.5;
+  opacity: 0.85;
 }
 
 /* Stats grid */
@@ -130,7 +130,7 @@
 }
 .pg-ui__lbl {
   font-family: var(--font-space-mono);
-  opacity: 0.45;
+  opacity: 0.8;
   font-weight: 400;
   justify-self: start;
 }
@@ -157,7 +157,7 @@
   border: 1px solid currentColor;
   border-radius: 50%;
   box-sizing: border-box;
-  opacity: 0.7;
+  opacity: 0.95;
 }
 
 /* Close button */

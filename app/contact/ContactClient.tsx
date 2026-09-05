@@ -68,7 +68,7 @@ export function ContactClient() {
             className="flex items-center gap-3"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            <p className="uppercase tracking-[0.3em] text-white/50 text-[11px] font-light">
+            <p className="uppercase tracking-[0.3em] text-white/80 text-[11px] font-light">
               Contact // Inquiries
             </p>
           </motion.div>
@@ -86,7 +86,7 @@ export function ContactClient() {
               initial={{ opacity: 0, y: 35, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.95, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="block text-white/40 font-thin italic mt-1"
+              className="block text-white/75 font-thin italic mt-1"
             >
               remarkable.
             </motion.span>
@@ -96,16 +96,16 @@ export function ContactClient() {
             initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.85, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="text-base sm:text-lg font-light text-white/60 leading-[1.8] max-w-2xl mt-2"
+            className="text-base sm:text-lg font-light text-white/85 leading-[1.8] max-w-2xl mt-2"
           >
             Whether you need modern web engineering, full-stack software, creative coding, or cinematic visual direction — I&apos;m ready to hunt for the right solution.
           </motion.p>
         </section>
 
         {/* 02. Direct Email — Large Interactive Typography */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.08] pt-14 sm:pt-24">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.12] pt-14 sm:pt-24">
           <div className="lg:col-span-3">
-            <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
+            <span className="uppercase tracking-[0.25em] text-white/75 text-[11px] font-mono sticky top-32 block">
               Direct Inbox
             </span>
           </div>
@@ -120,7 +120,7 @@ export function ContactClient() {
             >
               <a
                 href={`mailto:${email}`}
-                className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extralight tracking-tight text-white hover:text-white/75 transition-colors leading-tight break-all sm:break-normal"
+                className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extralight tracking-tight text-white hover:text-white/85 transition-colors leading-tight break-all sm:break-normal"
               >
                 {email}
               </a>
@@ -128,18 +128,18 @@ export function ContactClient() {
               <div className="flex items-center gap-6 pt-3">
                 <button
                   onClick={copyEmail}
-                  className="group relative inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-light text-white/60 hover:text-white transition-colors duration-300 py-1 cursor-pointer"
+                  className="group relative inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-light text-white/80 hover:text-white transition-colors duration-300 py-1 cursor-pointer"
                 >
                   <span>{copied ? '✓ Copied to clipboard' : 'Copy Email'}</span>
-                  <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/40 group-hover:bg-white transition-colors" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/60 group-hover:bg-white transition-colors" />
                 </button>
 
                 <a
                   href={`mailto:${email}`}
-                  className="group relative inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-light text-white/60 hover:text-white transition-colors duration-300 py-1"
+                  className="group relative inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-light text-white/80 hover:text-white transition-colors duration-300 py-1"
                 >
                   <span>Send Mail ↗</span>
-                  <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/40 group-hover:bg-white transition-colors" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/60 group-hover:bg-white transition-colors" />
                 </a>
               </div>
             </motion.div>
@@ -147,9 +147,9 @@ export function ContactClient() {
         </section>
 
         {/* 03. Directory & Channels — Clean Typographic Rows */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.08] pt-16 sm:pt-24">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 border-t border-white/[0.12] pt-16 sm:pt-24">
           <div className="lg:col-span-3">
-            <span className="uppercase tracking-[0.25em] text-white/40 text-[11px] font-mono sticky top-32 block">
+            <span className="uppercase tracking-[0.25em] text-white/75 text-[11px] font-mono sticky top-32 block">
               Channels
             </span>
           </div>
@@ -171,25 +171,25 @@ export function ContactClient() {
                 >
                   <ItemWrapper
                     {...extraProps}
-                    className={`group flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-4 border-b border-white/[0.06] transition-colors ${
+                    className={`group flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-4 border-b border-white/[0.1] transition-colors ${
                       item.href ? 'cursor-pointer' : 'cursor-default'
                     }`}
                   >
                     <div className="flex flex-col gap-1">
-                      <span className="text-[11px] uppercase tracking-[0.2em] font-mono text-white/35">
+                      <span className="text-[11px] uppercase tracking-[0.2em] font-mono text-white/70">
                         {item.category}
                       </span>
-                      <h2 className="text-lg sm:text-xl font-light text-white group-hover:text-white/80 transition-colors flex items-center gap-2">
+                      <h2 className="text-lg sm:text-xl font-light text-white group-hover:text-white/90 transition-colors flex items-center gap-2">
                         <span>{item.title}</span>
                         {item.href && (
-                          <span className="text-xs text-white/30 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all">
+                          <span className="text-xs text-white/60 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all">
                             ↗
                           </span>
                         )}
                       </h2>
                     </div>
 
-                    <p className="text-xs sm:text-sm font-light text-white/50 group-hover:text-white/70 transition-colors mt-1 sm:mt-0">
+                    <p className="text-xs sm:text-sm font-light text-white/80 group-hover:text-white transition-colors mt-1 sm:mt-0">
                       {item.desc}
                     </p>
                   </ItemWrapper>

@@ -65,16 +65,16 @@ export function SketchLightbox({ sketch, onClose, isDark }: SketchLightboxProps)
             </div>
 
             {/* Right side (Details panel) */}
-            <div className="md:w-1/3 p-6 sm:p-8 flex flex-col justify-between font-mono text-[#F0EDE8] bg-[#0d0d0d]">
+            <div className="md:w-1/3 p-6 sm:p-8 flex flex-col justify-between font-mono text-white bg-[#0d0d0d]">
               {/* Top Section */}
               <div className="flex flex-col gap-2 border-b border-white/10 pb-4">
                 <div className="flex items-center justify-between text-xs tracking-widest">
                   <span className="text-[#30b8ff] font-bold px-2 py-0.5 rounded bg-[#30b8ff]/10 border border-[#30b8ff]/30">
                     #{sketch.id}
                   </span>
-                  <span className="text-white/60">{sketch.year}</span>
+                  <span className="text-white/90">{sketch.year}</span>
                 </div>
-                <div className="text-xs text-white/50 tracking-wider mt-1 break-words">
+                <div className="text-xs text-white/85 tracking-wider mt-1 break-words">
                   / {sketch.tech}
                 </div>
               </div>
@@ -84,19 +84,19 @@ export function SketchLightbox({ sketch, onClose, isDark }: SketchLightboxProps)
                 <h3 className="font-sans text-2xl sm:text-3xl font-bold tracking-wider uppercase mb-4 text-white">
                   {sketch.title}
                 </h3>
-                <p className="font-mono text-sm text-white/70 leading-relaxed">
+                <p className="font-mono text-sm text-white/90 leading-relaxed">
                   {sketch.description}
                 </p>
               </div>
 
               {/* Bottom Section */}
               <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-4">
-                <span className="text-[10px] sm:text-xs text-white/70 uppercase tracking-widest hidden sm:inline">
+                <span className="text-[10px] sm:text-xs text-white/90 uppercase tracking-widest hidden sm:inline">
                   ESC
                 </span>
                 <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded border border-white/20 text-xs tracking-widest uppercase font-bold hover:border-[#30b8ff] hover:text-[#30b8ff] hover:bg-[#30b8ff]/5 hover:shadow-[0_0_20px_rgba(48,184,255,0.3)] transition-all duration-300 cursor-pointer text-center ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded border border-white/30 text-xs tracking-widest uppercase font-bold hover:border-[#30b8ff] hover:text-[#30b8ff] hover:bg-[#30b8ff]/5 hover:shadow-[0_0_20px_rgba(48,184,255,0.3)] transition-all duration-300 cursor-pointer text-center ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                   CLOSE [X]
                 </button>

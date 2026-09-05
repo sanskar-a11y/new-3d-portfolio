@@ -144,13 +144,13 @@ const liquidFragmentShader = /* glsl */ `
     // Deep matte black base with titanium-silver sheen
     vec3 matteBase = vec3(0.035, 0.035, 0.04);
     vec3 midTone = vec3(0.09, 0.095, 0.11);
-    vec3 silverHighlight = vec3(0.75, 0.78, 0.85);
-    vec3 rimColor = vec3(0.4, 0.43, 0.5);
+    vec3 silverHighlight = vec3(0.92, 0.94, 0.98);
+    vec3 rimColor = vec3(0.65, 0.68, 0.75);
 
     // Composite surface color
     vec3 color = mix(matteBase, midTone, diff * 0.6);
-    color += spec * silverHighlight * 0.65;
-    color += fresnel * rimColor * 0.4;
+    color += spec * silverHighlight * 0.75;
+    color += fresnel * rimColor * 0.5;
 
     // Elevation glow on wave crests
     float crest = smoothstep(0.2, 0.8, vElevation);

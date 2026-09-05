@@ -5,8 +5,8 @@ import dynamic from 'next/dynamic'
 import './playground.css'
 import { SKETCH_CATALOG, type SketchDef } from '@/components/playground/sketches'
 
-const PlaygroundImageGrid = dynamic(
-  () => import('@/components/playground/PlaygroundImageGrid').then((mod) => mod.PlaygroundImageGrid),
+const PlaygroundCanvas = dynamic(
+  () => import('@/components/playground/PlaygroundCanvas').then((mod) => mod.PlaygroundCanvas),
   { ssr: false }
 )
 
@@ -32,6 +32,7 @@ export function PlaygroundClient() {
 
   const handleToggleLights = useCallback(() => {
     setLightsOut((prev) => !prev)
+    setSwitchCount((prev) => prev + 1)
   }, [])
 
   const handleSwitch = useCallback(() => {
@@ -60,22 +61,26 @@ export function PlaygroundClient() {
         lightsOut ? 'bg-[#000000]' : 'bg-[#080808]'
       }`}
     >
-      {/* Background Smooth Scrolling Image Grid */}
-      <PlaygroundImageGrid
+      {/* Background WebGL Procedural Mosaic Canvas with 7 GLSL Shaders & 2D Momentum Physics */}
+      <PlaygroundCanvas
         sketches={SKETCH_CATALOG}
         isDark={lightsOut}
+        isModalOpen={!!selectedSketch}
+        selectedSketch={selectedSketch}
         onSelectSketch={handleSelectSketch}
+        onSwitch={handleSwitch}
       />
 
-      {/* Fixed HUD Overlay */}
+      {/* Synchronized 4-Corner HUD Overlay */}
       <PlaygroundHUD
         cellCount={SKETCH_CATALOG.length}
         switchCount={switchCount}
         lightsOut={lightsOut}
         onToggleLights={handleToggleLights}
+        activeTitle={selectedSketch?.title}
       />
 
-      {/* Reaction Game Overlay */}
+      {/* LightsOut Shift Reaction Mini-Game */}
       <LightsOut
         lightsOut={lightsOut}
         onToggleLights={handleToggleLights}

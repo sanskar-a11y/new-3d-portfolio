@@ -78,17 +78,17 @@ export const HUD = memo(function HUD() {
     <>
       {/* ── Left Flank: Time & Dynamic Atmosphere (Yuta Abe Style Line-Mask Reveal) ── */}
       {isHome && (
-        <div className="fixed left-6 sm:left-10 top-1/2 -translate-y-1/2 z-40 pointer-events-none select-none font-mono text-[11px] sm:text-xs tracking-[0.1em] text-white/70 uppercase">
+        <div className="fixed left-6 sm:left-10 top-1/2 -translate-y-1/2 z-40 pointer-events-none select-none font-mono text-[11px] sm:text-xs tracking-[0.1em] text-white/90 uppercase">
           <div className="flex flex-col gap-0.5">
             <div className="overflow-hidden py-0.5">
               <motion.div
                 initial={{ y: '110%', opacity: 0 }}
                 animate={{ y: '0%', opacity: 1 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="text-white/90"
+                className="text-white"
               >
                 {timeData.hour}
-                <span className="inline-block animate-pulse mx-0.5 text-white/50">:</span>
+                <span className="inline-block animate-pulse mx-0.5 text-white/80">:</span>
                 {timeData.minute} {timeData.ampm} NEW DELHI
               </motion.div>
             </div>
@@ -97,7 +97,7 @@ export const HUD = memo(function HUD() {
                 initial={{ y: '110%', opacity: 0 }}
                 animate={{ y: '0%', opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-white/60 tracking-[0.08em]"
+                className="text-white/85 tracking-[0.08em]"
               >
                 {timeData.weather}
               </motion.div>
@@ -108,7 +108,7 @@ export const HUD = memo(function HUD() {
 
       {/* ── Right Flank: Dynamic Dialogue (Yuta Abe Style Line-Mask Reveal) ── */}
       {isHome && (
-        <div className="fixed right-6 sm:right-10 top-1/2 -translate-y-1/2 z-40 pointer-events-none select-none font-mono text-[11px] sm:text-xs tracking-[0.1em] text-white/70 text-right uppercase">
+        <div className="fixed right-6 sm:right-10 top-1/2 -translate-y-1/2 z-40 pointer-events-none select-none font-mono text-[11px] sm:text-xs tracking-[0.1em] text-white/90 text-right uppercase">
           <AnimatePresence mode="wait">
             <motion.div
               key={`${telemetry.line1}-${telemetry.line2}`}
@@ -121,7 +121,7 @@ export const HUD = memo(function HUD() {
                   animate={{ y: '0%', opacity: 1 }}
                   exit={{ y: '-110%', opacity: 0 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="block font-bold tracking-[0.12em] text-white/95"
+                  className="block font-bold tracking-[0.12em] text-white"
                 >
                   {telemetry.line1}
                 </motion.span>
@@ -134,7 +134,7 @@ export const HUD = memo(function HUD() {
                   animate={{ y: '0%', opacity: 1 }}
                   exit={{ y: '-110%', opacity: 0 }}
                   transition={{ duration: 0.6, delay: 0.09, ease: [0.16, 1, 0.3, 1] }}
-                  className="block text-white/60 tracking-[0.08em]"
+                  className="block text-white/85 tracking-[0.08em]"
                 >
                   {telemetry.line2}
                 </motion.span>
@@ -150,11 +150,11 @@ export const HUD = memo(function HUD() {
           <Magnetic>
             <button
               onClick={cycleMode}
-              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors duration-200 cursor-pointer group font-mono text-[11px] sm:text-xs tracking-[0.1em] uppercase"
+              className="flex items-center gap-2 text-white hover:text-white transition-colors duration-200 cursor-pointer group font-mono text-[11px] sm:text-xs tracking-[0.1em] uppercase"
               aria-label="Shift Cat Visual Shader Mode"
             >
               {/* Minimalist Switch Toggle Pill */}
-              <div className="relative w-7 h-3.5 rounded-full border border-white/60 group-hover:border-white transition-colors duration-200 box-border p-0.5 flex items-center">
+              <div className="relative w-7 h-3.5 rounded-full border border-white/80 group-hover:border-white transition-colors duration-200 box-border p-0.5 flex items-center">
                 <div
                   className={`w-2 h-2 rounded-full bg-white transition-transform duration-300 ${
                     mode === 0 ? 'translate-x-0' : mode === 1 ? 'translate-x-1.5' : 'translate-x-3 bg-white'
@@ -173,7 +173,7 @@ export const HUD = memo(function HUD() {
               className={`flex items-center gap-2 px-3 py-1.5 border rounded-full transition-all duration-300 backdrop-blur-sm cursor-pointer ${
                 isMuted
                   ? 'bg-red-500/20 border-red-500/40 text-red-300 hover:bg-red-500/30'
-                  : 'bg-black/40 border-white/20 text-white/90 hover:bg-white/10 hover:border-white/50'
+                  : 'bg-black/40 border-white/30 text-white hover:bg-white/10 hover:border-white/60'
               }`}
             >
               <span className="text-xs">{isMuted ? '🔇' : '🔊'}</span>
@@ -186,7 +186,7 @@ export const HUD = memo(function HUD() {
       </div>
 
       {/* ── Bottom Right: Clean Social Icons (SNS) ── */}
-      <div className="fixed bottom-6 sm:bottom-8 right-6 sm:right-10 z-50 pointer-events-auto flex items-center gap-3.5 sm:gap-4 text-white/60 select-none">
+      <div className="fixed bottom-6 sm:bottom-8 right-6 sm:right-10 z-50 pointer-events-auto flex items-center gap-3.5 sm:gap-4 text-white/85 select-none">
         <Magnetic>
           <a
             href="https://www.linkedin.com/in/sanskar-sharma-b5830433a/"

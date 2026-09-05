@@ -68,7 +68,7 @@ export const Navbar = memo(function Navbar() {
                 href={link.href}
                 onMouseEnter={() => handlePrefetch(link.href)}
                 className={`relative group inline-flex items-center text-xs sm:text-sm font-light uppercase tracking-[0.25em] transition-all duration-300 py-1 ${
-                  isActive ? 'text-white' : 'text-white/50 hover:text-white'
+                  isActive ? 'text-white' : 'text-white/75 hover:text-white'
                 }`}
               >
                 <span>{link.name}</span>
@@ -115,7 +115,7 @@ export const Navbar = memo(function Navbar() {
                 href={link.href}
                 onMouseEnter={() => handlePrefetch(link.href)}
                 className={`relative group inline-flex items-center text-xs sm:text-sm font-light uppercase tracking-[0.25em] transition-all duration-300 py-1 ${
-                  isActive ? 'text-white' : 'text-white/50 hover:text-white'
+                  isActive ? 'text-white' : 'text-white/75 hover:text-white'
                 }`}
               >
                 <span>{link.name}</span>
@@ -183,7 +183,7 @@ export const Navbar = memo(function Navbar() {
                       className={`group relative inline-flex items-center gap-2 text-xs font-light uppercase tracking-[0.25em] transition-all duration-300 py-0.5 ${
                         isActive
                           ? 'text-white'
-                          : 'text-white/45 hover:text-white hover:translate-x-[-3px]'
+                          : 'text-white/75 hover:text-white hover:translate-x-[-3px]'
                       }`}
                     >
                       {isActive && (

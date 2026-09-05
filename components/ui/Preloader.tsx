@@ -1,20 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '@/store/useAppStore'
 
+const emptySubscribe = () => () => {}
+
 export function Preloader() {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
   const [stage, setStage] = useState<'meow' | 'loading' | 'done'>('meow')
   const [counter, setCounter] = useState(0)
   const isLoaded = useAppStore((state) => state.isLoaded)
   const setLoaded = useAppStore((state) => state.setLoaded)
   const setCursorVariant = useAppStore((state) => state.setCursorVariant)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Stage 1: "meow meow" prologue duration
   useEffect(() => {
@@ -83,7 +85,7 @@ export function Preloader() {
           style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
         >
           {/* Top subtle metadata */}
-          <div className="flex justify-between items-center w-full font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/40 uppercase">
+          <div className="flex justify-between items-center w-full font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/75 uppercase">
             <span className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               SANSKAR // 3D CORE
@@ -104,10 +106,10 @@ export function Preloader() {
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center text-center gap-4"
                 >
-                  <span className="text-[clamp(2rem,6vw,4rem)] font-extralight tracking-[0.45em] lowercase italic text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">
+                  <span className="text-[clamp(2rem,6vw,4rem)] font-extralight tracking-[0.45em] lowercase italic text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.7)]">
                     meow meow
                   </span>
-                  <p className="font-mono text-[10px] sm:text-xs tracking-[0.3em] uppercase text-white/35">
+                  <p className="font-mono text-[10px] sm:text-xs tracking-[0.3em] uppercase text-white/75">
                     [ Awakening Consciousness // Cat Core ]
                   </p>
                 </motion.div>
@@ -121,7 +123,7 @@ export function Preloader() {
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center justify-center w-full"
                 >
-                  <p className="font-mono text-[11px] tracking-[0.35em] text-white/40 uppercase mb-4 text-center">
+                  <p className="font-mono text-[11px] tracking-[0.35em] text-white/80 uppercase mb-4 text-center">
                     INITIALIZING ENVIRONMENT
                   </p>
 
@@ -129,13 +131,13 @@ export function Preloader() {
                     <span className="text-[clamp(4.5rem,14vw,9rem)] font-extralight leading-none font-sans tracking-tight text-white">
                       {formattedCounter}
                     </span>
-                    <span className="text-xs sm:text-sm font-mono tracking-widest text-white/40 uppercase">
+                    <span className="text-xs sm:text-sm font-mono tracking-widest text-white/80 uppercase">
                       %
                     </span>
                   </div>
 
                   {/* Ultra-thin hairline progress bar */}
-                  <div className="w-56 sm:w-72 h-[1px] bg-white/10 mt-8 relative overflow-hidden">
+                  <div className="w-56 sm:w-72 h-[1px] bg-white/30 mt-8 relative overflow-hidden">
                     <motion.div
                       className="absolute top-0 left-0 h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)]"
                       style={{ width: `${counter}%` }}
@@ -147,7 +149,7 @@ export function Preloader() {
           </div>
 
           {/* Bottom minimal telemetry */}
-          <div className="flex justify-between items-end w-full font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-white/40 uppercase">
+          <div className="flex justify-between items-end w-full font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-white/75 uppercase">
             <span>{stage === 'meow' ? '[ SYSTEM_PROLOGUE ]' : `[ BUFFER_STREAM: ${counter}% ]`}</span>
             <span>{stage === 'meow' ? 'INITIALIZING' : counter >= 100 ? 'READY // LAUNCHING' : 'PLEASE STANDBY'}</span>
           </div>

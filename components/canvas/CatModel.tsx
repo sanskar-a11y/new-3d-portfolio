@@ -178,7 +178,7 @@ const CatShader = {
       // ── Color palette ──
       vec3 darkBg = vec3(0.02, 0.02, 0.02);
       vec3 facetDark = vec3(0.09, 0.09, 0.09);
-      vec3 dotWhite = vec3(0.95, 0.95, 0.95);
+      vec3 dotWhite = vec3(1.0, 1.0, 1.0);
       vec3 beamWhite = vec3(1.0, 1.0, 1.0); // Restored to White
 
       // ── MODE 0: Wireframe ──
@@ -190,7 +190,7 @@ const CatShader = {
       if (wWire > 0.001) {
         float wireEdge = getWireEdge();
         vec3 baseFacet = mix(darkBg, facetDark, facet);
-        wireColor = mix(baseFacet, dotWhite, wireEdge * 0.9) + totalRim * 0.5;
+        wireColor = mix(baseFacet, dotWhite, wireEdge * 1.0) + totalRim * 0.6;
       }
 
       // ── MODE 1: World-Space Halftone ──
@@ -200,7 +200,7 @@ const CatShader = {
         dotMask = getHalftoneMask(faceNormal, keyLight, fillLight);
       }
       if (wHalf > 0.001) {
-        halftoneColor = mix(darkBg, dotWhite, dotMask) + totalRim * 0.7;
+        halftoneColor = mix(darkBg, dotWhite, dotMask) + totalRim * 0.8;
       }
 
       // ── MODE 2: Holographic LiDAR Laser Sweep ──

@@ -24,7 +24,8 @@
 @layer base {
   :root {
     --background: #0a0a0a;
-    --foreground: #fcfcfc;
+    --foreground: #ffffff;
+    --col-white: #ffffff;
     --accent: #ff4500; /* Subtle accent */
   }
 
